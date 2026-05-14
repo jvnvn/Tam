@@ -517,14 +517,13 @@
       position: fixed;
       inset: 0;
       background: rgba(0,0,0,0.5);
-      display: flex;
+      display: none;
       align-items: flex-end;
-      z-index: 1000;
-      visibility: hidden;
+      z-index: 1500;
       backdrop-filter: blur(4px);
     }
     .modal.active {
-      visibility: visible;
+      display: flex;
     }
     .modal-content {
       background: var(--bg);
