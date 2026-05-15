@@ -100,7 +100,7 @@
             75% { background-position: 0% 100%; }
         }
 
-        /* ===== AUTH CARD (unchanged) ===== */
+        /* ===== AUTH CARD ===== */
         .auth-wrapper { width: 100%; max-width: 440px; }
         .card {
             background: var(--card-bg);
@@ -112,10 +112,7 @@
             animation: cardIn 0.4s ease;
             color: var(--text);
         }
-        @keyframes cardIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        @keyframes cardIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         .card::before {
             content: '';
             position: absolute;
@@ -125,38 +122,23 @@
             background-size: 200% 100%;
             animation: shimmer 3s ease infinite;
         }
-        @keyframes shimmer {
-            0%,100% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-        }
+        @keyframes shimmer { 0%,100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
 
         .brand { text-align: center; margin-bottom: 28px; }
-        .brand .icon-wrapper {
-            display: inline-flex; align-items: center; justify-content: center;
-            width: 56px; height: 56px; border-radius: 16px;
-            background: linear-gradient(135deg, #4f46e5, #7c3aed);
-            margin-bottom: 14px; box-shadow: 0 8px 24px rgba(79,70,229,0.3);
-        }
+        .brand .icon-wrapper { display: inline-flex; align-items: center; justify-content: center; width: 56px; height: 56px; border-radius: 16px; background: linear-gradient(135deg, #4f46e5, #7c3aed); margin-bottom: 14px; box-shadow: 0 8px 24px rgba(79,70,229,0.3); }
         .brand .icon-wrapper svg { width: 28px; height: 28px; color: white; }
         .brand h1 { font-size: 1.6rem; font-weight: 700; letter-spacing: -0.5px; color: var(--text); }
         .brand p { font-size: 0.9rem; color: var(--text-secondary); margin-top: 4px; }
 
         .tabs { display: flex; background: #f3f4f6; border-radius: 30px; padding: 4px; margin-bottom: 28px; }
-        .tabs button {
-            flex: 1; padding: 11px 20px; border: none; background: transparent;
-            border-radius: 26px; cursor: pointer; font-weight: 600; font-size: 0.9rem;
-            color: var(--text-secondary); transition: all var(--transition); white-space: nowrap;
-        }
+        .tabs button { flex: 1; padding: 11px 20px; border: none; background: transparent; border-radius: 26px; cursor: pointer; font-weight: 600; font-size: 0.9rem; color: var(--text-secondary); transition: all var(--transition); white-space: nowrap; }
         .tabs button.active { background: #ffffff; color: var(--primary); box-shadow: var(--shadow-sm); }
         .tabs button:disabled { opacity: 0.5; cursor: not-allowed; }
 
         .form-step { display: none; flex-direction: column; gap: 18px; animation: fadeSlideIn 0.35s ease; }
         .form-step.active { display: flex; }
 
-        @keyframes fadeSlideIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        @keyframes fadeSlideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         .form-group { display: flex; flex-direction: column; gap: 6px; }
         .form-group label { font-size: 0.85rem; font-weight: 600; color: var(--text); }
@@ -181,15 +163,11 @@
             box-shadow: 0 4px 16px rgba(79,70,229,0.3); margin-top: 6px;
         }
         .btn-primary:hover:not(:disabled) {
-            background: linear-gradient(135deg, var(--primary-hover), #6d28d9);
-            transform: translateY(-1px);
+            background: linear-gradient(135deg, var(--primary-hover), #6d28d9); transform: translateY(-1px);
         }
         .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; transform: none; box-shadow: none; }
 
-        .message {
-            padding: 12px 16px; border-radius: var(--radius-sm); font-size: 0.85rem;
-            font-weight: 500; display: none;
-        }
+        .message { padding: 12px 16px; border-radius: var(--radius-sm); font-size: 0.85rem; font-weight: 500; display: none; }
         .message.error { display: block; background: var(--error-bg); color: var(--error-text); border: 1px solid var(--error-border); }
         .message.success { display: block; background: var(--success-bg); color: var(--success-text); border: 1px solid #bbf7d0; }
 
@@ -211,73 +189,42 @@
             padding: 0 24px; position: sticky; top: 0; z-index: 10; gap: 12px;
         }
         .nav-left { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
-        .nav-logo {
-            width: 36px; height: 36px; border-radius: 12px;
-            background: linear-gradient(135deg, #4f46e5, #7c3aed);
-            display: flex; align-items: center; justify-content: center; color: white;
-        }
+        .nav-logo { width: 36px; height: 36px; border-radius: 12px; background: linear-gradient(135deg, #4f46e5, #7c3aed); display: flex; align-items: center; justify-content: center; color: white; }
         .nav-logo svg { width: 20px; height: 20px; }
         .nav-title { font-weight: 700; font-size: 1.1rem; color: var(--nav-text); }
         .nav-tabs { display: flex; gap: 6px; }
-        .nav-tab {
-            padding: 8px 14px; border-radius: 20px; background: transparent;
-            border: none; font-weight: 600; font-size: 0.85rem; color: var(--text-secondary);
-            cursor: pointer; transition: all var(--transition);
-        }
+        .nav-tab { padding: 8px 14px; border-radius: 20px; background: transparent; border: none; font-weight: 600; font-size: 0.85rem; color: var(--text-secondary); cursor: pointer; transition: all var(--transition); }
         .nav-tab.active { background: #e0e7ff; color: var(--primary); }
         .nav-right { display: flex; align-items: center; gap: 12px; }
-        .user-badge {
-            display: flex; align-items: center; gap: 8px; background: var(--input-bg);
-            padding: 6px 14px; border-radius: 30px; font-size: 0.85rem; font-weight: 600;
-            cursor: pointer; transition: all var(--transition); color: var(--text);
-        }
+        .user-badge { display: flex; align-items: center; gap: 8px; background: var(--input-bg); padding: 6px 14px; border-radius: 30px; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all var(--transition); color: var(--text); }
         .user-badge:hover { background: var(--primary); color: white; }
         .user-badge:hover .avatar-circle { background: white; color: var(--primary); }
-        .avatar-circle {
-            width: 30px; height: 30px; border-radius: 50%; background: var(--primary);
-            color: white; display: flex; align-items: center; justify-content: center;
-            font-weight: 700; transition: all var(--transition);
-        }
-        .btn-signout {
-            background: #fff; color: #dc2626; border: 2px solid #fecaca;
-            padding: 8px 16px; border-radius: 20px; font-weight: 600; cursor: pointer;
-        }
+        .avatar-circle { width: 30px; height: 30px; border-radius: 50%; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; transition: all var(--transition); }
+        .btn-signout { background: #fff; color: #dc2626; border: 2px solid #fecaca; padding: 8px 16px; border-radius: 20px; font-weight: 600; cursor: pointer; }
         .btn-signout:hover { background: #fef2f2; border-color: #fca5a5; }
 
-        .home-panel {
-            flex: 1; padding: 32px 24px; max-width: 1000px; margin: 0 auto;
-            width: 100%; display: none; animation: fadeSlideIn 0.3s ease;
-        }
+        .home-panel { flex: 1; padding: 32px 24px; max-width: 1000px; margin: 0 auto; width: 100%; display: none; animation: fadeSlideIn 0.3s ease; }
         .home-panel.active { display: block; }
 
         .home-header { margin-bottom: 28px; }
         .home-header h2 { font-size: 1.8rem; font-weight: 700; color: var(--text); }
-        .home-grid {
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px;
-        }
+        .home-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; }
         .home-card {
             background: var(--card-bg); border-radius: var(--radius); padding: 24px;
-            box-shadow: var(--shadow-sm); transition: all var(--transition); cursor: pointer;
-            color: var(--text);
+            box-shadow: var(--shadow-sm); transition: all var(--transition); cursor: pointer; color: var(--text);
         }
         .home-card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
-        .home-card .icon-bg {
-            width: 44px; height: 44px; border-radius: 14px; background: #e0e7ff;
-            display: flex; align-items: center; justify-content: center; margin-bottom: 14px; color: var(--primary);
-        }
+        .home-card .icon-bg { width: 44px; height: 44px; border-radius: 14px; background: #e0e7ff; display: flex; align-items: center; justify-content: center; margin-bottom: 14px; color: var(--primary); }
         .profile-card .profile-detail { margin-top: 12px; }
         .profile-card .username { font-size: 1.2rem; font-weight: 700; }
         .profile-card .bio { font-size: 0.85rem; color: var(--text-secondary); margin-top: 4px; }
-        .profile-card .partner-code { margin-top: 12px; font-size: 0.9rem; color: var(--primary); }
-
-        /* Code display */
+        .partner-code { margin-top: 12px; font-size: 0.9rem; color: var(--primary); }
         .code-box {
             background: var(--input-bg); padding: 8px 12px; border-radius: 8px;
             font-family: monospace; font-size: 1rem; letter-spacing: 2px;
-            text-align: center; margin-top: 8px; cursor: pointer;
+            text-align: center; margin-top: 8px; cursor: pointer; user-select: all;
         }
 
-        /* Modal */
         .modal-overlay {
             position: fixed; top: 0; left: 0; right: 0; bottom: 0;
             background: rgba(0,0,0,0.4); display: none; align-items: center;
@@ -291,18 +238,9 @@
         }
         .modal h3 { font-size: 1.3rem; margin-bottom: 20px; }
         .modal-actions { display: flex; gap: 12px; margin-top: 20px; }
-        .btn-cancel {
-            background: var(--input-bg); border: none; color: var(--text);
-            padding: 12px 20px; border-radius: var(--radius-sm); font-weight: 600;
-            cursor: pointer; flex: 1;
-        }
-        .btn-save {
-            background: var(--primary); color: white; border: none;
-            padding: 12px 20px; border-radius: var(--radius-sm); font-weight: 600;
-            cursor: pointer; flex: 1;
-        }
+        .btn-cancel { background: var(--input-bg); border: none; color: var(--text); padding: 12px 20px; border-radius: var(--radius-sm); font-weight: 600; cursor: pointer; flex: 1; }
+        .btn-save { background: var(--primary); color: white; border: none; padding: 12px 20px; border-radius: var(--radius-sm); font-weight: 600; cursor: pointer; flex: 1; }
 
-        /* Partner connection area */
         .partner-connect {
             background: var(--card-bg); border-radius: var(--radius);
             padding: 24px; box-shadow: var(--shadow-sm); margin-bottom: 20px;
@@ -316,11 +254,8 @@
             background: var(--primary); color: white; border: none;
             border-radius: 30px; padding: 0 24px; font-weight: 600; cursor: pointer;
         }
-        .partner-info {
-            display: flex; align-items: center; gap: 12px; margin-bottom: 16px;
-        }
+        .partner-info { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; color: var(--text); }
 
-        /* Chat (private) */
         .chat-container {
             background: var(--card-bg); border-radius: var(--radius);
             box-shadow: var(--shadow-sm); display: flex; flex-direction: column;
@@ -343,35 +278,16 @@
         .user-card .username { font-weight: 600; margin-bottom: 4px; color: var(--text); }
         .user-card .bio { font-size: 0.8rem; color: var(--text-secondary); }
 
-        /* Toggle switches (settings) */
-        .toggle-container {
-            display: flex; align-items: center; justify-content: space-between; padding: 12px 0;
-            border-bottom: 1px solid var(--input-border);
-        }
+        .toggle-container { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--input-border); }
         .toggle-label { color: var(--text); font-weight: 500; }
-        .toggle-switch {
-            position: relative; width: 50px; height: 28px; background: #cbd5e1;
-            border-radius: 30px; cursor: pointer; transition: background var(--transition);
-        }
+        .toggle-switch { position: relative; width: 50px; height: 28px; background: #cbd5e1; border-radius: 30px; cursor: pointer; transition: background var(--transition); }
         .toggle-switch.active { background: var(--primary); }
-        .toggle-switch::after {
-            content: ''; position: absolute; top: 2px; left: 2px;
-            width: 24px; height: 24px; background: white; border-radius: 50%;
-            transition: transform var(--transition);
-        }
+        .toggle-switch::after { content: ''; position: absolute; top: 2px; left: 2px; width: 24px; height: 24px; background: white; border-radius: 50%; transition: transform var(--transition); }
         .toggle-switch.active::after { transform: translateX(22px); }
 
-        .settings-section {
-            background: var(--card-bg); border-radius: var(--radius); padding: 24px;
-            box-shadow: var(--shadow-sm); margin-bottom: 24px;
-        }
+        .settings-section { background: var(--card-bg); border-radius: var(--radius); padding: 24px; box-shadow: var(--shadow-sm); margin-bottom: 24px; }
         .settings-section h3 { font-size: 1.1rem; margin-bottom: 16px; color: var(--text); }
-        .btn-danger {
-            background: var(--danger-bg); color: var(--danger-text);
-            border: 2px solid var(--danger-border); padding: 12px 20px;
-            border-radius: var(--radius-sm); font-weight: 600; cursor: pointer;
-            transition: all var(--transition); width: auto;
-        }
+        .btn-danger { background: var(--danger-bg); color: var(--danger-text); border: 2px solid var(--danger-border); padding: 12px 20px; border-radius: var(--radius-sm); font-weight: 600; cursor: pointer; transition: all var(--transition); width: auto; }
         .btn-danger:hover { opacity: 0.9; }
     </style>
 </head>
@@ -383,8 +299,7 @@
             <div class="brand">
                 <div class="icon-wrapper">
                     <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                        d="M8.625 9.75a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375m-13.5 3.01c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.184-4.183a1.14 1.14 0 0 1 .778-.332 48.294 48.294 0 0 0 5.83-.498c1.585-.233 2.708-1.626 2.708-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.625 9.75a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375m-13.5 3.01c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.184-4.183a1.14 1.14 0 0 1 .778-.332 48.294 48.294 0 0 0 5.83-.498c1.585-.233 2.708-1.626 2.708-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z" />
                     </svg>
                 </div>
                 <h1>TamTam</h1>
@@ -406,43 +321,22 @@
                     <label for="loginPassword">Password</label>
                     <input type="password" id="loginPassword" placeholder="••••••••" autocomplete="current-password">
                 </div>
-                <button class="btn btn-primary" id="loginBtn">
-                    <span id="loginBtnText">Sign In</span>
-                </button>
+                <button class="btn btn-primary" id="loginBtn"><span id="loginBtnText">Sign In</span></button>
             </div>
 
             <div class="form-step" id="stepSignup">
                 <div id="signupMessage" class="message"></div>
-                <div class="form-group">
-                    <label for="signupEmail">Email</label>
-                    <input type="email" id="signupEmail" placeholder="you@example.com" autocomplete="email">
-                </div>
-                <div class="form-group">
-                    <label for="signupPassword">Password</label>
-                    <input type="password" id="signupPassword" placeholder="Min. 6 characters" autocomplete="new-password">
-                </div>
-                <div class="form-group">
-                    <label for="signupConfirm">Confirm Password</label>
-                    <input type="password" id="signupConfirm" placeholder="Re-enter password" autocomplete="new-password">
-                </div>
-                <button class="btn btn-primary" id="signupBtn">
-                    <span id="signupBtnText">Create Account</span>
-                </button>
+                <div class="form-group"><label for="signupEmail">Email</label><input type="email" id="signupEmail" placeholder="you@example.com" autocomplete="email"></div>
+                <div class="form-group"><label for="signupPassword">Password</label><input type="password" id="signupPassword" placeholder="Min. 6 characters" autocomplete="new-password"></div>
+                <div class="form-group"><label for="signupConfirm">Confirm Password</label><input type="password" id="signupConfirm" placeholder="Re-enter password" autocomplete="new-password"></div>
+                <button class="btn btn-primary" id="signupBtn"><span id="signupBtnText">Create Account</span></button>
             </div>
 
             <div class="form-step" id="stepProfile">
                 <div id="profileMessage" class="message"></div>
-                <div class="form-group">
-                    <label for="profileUsername">Username</label>
-                    <input type="text" id="profileUsername" placeholder="Your unique username" autocomplete="off">
-                </div>
-                <div class="form-group">
-                    <label for="profileBio">Bio</label>
-                    <textarea id="profileBio" placeholder="A short description about you..."></textarea>
-                </div>
-                <button class="btn btn-primary" id="saveProfileBtn">
-                    <span id="saveProfileBtnText">Save & Continue</span>
-                </button>
+                <div class="form-group"><label for="profileUsername">Username</label><input type="text" id="profileUsername" placeholder="Your unique username" autocomplete="off"></div>
+                <div class="form-group"><label for="profileBio">Bio</label><textarea id="profileBio" placeholder="A short description about you..."></textarea></div>
+                <button class="btn btn-primary" id="saveProfileBtn"><span id="saveProfileBtnText">Save & Continue</span></button>
             </div>
         </div>
     </div>
@@ -451,12 +345,7 @@
     <div class="home-container" id="homeContainer">
         <nav class="navbar">
             <div class="nav-left">
-                <div class="nav-logo">
-                    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                        d="M8.625 9.75a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375m-13.5 3.01c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.184-4.183a1.14 1.14 0 0 1 .778-.332 48.294 48.294 0 0 0 5.83-.498c1.585-.233 2.708-1.626 2.708-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z" />
-                    </svg>
-                </div>
+                <div class="nav-logo"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.625 9.75a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375m-13.5 3.01c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.184-4.183a1.14 1.14 0 0 1 .778-.332 48.294 48.294 0 0 0 5.83-.498c1.585-.233 2.708-1.626 2.708-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z" /></svg></div>
                 <span class="nav-title">TamTam</span>
                 <div class="nav-tabs" id="homeNavTabs">
                     <button class="nav-tab active" data-panel="home">Home</button>
@@ -476,35 +365,18 @@
 
         <!-- Home Panel -->
         <div class="home-panel active" id="panelHome">
-            <div class="home-header">
-                <h2>Welcome back! 👋</h2>
-                <p style="color:var(--text-secondary)">Your private chat awaits.</p>
-            </div>
+            <div class="home-header"><h2>Welcome back! 👋</h2><p style="color:var(--text-secondary)">Your private chat awaits.</p></div>
             <div class="home-grid">
                 <div class="home-card" onclick="document.querySelector('[data-panel=messages]').click()">
-                    <div class="icon-bg">
-                        <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M8.625 9.75a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375m-13.5 3.01c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.184-4.183a1.14 1.14 0 0 1 .778-.332 48.294 48.294 0 0 0 5.83-.498c1.585-.233 2.708-1.626 2.708-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z" />
-                        </svg>
-                    </div>
-                    <h3>Partner Chat</h3>
-                    <p>Chat privately with your partner.</p>
+                    <div class="icon-bg"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.625 9.75a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375m-13.5 3.01c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.184-4.183a1.14 1.14 0 0 1 .778-.332 48.294 48.294 0 0 0 5.83-.498c1.585-.233 2.708-1.626 2.708-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z" /></svg></div>
+                    <h3>Partner Chat</h3><p>Chat privately with your partner.</p>
                 </div>
                 <div class="home-card" onclick="document.querySelector('[data-panel=people]').click()">
-                    <div class="icon-bg">
-                        <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z" />
-                        </svg>
-                    </div>
-                    <h3>Find People</h3>
-                    <p>Discover and connect with others.</p>
+                    <div class="icon-bg"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z" /></svg></div>
+                    <h3>Find People</h3><p>Discover and connect with others.</p>
                 </div>
                 <div class="home-card profile-card" id="profileSummaryCard">
-                    <div class="icon-bg">
-                        <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
-                        </svg>
-                    </div>
+                    <div class="icon-bg"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" /></svg></div>
                     <h3>Your Profile</h3>
                     <div class="profile-detail">
                         <div class="username" id="profileCardUsername">-</div>
@@ -512,7 +384,7 @@
                     </div>
                     <div class="partner-code">
                         <span style="font-weight:600;">Your Code:</span>
-                        <div class="code-box" id="profileCodeDisplay">------</div>
+                        <div class="code-box" id="profileCodeDisplay" title="Click to copy">------</div>
                     </div>
                 </div>
             </div>
@@ -529,7 +401,6 @@
                 </div>
                 <div id="partnerConnectMsg" class="message" style="margin-top:12px;"></div>
             </div>
-
             <div id="chatArea" style="display:none;">
                 <div class="partner-info" id="connectedPartnerInfo"></div>
                 <div class="chat-container">
@@ -546,32 +417,21 @@
         <!-- People Panel -->
         <div class="home-panel" id="panelPeople">
             <div class="home-header"><h2>👥 People</h2></div>
-            <div class="people-search">
-                <input type="text" id="peopleSearch" placeholder="Search by username...">
-            </div>
+            <div class="people-search"><input type="text" id="peopleSearch" placeholder="Search by username..."></div>
             <div class="user-list" id="userList"></div>
         </div>
 
-        <!-- Settings Panel (unchanged) -->
+        <!-- Settings Panel -->
         <div class="home-panel" id="panelSettings">
             <div class="home-header"><h2>⚙️ Settings</h2></div>
             <div class="settings-section">
                 <h3>Appearance</h3>
-                <div class="toggle-container">
-                    <span class="toggle-label">Dark Mode</span>
-                    <div class="toggle-switch" id="darkModeToggle"></div>
-                </div>
+                <div class="toggle-container"><span class="toggle-label">Dark Mode</span><div class="toggle-switch" id="darkModeToggle"></div></div>
             </div>
             <div class="settings-section">
                 <h3>Notifications</h3>
-                <div class="toggle-container">
-                    <span class="toggle-label">Notification Sounds</span>
-                    <div class="toggle-switch" id="notifSoundToggle"></div>
-                </div>
-                <div class="toggle-container" style="border-bottom:none;">
-                    <span class="toggle-label">Message Previews</span>
-                    <div class="toggle-switch" id="msgPreviewToggle"></div>
-                </div>
+                <div class="toggle-container"><span class="toggle-label">Notification Sounds</span><div class="toggle-switch" id="notifSoundToggle"></div></div>
+                <div class="toggle-container" style="border-bottom:none;"><span class="toggle-label">Message Previews</span><div class="toggle-switch" id="msgPreviewToggle"></div></div>
             </div>
             <div class="settings-section">
                 <h3>Account</h3>
@@ -588,14 +448,8 @@
         <div class="modal">
             <h3>Edit Profile</h3>
             <div id="modalMessage" class="message"></div>
-            <div class="form-group">
-                <label for="modalUsername">Username</label>
-                <input type="text" id="modalUsername" placeholder="Your username" autocomplete="off">
-            </div>
-            <div class="form-group">
-                <label for="modalBio">Bio</label>
-                <textarea id="modalBio" placeholder="Tell us about yourself"></textarea>
-            </div>
+            <div class="form-group"><label for="modalUsername">Username</label><input type="text" id="modalUsername" placeholder="Your username" autocomplete="off"></div>
+            <div class="form-group"><label for="modalBio">Bio</label><textarea id="modalBio" placeholder="Tell us about yourself"></textarea></div>
             <div class="modal-actions">
                 <button class="btn-cancel" id="closeModalBtn">Cancel</button>
                 <button class="btn-save" id="saveModalBtn">Save</button>
@@ -619,17 +473,14 @@
             const auth = firebase.auth();
             const db = firebase.firestore();
 
-            // ===== Helper: generate unique 6-char alphanumeric code =====
             function generateCode() {
                 const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
                 let code = '';
-                for (let i = 0; i < 6; i++) {
-                    code += chars.charAt(Math.floor(Math.random() * chars.length));
-                }
+                for (let i = 0; i < 6; i++) code += chars.charAt(Math.floor(Math.random() * chars.length));
                 return code;
             }
 
-            // ===== DOM elements =====
+            // DOM elements
             const authWrapper = document.getElementById('authWrapper');
             const tabLogin = document.getElementById('tabLogin');
             const tabSignup = document.getElementById('tabSignup');
@@ -683,7 +534,6 @@
             const changePasswordBtn = document.getElementById('changePasswordBtn');
             const clearChatBtn = document.getElementById('clearChatBtn');
 
-            // Partner chat elements
             const partnerCodeInput = document.getElementById('partnerCodeInput');
             const connectPartnerBtn = document.getElementById('connectPartnerBtn');
             const partnerConnectMsg = document.getElementById('partnerConnectMsg');
@@ -700,38 +550,26 @@
             let currentUser = null;
             let allUsers = [];
             let unsubscribeChat = null;
+            let unsubscribeUserDoc = null; // listener for partnerId changes
             let currentPartnerId = null;
             let currentChatId = null;
 
             // ===== Dark mode =====
             function applyDarkMode(isDark) {
-                if (isDark) {
-                    document.body.classList.add('dark');
-                    darkModeToggle.classList.add('active');
-                    localStorage.setItem('darkMode', 'true');
-                } else {
-                    document.body.classList.remove('dark');
-                    darkModeToggle.classList.remove('active');
-                    localStorage.setItem('darkMode', 'false');
-                }
+                if (isDark) { document.body.classList.add('dark'); darkModeToggle.classList.add('active'); localStorage.setItem('darkMode', 'true'); }
+                else { document.body.classList.remove('dark'); darkModeToggle.classList.remove('active'); localStorage.setItem('darkMode', 'false'); }
             }
-            darkModeToggle.addEventListener('click', () => {
-                const isDark = !document.body.classList.contains('dark');
-                applyDarkMode(isDark);
-            });
+            darkModeToggle.addEventListener('click', () => applyDarkMode(!document.body.classList.contains('dark')));
             if (localStorage.getItem('darkMode') === 'true') applyDarkMode(true);
 
-            // ===== Toggle settings =====
+            // ===== Setting toggles =====
             function toggleSetting(key, toggleEl) {
                 const current = localStorage.getItem(key) === 'true';
-                const newVal = !current;
-                localStorage.setItem(key, newVal.toString());
-                if (newVal) toggleEl.classList.add('active');
-                else toggleEl.classList.remove('active');
+                localStorage.setItem(key, (!current).toString());
+                if (!current) toggleEl.classList.add('active'); else toggleEl.classList.remove('active');
             }
             function initToggle(key, toggleEl) {
-                const val = localStorage.getItem(key) === 'true';
-                if (val) toggleEl.classList.add('active');
+                if (localStorage.getItem(key) === 'true') toggleEl.classList.add('active');
                 toggleEl.addEventListener('click', () => toggleSetting(key, toggleEl));
             }
             initToggle('notifSound', notifSoundToggle);
@@ -740,20 +578,13 @@
             // ===== Change password =====
             changePasswordBtn.addEventListener('click', async () => {
                 if (!auth.currentUser) return;
-                try {
-                    await auth.sendPasswordResetEmail(auth.currentUser.email);
-                    alert('Password reset email sent!');
-                } catch (error) {
-                    alert('Error: ' + error.message);
-                }
+                try { await auth.sendPasswordResetEmail(auth.currentUser.email); alert('Password reset email sent!'); }
+                catch (error) { alert('Error: ' + error.message); }
             });
 
             // ===== Clear private chat =====
             clearChatBtn.addEventListener('click', async () => {
-                if (!currentChatId) {
-                    alert('No active partner chat to clear.');
-                    return;
-                }
+                if (!currentChatId) { alert('No active partner chat to clear.'); return; }
                 if (!confirm('Delete all messages with your partner?')) return;
                 try {
                     const snapshot = await db.collection('chats').doc(currentChatId).collection('messages').get();
@@ -761,9 +592,7 @@
                     snapshot.forEach(doc => batch.delete(doc.ref));
                     await batch.commit();
                     alert('Chat history cleared.');
-                } catch (error) {
-                    alert('Error: ' + error.message);
-                }
+                } catch (error) { alert('Error: ' + error.message); }
             });
 
             // ===== Helpers =====
@@ -784,13 +613,8 @@
             function clearMessage(el) { el.textContent = ''; el.className = 'message'; }
             function setMessage(el, text, type) { el.textContent = text; el.className = 'message ' + type; }
             function setLoading(btn, btnText, isLoading, originalText) {
-                if (isLoading) {
-                    btn.disabled = true;
-                    btnText.innerHTML = '<span class="spinner"></span> Please wait...';
-                } else {
-                    btn.disabled = false;
-                    btnText.textContent = originalText;
-                }
+                if (isLoading) { btn.disabled = true; btnText.innerHTML = '<span class="spinner"></span> Please wait...'; }
+                else { btn.disabled = false; btnText.textContent = originalText; }
             }
             function updateNavbarDisplay(username) {
                 navbarDisplayName.textContent = username || 'User';
@@ -808,6 +632,16 @@
                 }
             }
 
+            // Copy code to clipboard
+            profileCodeDisplay.addEventListener('click', () => {
+                const code = profileCodeDisplay.textContent;
+                if (code && code !== '------') {
+                    navigator.clipboard.writeText(code).then(() => {
+                        alert('Code copied: ' + code);
+                    }).catch(() => alert('Failed to copy.'));
+                }
+            });
+
             function switchHomeTab(panelName) {
                 [panelHome, panelMessages, panelPeople, panelSettings].forEach(p => p.classList.remove('active'));
                 document.getElementById('panel' + panelName.charAt(0).toUpperCase() + panelName.slice(1)).classList.add('active');
@@ -816,7 +650,7 @@
                     if (tab.dataset.panel === panelName) tab.classList.add('active');
                 });
                 if (panelName === 'home') loadProfileData();
-                if (panelName === 'messages') setupPartnerUI();
+                if (panelName === 'messages') setupMessagesUI();
                 if (panelName === 'people') loadPeople();
             }
 
@@ -828,6 +662,8 @@
                 updateNavbarDisplay(username || user.email);
                 switchHomeTab('home');
                 loadPeople();
+                // Start listening to own user document for partnerId changes
+                listenToOwnUser();
             }
 
             function goToAuth() {
@@ -844,157 +680,105 @@
                 signupBtn.disabled = false; signupBtnText.textContent = 'Create Account';
                 saveProfileBtn.disabled = false; saveProfileBtnText.textContent = 'Save & Continue';
                 if (unsubscribeChat) { unsubscribeChat(); unsubscribeChat = null; }
+                if (unsubscribeUserDoc) { unsubscribeUserDoc(); unsubscribeUserDoc = null; }
             }
 
-            // ===== Modal =====
-            async function openEditModal() {
-                if (!auth.currentUser) return;
-                const doc = await db.collection('users').doc(auth.currentUser.uid).get();
-                if (doc.exists) {
-                    modalUsername.value = doc.data().username || '';
-                    modalBio.value = doc.data().bio || '';
-                }
-                clearMessage(modalMessage);
-                editProfileModal.classList.add('active');
-            }
-            function closeEditModal() { editProfileModal.classList.remove('active'); }
-            saveModalBtn.addEventListener('click', async () => {
-                const username = modalUsername.value.trim();
-                const bio = modalBio.value.trim();
-                clearMessage(modalMessage);
-                if (!username || username.length < 3) {
-                    setMessage(modalMessage, 'Username min 3 characters.', 'error');
-                    return;
-                }
-                saveModalBtn.disabled = true;
-                saveModalBtn.textContent = 'Saving...';
-                try {
-                    await db.collection('users').doc(auth.currentUser.uid).update({
-                        username, bio,
-                        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            // ===== Listen to own user doc for partnerId changes (auto-sync) =====
+            function listenToOwnUser() {
+                if (unsubscribeUserDoc) unsubscribeUserDoc();
+                unsubscribeUserDoc = db.collection('users').doc(auth.currentUser.uid)
+                    .onSnapshot(async doc => {
+                        if (!doc.exists) return;
+                        const partnerId = doc.data().partnerId;
+                        if (partnerId && partnerId !== currentPartnerId) {
+                            // Partner changed or newly set
+                            currentPartnerId = partnerId;
+                            const chatId = [auth.currentUser.uid, partnerId].sort().join('_');
+                            currentChatId = chatId;
+                            // Update UI if messages tab is active
+                            if (panelMessages.classList.contains('active')) {
+                                setupMessagesUI();
+                            }
+                        } else if (!partnerId && currentPartnerId) {
+                            // Partner disconnected
+                            currentPartnerId = null;
+                            currentChatId = null;
+                            if (panelMessages.classList.contains('active')) {
+                                setupMessagesUI();
+                            }
+                        }
                     });
-                    updateNavbarDisplay(username);
-                    await loadProfileData();
-                    closeEditModal();
-                } catch (error) {
-                    setMessage(modalMessage, 'Save failed.', 'error');
-                } finally {
-                    saveModalBtn.disabled = false;
-                    saveModalBtn.textContent = 'Save';
+            }
+
+            async function setupMessagesUI() {
+                if (!auth.currentUser) return;
+                const myDoc = await db.collection('users').doc(auth.currentUser.uid).get();
+                const partnerId = myDoc.data().partnerId;
+                const partnerConnectArea = document.getElementById('partnerConnectArea');
+                const chatArea = document.getElementById('chatArea');
+                if (partnerId) {
+                    partnerConnectArea.style.display = 'none';
+                    chatArea.style.display = 'block';
+                    const chatId = [auth.currentUser.uid, partnerId].sort().join('_');
+                    currentChatId = chatId;
+                    currentPartnerId = partnerId;
+                    // Show partner info
+                    const partnerDoc = await db.collection('users').doc(partnerId).get();
+                    const username = partnerDoc.exists ? partnerDoc.data().username : 'Partner';
+                    connectedPartnerInfo.innerHTML = `<span>Chatting with <strong>${username}</strong></span>`;
+                    attachPrivateChatListener(chatId);
+                } else {
+                    partnerConnectArea.style.display = 'block';
+                    chatArea.style.display = 'none';
+                    if (unsubscribeChat) { unsubscribeChat(); unsubscribeChat = null; }
+                    currentChatId = null;
+                    currentPartnerId = null;
                 }
-            });
-            closeModalBtn.addEventListener('click', closeEditModal);
-            editProfileModal.addEventListener('click', (e) => { if (e.target === editProfileModal) closeEditModal(); });
-            userBadge.addEventListener('click', openEditModal);
-
-            // ===== Partner connection logic =====
-            async function getCombinedId(uid1, uid2) {
-                return [uid1, uid2].sort().join('_');
             }
 
-            async function disconnectPartner() {
-                if (!currentUser || !currentPartnerId) return;
-                // Remove partnerId from both users
-                const batch = db.batch();
-                batch.update(db.collection('users').doc(currentUser.uid), { partnerId: null });
-                batch.update(db.collection('users').doc(currentPartnerId), { partnerId: null });
-                await batch.commit();
-                currentPartnerId = null;
-                currentChatId = null;
-                if (unsubscribeChat) { unsubscribeChat(); unsubscribeChat = null; }
-                chatMessages.innerHTML = '';
-                chatArea.style.display = 'none';
-                document.getElementById('partnerConnectArea').style.display = 'block';
-            }
-
+            // ===== Partner connection =====
             async function connectToPartner(code) {
                 if (!currentUser) return;
                 code = code.trim().toUpperCase();
-                if (!code || code.length !== 6) {
-                    setMessage(partnerConnectMsg, 'Code must be 6 characters.', 'error');
-                    return;
-                }
-                // Get current user's own code to avoid self-connect
+                if (!code || code.length !== 6) { setMessage(partnerConnectMsg, 'Code must be 6 characters.', 'error'); return; }
                 const myDoc = await db.collection('users').doc(currentUser.uid).get();
                 const myCode = myDoc.data().partnerCode;
-                if (code === myCode) {
-                    setMessage(partnerConnectMsg, 'You cannot connect with yourself.', 'error');
-                    return;
-                }
-                // Find user by code
+                if (code === myCode) { setMessage(partnerConnectMsg, 'You cannot connect with yourself.', 'error'); return; }
                 const snapshot = await db.collection('users').where('partnerCode', '==', code).limit(1).get();
-                if (snapshot.empty) {
-                    setMessage(partnerConnectMsg, 'Partner code not found.', 'error');
-                    return;
-                }
+                if (snapshot.empty) { setMessage(partnerConnectMsg, 'Partner code not found.', 'error'); return; }
                 const partnerDoc = snapshot.docs[0];
                 const partnerId = partnerDoc.id;
-                // Disconnect any existing connections first
-                if (myDoc.data().partnerId) {
-                    // Disconnect from previous partner
-                    const prevPartnerId = myDoc.data().partnerId;
-                    if (prevPartnerId !== partnerId) {
-                        await db.collection('users').doc(prevPartnerId).update({ partnerId: null });
-                    }
-                }
-                const partnerData = partnerDoc.data();
-                if (partnerData.partnerId && partnerData.partnerId !== currentUser.uid) {
-                    // Partner already has a different connection, clear it
-                    await db.collection('users').doc(partnerData.partnerId).update({ partnerId: null });
-                }
-                // Set both partnerIds
+                // Clear previous connections
+                const myPrevPartner = myDoc.data().partnerId;
+                const partnerPrevPartner = partnerDoc.data().partnerId;
                 const batch = db.batch();
+                if (myPrevPartner && myPrevPartner !== partnerId) {
+                    batch.update(db.collection('users').doc(myPrevPartner), { partnerId: null });
+                }
+                if (partnerPrevPartner && partnerPrevPartner !== currentUser.uid) {
+                    batch.update(db.collection('users').doc(partnerPrevPartner), { partnerId: null });
+                }
                 batch.update(db.collection('users').doc(currentUser.uid), { partnerId: partnerId });
                 batch.update(db.collection('users').doc(partnerId), { partnerId: currentUser.uid });
                 await batch.commit();
-                currentPartnerId = partnerId;
-                const chatId = await getCombinedId(currentUser.uid, partnerId);
-                currentChatId = chatId;
-                // Show chat area
-                document.getElementById('partnerConnectArea').style.display = 'none';
-                chatArea.style.display = 'block';
-                const partnerUsername = partnerData.username || 'Partner';
-                connectedPartnerInfo.innerHTML = `<span>Chatting with <strong>${partnerUsername}</strong></span>`;
-                // Start listening to private chat
-                attachPrivateChatListener(chatId);
+                // The listener on own user doc will automatically update the UI
                 setMessage(partnerConnectMsg, '', '');
                 partnerCodeInput.value = '';
             }
 
             connectPartnerBtn.addEventListener('click', () => connectToPartner(partnerCodeInput.value));
-            partnerCodeInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') connectPartnerBtn.click(); });
+            partnerCodeInput.addEventListener('keydown', e => { if (e.key === 'Enter') connectPartnerBtn.click(); });
 
             disconnectPartnerBtn.addEventListener('click', async () => {
-                if (confirm('Disconnect from your partner?')) {
-                    await disconnectPartner();
+                if (!confirm('Disconnect from your partner?')) return;
+                const batch = db.batch();
+                batch.update(db.collection('users').doc(auth.currentUser.uid), { partnerId: null });
+                if (currentPartnerId) {
+                    batch.update(db.collection('users').doc(currentPartnerId), { partnerId: null });
                 }
+                await batch.commit();
+                // listener will handle UI reset
             });
-
-            function setupPartnerUI() {
-                if (!currentUser) return;
-                db.collection('users').doc(currentUser.uid).get().then(doc => {
-                    const partnerId = doc.data().partnerId;
-                    if (partnerId) {
-                        // Already connected
-                        currentPartnerId = partnerId;
-                        getCombinedId(currentUser.uid, partnerId).then(chatId => {
-                            currentChatId = chatId;
-                            document.getElementById('partnerConnectArea').style.display = 'none';
-                            chatArea.style.display = 'block';
-                            db.collection('users').doc(partnerId).get().then(pDoc => {
-                                const username = pDoc.data().username || 'Partner';
-                                connectedPartnerInfo.innerHTML = `<span>Chatting with <strong>${username}</strong></span>`;
-                            });
-                            attachPrivateChatListener(chatId);
-                        });
-                    } else {
-                        // No partner
-                        document.getElementById('partnerConnectArea').style.display = 'block';
-                        chatArea.style.display = 'none';
-                        if (unsubscribeChat) { unsubscribeChat(); unsubscribeChat = null; }
-                    }
-                });
-            }
 
             function attachPrivateChatListener(chatId) {
                 if (unsubscribeChat) unsubscribeChat();
@@ -1025,7 +809,7 @@
                 });
                 chatInput.value = '';
             });
-            chatInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') sendChatBtn.click(); });
+            chatInput.addEventListener('keydown', e => { if (e.key === 'Enter') sendChatBtn.click(); });
 
             // ===== People =====
             async function loadPeople() {
@@ -1035,11 +819,7 @@
                 renderPeople(allUsers);
             }
             function renderPeople(users) {
-                userList.innerHTML = users.map(u => `
-                    <div class="user-card">
-                        <div class="username">${u.username || 'No username'}</div>
-                        <div class="bio">${u.bio || ''}</div>
-                    </div>`).join('');
+                userList.innerHTML = users.map(u => `<div class="user-card"><div class="username">${u.username || 'No username'}</div><div class="bio">${u.bio || ''}</div></div>`).join('');
             }
             peopleSearch.addEventListener('input', () => {
                 const term = peopleSearch.value.toLowerCase();
@@ -1047,22 +827,49 @@
                 renderPeople(filtered);
             });
 
+            // ===== Modal =====
+            async function openEditModal() {
+                if (!auth.currentUser) return;
+                const doc = await db.collection('users').doc(auth.currentUser.uid).get();
+                if (doc.exists) { modalUsername.value = doc.data().username || ''; modalBio.value = doc.data().bio || ''; }
+                clearMessage(modalMessage);
+                editProfileModal.classList.add('active');
+            }
+            function closeEditModal() { editProfileModal.classList.remove('active'); }
+            saveModalBtn.addEventListener('click', async () => {
+                const username = modalUsername.value.trim();
+                const bio = modalBio.value.trim();
+                clearMessage(modalMessage);
+                if (!username || username.length < 3) { setMessage(modalMessage, 'Username min 3 characters.', 'error'); return; }
+                saveModalBtn.disabled = true; saveModalBtn.textContent = 'Saving...';
+                try {
+                    await db.collection('users').doc(auth.currentUser.uid).update({
+                        username, bio,
+                        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                    updateNavbarDisplay(username);
+                    await loadProfileData();
+                    closeEditModal();
+                } catch (error) { setMessage(modalMessage, 'Save failed.', 'error'); }
+                finally { saveModalBtn.disabled = false; saveModalBtn.textContent = 'Save'; }
+            });
+            closeModalBtn.addEventListener('click', closeEditModal);
+            editProfileModal.addEventListener('click', e => { if (e.target === editProfileModal) closeEditModal(); });
+            userBadge.addEventListener('click', openEditModal);
+
             // ===== Auth observer =====
             auth.onAuthStateChanged(async (user) => {
                 if (user) {
                     const doc = await db.collection('users').doc(user.uid).get();
                     if (doc.exists && doc.data().username) {
-                        // Existing user with profile
                         goToHome(user, doc.data().username);
                     } else {
-                        // New user or missing profile – show profile setup
                         authWrapper.style.display = 'block';
                         homeContainer.classList.remove('active');
                         document.body.classList.remove('home-view');
                         showStep('stepProfile');
                         brandSubtitle.textContent = 'Complete your profile';
-                        profileUsername.value = '';
-                        profileBio.value = '';
+                        profileUsername.value = ''; profileBio.value = '';
                         clearMessage(profileMessage);
                     }
                 } else {
@@ -1072,8 +879,7 @@
 
             // ===== Login =====
             loginBtn.addEventListener('click', async () => {
-                const email = loginEmail.value.trim();
-                const password = loginPassword.value;
+                const email = loginEmail.value.trim(), password = loginPassword.value;
                 clearMessage(loginMessage);
                 if (!email) { setMessage(loginMessage, 'Please enter your email.', 'error'); return; }
                 if (!password) { setMessage(loginMessage, 'Please enter your password.', 'error'); return; }
@@ -1093,18 +899,15 @@
 
             // ===== Signup =====
             signupBtn.addEventListener('click', async () => {
-                const email = signupEmail.value.trim();
-                const password = signupPassword.value;
-                const confirm = signupConfirm.value;
+                const email = signupEmail.value.trim(), password = signupPassword.value, confirm = signupConfirm.value;
                 clearMessage(signupMessage);
                 if (!email) { setMessage(signupMessage, 'Please enter your email.', 'error'); return; }
                 if (!password) { setMessage(signupMessage, 'Please create a password.', 'error'); return; }
                 if (password.length < 6) { setMessage(signupMessage, 'Min 6 characters.', 'error'); return; }
                 if (password !== confirm) { setMessage(signupMessage, 'Passwords do not match.', 'error'); return; }
                 setLoading(signupBtn, signupBtnText, true, 'Create Account');
-                try {
-                    await auth.createUserWithEmailAndPassword(email, password);
-                } catch (error) {
+                try { await auth.createUserWithEmailAndPassword(email, password); }
+                catch (error) {
                     let msg = 'An error occurred.';
                     switch (error.code) {
                         case 'auth/email-already-in-use': msg = 'Email already in use.'; break;
@@ -1117,48 +920,34 @@
 
             // ===== Profile Setup (with code generation) =====
             saveProfileBtn.addEventListener('click', async () => {
-                const username = profileUsername.value.trim();
-                const bio = profileBio.value.trim();
+                const username = profileUsername.value.trim(), bio = profileBio.value.trim();
                 const user = auth.currentUser;
                 clearMessage(profileMessage);
                 if (!user) { setMessage(profileMessage, 'Not logged in.', 'error'); return; }
                 if (!username || username.length < 3) { setMessage(profileMessage, 'Username min 3 chars.', 'error'); return; }
                 setLoading(saveProfileBtn, saveProfileBtnText, true, 'Save & Continue');
                 try {
-                    // Generate a unique partner code
                     let code = generateCode();
-                    // Ensure uniqueness (rare collision, but check)
                     let snapshot = await db.collection('users').where('partnerCode', '==', code).get();
-                    while (!snapshot.empty) {
-                        code = generateCode();
-                        snapshot = await db.collection('users').where('partnerCode', '==', code).get();
-                    }
+                    while (!snapshot.empty) { code = generateCode(); snapshot = await db.collection('users').where('partnerCode', '==', code).get(); }
                     await db.collection('users').doc(user.uid).set({
-                        username,
-                        bio,
-                        email: user.email,
-                        partnerCode: code,
-                        partnerId: null,
+                        username, bio, email: user.email,
+                        partnerCode: code, partnerId: null,
                         updatedAt: firebase.firestore.FieldValue.serverTimestamp()
                     }, { merge: true });
-                    // The auth observer will pick up the profile and show home
-                } catch (error) {
-                    setMessage(profileMessage, 'Save failed.', 'error');
-                } finally {
-                    setLoading(saveProfileBtn, saveProfileBtnText, false, 'Save & Continue');
-                }
+                } catch (error) { setMessage(profileMessage, 'Save failed.', 'error'); }
+                finally { setLoading(saveProfileBtn, saveProfileBtnText, false, 'Save & Continue'); }
             });
 
             // ===== Home tabs =====
             homeNavTabs.forEach(tab => {
-                tab.addEventListener('click', () => {
-                    switchHomeTab(tab.dataset.panel);
-                });
+                tab.addEventListener('click', () => switchHomeTab(tab.dataset.panel));
             });
 
             // ===== Sign out =====
             signoutBtn.addEventListener('click', async () => {
                 if (unsubscribeChat) { unsubscribeChat(); unsubscribeChat = null; }
+                if (unsubscribeUserDoc) { unsubscribeUserDoc(); unsubscribeUserDoc = null; }
                 await auth.signOut();
             });
         })();
