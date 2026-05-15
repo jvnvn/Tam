@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TamTam – Private Chat</title>
 
+    <!-- Leaflet Map -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+
     <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
@@ -258,13 +262,6 @@
         .chat-input-area input { flex: 1; padding: 12px 16px; border: 2px solid var(--input-border); border-radius: 30px; font-size: 0.9rem; outline: none; background: var(--input-bg); color: var(--text); }
         .chat-input-area button { background: var(--primary); color: white; border: none; border-radius: 30px; padding: 0 24px; font-weight: 600; cursor: pointer; }
 
-        .people-search { margin-bottom: 20px; }
-        .people-search input { width: 100%; padding: 12px 16px; border: 2px solid var(--input-border); border-radius: 30px; font-size: 0.9rem; outline: none; background: var(--input-bg); color: var(--text); }
-        .user-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; }
-        .user-card { background: var(--card-bg); border-radius: var(--radius-sm); padding: 16px; box-shadow: var(--shadow-sm); }
-        .user-card .username { font-weight: 600; margin-bottom: 4px; color: var(--text); }
-        .user-card .bio { font-size: 0.8rem; color: var(--text-secondary); }
-
         .toggle-container { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--input-border); }
         .toggle-label { color: var(--text); font-weight: 500; }
         .toggle-switch { position: relative; width: 50px; height: 28px; background: #cbd5e1; border-radius: 30px; cursor: pointer; transition: background var(--transition); }
@@ -276,6 +273,60 @@
         .settings-section h3 { font-size: 1.1rem; margin-bottom: 16px; color: var(--text); }
         .btn-danger { background: var(--danger-bg); color: var(--danger-text); border: 2px solid var(--danger-border); padding: 12px 20px; border-radius: var(--radius-sm); font-weight: 600; cursor: pointer; transition: all var(--transition); width: auto; }
         .btn-danger:hover { opacity: 0.9; }
+
+        /* ===== LOCATION PANEL ===== */
+        .location-status-bar {
+            display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap;
+        }
+        .location-user-card {
+            flex: 1; min-width: 180px; background: var(--card-bg);
+            border-radius: var(--radius); padding: 16px 20px;
+            box-shadow: var(--shadow-sm); display: flex; align-items: center; gap: 14px;
+        }
+        .loc-avatar {
+            width: 42px; height: 42px; border-radius: 50%;
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 700; font-size: 1rem; color: white; flex-shrink: 0;
+        }
+        .loc-avatar.partner { background: linear-gradient(135deg, #ec4899, #f43f5e); }
+        .loc-info { flex: 1; min-width: 0; }
+        .loc-name { font-weight: 700; font-size: 0.95rem; color: var(--text); }
+        .loc-coords { font-size: 0.75rem; color: var(--text-secondary); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .loc-dot {
+            width: 10px; height: 10px; border-radius: 50%;
+            background: #d1d5db; flex-shrink: 0;
+        }
+        .loc-dot.live { background: #22c55e; box-shadow: 0 0 0 3px rgba(34,197,94,0.25); animation: pulse-dot 2s ease infinite; }
+        .loc-dot.stale { background: #f59e0b; }
+        @keyframes pulse-dot { 0%,100% { box-shadow: 0 0 0 3px rgba(34,197,94,0.25); } 50% { box-shadow: 0 0 0 6px rgba(34,197,94,0.1); } }
+
+        #locationMap {
+            width: 100%; height: calc(100vh - 340px); min-height: 360px;
+            border-radius: var(--radius); overflow: hidden;
+            box-shadow: var(--shadow-md); background: #e5e7eb;
+        }
+        .location-actions {
+            display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap;
+        }
+        .btn-location {
+            padding: 10px 22px; border-radius: 30px; font-weight: 600;
+            font-size: 0.875rem; border: none; cursor: pointer; transition: all var(--transition);
+        }
+        .btn-loc-primary { background: linear-gradient(135deg, #4f46e5, #7c3aed); color: white; }
+        .btn-loc-primary:hover { opacity: 0.9; transform: translateY(-1px); }
+        .btn-loc-secondary { background: var(--input-bg); color: var(--text); border: 2px solid var(--input-border); }
+        .btn-loc-secondary:hover { border-color: var(--primary); color: var(--primary); }
+        .loc-no-partner {
+            background: var(--card-bg); border-radius: var(--radius); padding: 48px 24px;
+            text-align: center; box-shadow: var(--shadow-sm); color: var(--text-secondary);
+        }
+        .loc-no-partner svg { width: 48px; height: 48px; margin-bottom: 16px; opacity: 0.4; }
+        .loc-no-partner p { font-size: 0.95rem; }
+        .loc-permission-msg {
+            background: var(--error-bg); color: var(--error-text); border-radius: var(--radius-sm);
+            padding: 12px 16px; font-size: 0.85rem; margin-bottom: 12px; display: none;
+        }
     </style>
 </head>
 <body>
@@ -337,7 +388,7 @@
                 <div class="nav-tabs" id="homeNavTabs">
                     <button class="nav-tab active" data-panel="home">Home</button>
                     <button class="nav-tab" data-panel="messages">Messages</button>
-                    <button class="nav-tab" data-panel="people">People</button>
+                    <button class="nav-tab" data-panel="location">📍 Location</button>
                     <button class="nav-tab" data-panel="settings">Settings</button>
                 </div>
             </div>
@@ -357,10 +408,6 @@
                 <div class="home-card" onclick="document.querySelector('[data-panel=messages]').click()">
                     <div class="icon-bg"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.625 9.75a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375m-13.5 3.01c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.184-4.183a1.14 1.14 0 0 1 .778-.332 48.294 48.294 0 0 0 5.83-.498c1.585-.233 2.708-1.626 2.708-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z" /></svg></div>
                     <h3>Partner Chat</h3><p>Chat privately with your partner.</p>
-                </div>
-                <div class="home-card" onclick="document.querySelector('[data-panel=people]').click()">
-                    <div class="icon-bg"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z" /></svg></div>
-                    <h3>Find People</h3><p>Discover and connect with others.</p>
                 </div>
                 <div class="home-card profile-card" id="profileSummaryCard">
                     <div class="icon-bg"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" /></svg></div>
@@ -401,11 +448,55 @@
             </div>
         </div>
 
-        <!-- People Panel -->
-        <div class="home-panel" id="panelPeople">
-            <div class="home-header"><h2>👥 People</h2></div>
-            <div class="people-search"><input type="text" id="peopleSearch" placeholder="Search by username..."></div>
-            <div class="user-list" id="userList"></div>
+        <!-- Location Panel -->
+        <div class="home-panel" id="panelLocation">
+            <div class="home-header">
+                <h2>📍 Location</h2>
+                <p style="color:var(--text-secondary); margin-top:4px;">See where you and your partner are in real time.</p>
+            </div>
+
+            <!-- No-partner state -->
+            <div class="loc-no-partner" id="locNoPartner" style="display:none;">
+                <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z"/></svg>
+                <p><strong>No partner connected yet.</strong><br>Connect with your partner in the Messages tab first.</p>
+            </div>
+
+            <!-- Main location UI -->
+            <div id="locMain" style="display:none;">
+                <div id="locPermissionMsg" class="loc-permission-msg">
+                    ⚠️ Location permission denied. Please allow location access in your browser settings and refresh.
+                </div>
+
+                <!-- Status cards -->
+                <div class="location-status-bar">
+                    <div class="location-user-card">
+                        <div class="loc-avatar" id="locMyAvatar">?</div>
+                        <div class="loc-info">
+                            <div class="loc-name" id="locMyName">You</div>
+                            <div class="loc-coords" id="locMyCoords">Not sharing yet</div>
+                        </div>
+                        <div class="loc-dot" id="locMyDot"></div>
+                    </div>
+                    <div class="location-user-card">
+                        <div class="loc-avatar partner" id="locPartnerAvatar">?</div>
+                        <div class="loc-info">
+                            <div class="loc-name" id="locPartnerName">Partner</div>
+                            <div class="loc-coords" id="locPartnerCoords">Location not shared</div>
+                        </div>
+                        <div class="loc-dot" id="locPartnerDot"></div>
+                    </div>
+                </div>
+
+                <!-- Map -->
+                <div id="locationMap"></div>
+
+                <!-- Action buttons -->
+                <div class="location-actions">
+                    <button class="btn-location btn-loc-primary" id="shareLocationBtn">📡 Share My Location</button>
+                    <button class="btn-location btn-loc-secondary" id="stopSharingBtn" style="display:none;">⏹ Stop Sharing</button>
+                    <button class="btn-location btn-loc-secondary" id="centerMapBtn">🎯 Center Map</button>
+                </div>
+            </div>
         </div>
 
         <!-- Settings Panel -->
@@ -499,8 +590,8 @@
             const homeNavTabs = document.querySelectorAll('#homeNavTabs .nav-tab');
             const panelHome = document.getElementById('panelHome');
             const panelMessages = document.getElementById('panelMessages');
-            const panelPeople = document.getElementById('panelPeople');
             const panelSettings = document.getElementById('panelSettings');
+            const panelLocation = document.getElementById('panelLocation');
 
             const profileCardUsername = document.getElementById('profileCardUsername');
             const profileCardBio = document.getElementById('profileCardBio');
@@ -531,11 +622,7 @@
             const sendChatBtn = document.getElementById('sendChatBtn');
             const disconnectPartnerBtn = document.getElementById('disconnectPartnerBtn');
 
-            const peopleSearch = document.getElementById('peopleSearch');
-            const userList = document.getElementById('userList');
-
             let currentUser = null;
-            let allUsers = [];
             let unsubscribeChat = null;
             let unsubscribeUserDoc = null; // listener for partnerId changes
             let currentPartnerId = null;
@@ -634,7 +721,7 @@
             });
 
             function switchHomeTab(panelName) {
-                [panelHome, panelMessages, panelPeople, panelSettings].forEach(p => p.classList.remove('active'));
+                [panelHome, panelMessages, panelSettings, panelLocation].forEach(p => p.classList.remove('active'));
                 document.getElementById('panel' + panelName.charAt(0).toUpperCase() + panelName.slice(1)).classList.add('active');
                 homeNavTabs.forEach(tab => {
                     tab.classList.remove('active');
@@ -642,7 +729,7 @@
                 });
                 if (panelName === 'home') loadProfileData();
                 if (panelName === 'messages') setupMessagesUI();
-                if (panelName === 'people') loadPeople();
+                if (panelName === 'location') setupLocationUI();
             }
 
             function goToHome(user, username) {
@@ -652,7 +739,6 @@
                 currentUser = user;
                 updateNavbarDisplay(username || user.email);
                 switchHomeTab('home');
-                loadPeople();
                 // Start listening to own user document for partnerId changes
                 listenToOwnUser();
             }
@@ -802,22 +888,6 @@
             });
             chatInput.addEventListener('keydown', e => { if (e.key === 'Enter') sendChatBtn.click(); });
 
-            // ===== People =====
-            async function loadPeople() {
-                const snapshot = await db.collection('users').get();
-                allUsers = [];
-                snapshot.forEach(doc => allUsers.push({ id: doc.id, ...doc.data() }));
-                renderPeople(allUsers);
-            }
-            function renderPeople(users) {
-                userList.innerHTML = users.map(u => `<div class="user-card"><div class="username">${u.username || 'No username'}</div><div class="bio">${u.bio || ''}</div></div>`).join('');
-            }
-            peopleSearch.addEventListener('input', () => {
-                const term = peopleSearch.value.toLowerCase();
-                const filtered = allUsers.filter(u => (u.username || '').toLowerCase().includes(term));
-                renderPeople(filtered);
-            });
-
             // ===== Modal =====
             async function openEditModal() {
                 if (!auth.currentUser) return;
@@ -936,10 +1006,189 @@
                 tab.addEventListener('click', () => switchHomeTab(tab.dataset.panel));
             });
 
+            // ===== LOCATION FEATURE =====
+            let locationMap = null;
+            let myMarker = null;
+            let partnerMarker = null;
+            let watchId = null;
+            let unsubscribePartnerLocation = null;
+            let isSharing = false;
+
+            const myIcon = L.divIcon({
+                className: '',
+                html: `<div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#4f46e5,#7c3aed);display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:14px;border:3px solid white;box-shadow:0 2px 8px rgba(0,0,0,0.3);" id="myMarkerLabel">?</div>`,
+                iconSize: [36, 36], iconAnchor: [18, 18]
+            });
+            const partnerIcon = L.divIcon({
+                className: '',
+                html: `<div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#ec4899,#f43f5e);display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:14px;border:3px solid white;box-shadow:0 2px 8px rgba(0,0,0,0.3);" id="partnerMarkerLabel">?</div>`,
+                iconSize: [36, 36], iconAnchor: [18, 18]
+            });
+
+            function initMap() {
+                if (locationMap) return;
+                locationMap = L.map('locationMap', { zoomControl: true }).setView([20, 0], 2);
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '© OpenStreetMap contributors', maxZoom: 19
+                }).addTo(locationMap);
+            }
+
+            function formatCoords(lat, lng) {
+                return `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
+            }
+
+            function timeAgo(ts) {
+                if (!ts) return 'Unknown';
+                const diff = Math.floor((Date.now() - ts) / 1000);
+                if (diff < 60) return 'Just now';
+                if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+                return `${Math.floor(diff / 3600)}h ago`;
+            }
+
+            function updateMyMarker(lat, lng, name) {
+                const label = name ? name.charAt(0).toUpperCase() : '?';
+                const html = `<div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#4f46e5,#7c3aed);display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:14px;border:3px solid white;box-shadow:0 2px 8px rgba(0,0,0,0.3);">${label}</div>`;
+                const icon = L.divIcon({ className: '', html, iconSize: [36, 36], iconAnchor: [18, 18] });
+                if (myMarker) { myMarker.setLatLng([lat, lng]); myMarker.setIcon(icon); }
+                else { myMarker = L.marker([lat, lng], { icon }).addTo(locationMap).bindPopup(`<strong>You</strong><br>${formatCoords(lat, lng)}`); }
+                document.getElementById('locMyCoords').textContent = formatCoords(lat, lng);
+                document.getElementById('locMyDot').className = 'loc-dot live';
+            }
+
+            function updatePartnerMarker(lat, lng, name, updatedAt) {
+                const label = name ? name.charAt(0).toUpperCase() : '?';
+                const html = `<div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#ec4899,#f43f5e);display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:14px;border:3px solid white;box-shadow:0 2px 8px rgba(0,0,0,0.3);">${label}</div>`;
+                const icon = L.divIcon({ className: '', html, iconSize: [36, 36], iconAnchor: [18, 18] });
+                const ago = timeAgo(updatedAt);
+                if (partnerMarker) { partnerMarker.setLatLng([lat, lng]); partnerMarker.setIcon(icon); partnerMarker.setPopupContent(`<strong>${name || 'Partner'}</strong><br>${formatCoords(lat, lng)}<br><small>${ago}</small>`); }
+                else { partnerMarker = L.marker([lat, lng], { icon }).addTo(locationMap).bindPopup(`<strong>${name || 'Partner'}</strong><br>${formatCoords(lat, lng)}<br><small>${ago}</small>`); }
+                document.getElementById('locPartnerCoords').textContent = `${formatCoords(lat, lng)} · ${ago}`;
+                document.getElementById('locPartnerDot').className = 'loc-dot live';
+            }
+
+            function fitBothMarkers() {
+                if (myMarker && partnerMarker) {
+                    const group = L.featureGroup([myMarker, partnerMarker]);
+                    locationMap.fitBounds(group.getBounds().pad(0.3));
+                } else if (myMarker) {
+                    locationMap.setView(myMarker.getLatLng(), 14);
+                } else if (partnerMarker) {
+                    locationMap.setView(partnerMarker.getLatLng(), 14);
+                }
+            }
+
+            function startSharing(myName) {
+                if (!navigator.geolocation) {
+                    document.getElementById('locPermissionMsg').style.display = 'block';
+                    document.getElementById('locPermissionMsg').textContent = '⚠️ Geolocation is not supported by your browser.';
+                    return;
+                }
+                document.getElementById('shareLocationBtn').style.display = 'none';
+                document.getElementById('stopSharingBtn').style.display = '';
+                isSharing = true;
+
+                watchId = navigator.geolocation.watchPosition(
+                    async (pos) => {
+                        const { latitude: lat, longitude: lng } = pos.coords;
+                        updateMyMarker(lat, lng, myName);
+                        document.getElementById('locPermissionMsg').style.display = 'none';
+                        // Save to Firestore
+                        try {
+                            await db.collection('users').doc(auth.currentUser.uid).update({
+                                location: { lat, lng, updatedAt: Date.now() }
+                            });
+                        } catch(e) {}
+                    },
+                    (err) => {
+                        document.getElementById('locPermissionMsg').style.display = 'block';
+                        document.getElementById('locPermissionMsg').textContent = '⚠️ Location permission denied. Please allow location access in your browser settings.';
+                        stopSharing();
+                    },
+                    { enableHighAccuracy: true, maximumAge: 15000, timeout: 20000 }
+                );
+            }
+
+            function stopSharing() {
+                if (watchId !== null) { navigator.geolocation.clearWatch(watchId); watchId = null; }
+                isSharing = false;
+                document.getElementById('shareLocationBtn').style.display = '';
+                document.getElementById('stopSharingBtn').style.display = 'none';
+                document.getElementById('locMyDot').className = 'loc-dot';
+                document.getElementById('locMyCoords').textContent = 'Not sharing';
+                // Clear location from Firestore
+                if (auth.currentUser) {
+                    db.collection('users').doc(auth.currentUser.uid).update({ location: null }).catch(() => {});
+                }
+                if (myMarker) { locationMap.removeLayer(myMarker); myMarker = null; }
+            }
+
+            function listenToPartnerLocation(partnerId, partnerName) {
+                if (unsubscribePartnerLocation) { unsubscribePartnerLocation(); unsubscribePartnerLocation = null; }
+                unsubscribePartnerLocation = db.collection('users').doc(partnerId).onSnapshot(doc => {
+                    if (!doc.exists) return;
+                    const loc = doc.data().location;
+                    const name = doc.data().username || partnerName || 'Partner';
+                    document.getElementById('locPartnerName').textContent = name;
+                    const avatar = document.getElementById('locPartnerAvatar');
+                    avatar.textContent = name.charAt(0).toUpperCase();
+                    if (loc && loc.lat && loc.lng) {
+                        updatePartnerMarker(loc.lat, loc.lng, name, loc.updatedAt);
+                    } else {
+                        document.getElementById('locPartnerCoords').textContent = 'Not sharing location';
+                        document.getElementById('locPartnerDot').className = 'loc-dot stale';
+                        if (partnerMarker) { locationMap.removeLayer(partnerMarker); partnerMarker = null; }
+                    }
+                });
+            }
+
+            async function setupLocationUI() {
+                const locNoPartner = document.getElementById('locNoPartner');
+                const locMain = document.getElementById('locMain');
+                if (!auth.currentUser) return;
+
+                const myDoc = await db.collection('users').doc(auth.currentUser.uid).get();
+                const data = myDoc.data();
+                const partnerId = data.partnerId;
+
+                if (!partnerId) {
+                    locNoPartner.style.display = 'block';
+                    locMain.style.display = 'none';
+                    return;
+                }
+
+                locNoPartner.style.display = 'none';
+                locMain.style.display = 'block';
+
+                // Set my avatar/name
+                const myName = data.username || 'You';
+                document.getElementById('locMyName').textContent = myName;
+                document.getElementById('locMyAvatar').textContent = myName.charAt(0).toUpperCase();
+
+                // Init map (slight delay so panel is visible)
+                setTimeout(() => {
+                    initMap();
+                    locationMap.invalidateSize();
+                    // Listen to partner
+                    listenToPartnerLocation(partnerId, 'Partner');
+                }, 100);
+
+                // Button handlers (set once)
+                const shareBtn = document.getElementById('shareLocationBtn');
+                const stopBtn = document.getElementById('stopSharingBtn');
+                const centerBtn = document.getElementById('centerMapBtn');
+                shareBtn.onclick = () => startSharing(myName);
+                stopBtn.onclick = stopSharing;
+                centerBtn.onclick = fitBothMarkers;
+            }
+
             // ===== Sign out =====
             signoutBtn.addEventListener('click', async () => {
                 if (unsubscribeChat) { unsubscribeChat(); unsubscribeChat = null; }
                 if (unsubscribeUserDoc) { unsubscribeUserDoc(); unsubscribeUserDoc = null; }
+                if (unsubscribePartnerLocation) { unsubscribePartnerLocation(); unsubscribePartnerLocation = null; }
+                if (watchId !== null) { navigator.geolocation.clearWatch(watchId); watchId = null; }
+                if (auth.currentUser) { db.collection('users').doc(auth.currentUser.uid).update({ location: null }).catch(() => {}); }
+                locationMap = null; myMarker = null; partnerMarker = null; isSharing = false;
                 await auth.signOut();
             });
         })();
