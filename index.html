@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TamTam - Complete Your Profile</title>
+    <title>TamTam – Complete Your Profile</title>
 
     <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
@@ -23,7 +23,6 @@
             --input-focus: #4f46e5;
             --error-bg: #fef2f2;
             --error-text: #dc2626;
-            --error-border: #fecaca;
             --success-bg: #f0fdf4;
             --success-text: #16a34a;
             --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
@@ -32,7 +31,6 @@
             --radius: 16px;
             --radius-sm: 10px;
             --transition: 0.2s cubic-bezier(0.4,0,0.2,1);
-            --nav-height: 64px;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -50,7 +48,7 @@
             color: var(--text);
             transition: background 0.3s;
         }
-        body.logged-in {
+        body.home-view {
             background: var(--bg);
             animation: none;
             display: block;
@@ -64,20 +62,24 @@
             75% { background-position: 0% 100%; }
         }
 
-        /* ========== AUTH CARD ========== */
-        .auth-container {
+        /* ===== AUTH CARD CONTAINER ===== */
+        .auth-wrapper {
             width: 100%;
             max-width: 440px;
-            margin: auto;
         }
+
         .card {
             background: var(--card-bg);
             border-radius: var(--radius);
             box-shadow: var(--shadow-lg);
             padding: 40px 36px;
-            transition: all var(--transition);
             position: relative;
             overflow: hidden;
+            animation: cardIn 0.4s ease;
+        }
+        @keyframes cardIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         .card::before {
             content: '';
@@ -95,7 +97,7 @@
 
         .brand {
             text-align: center;
-            margin-bottom: 32px;
+            margin-bottom: 28px;
         }
         .brand .icon-wrapper {
             display: inline-flex;
@@ -107,13 +109,11 @@
             margin-bottom: 14px;
             box-shadow: 0 8px 24px rgba(79,70,229,0.3);
         }
-        .brand .icon-wrapper svg {
-            width: 28px; height: 28px;
-            color: white;
-        }
+        .brand .icon-wrapper svg { width: 28px; height: 28px; color: white; }
         .brand h1 { font-size: 1.6rem; font-weight: 700; letter-spacing: -0.5px; }
         .brand p { font-size: 0.9rem; color: var(--text-secondary); margin-top: 4px; }
 
+        /* Tabs */
         .tabs {
             display: flex;
             background: #f3f4f6;
@@ -132,16 +132,19 @@
             font-size: 0.9rem;
             color: var(--text-secondary);
             transition: all var(--transition);
+            white-space: nowrap;
         }
         .tabs button.active { background: #ffffff; color: var(--primary); box-shadow: var(--shadow-sm); }
+        .tabs button:disabled { opacity: 0.5; cursor: not-allowed; }
 
-        .form-panel {
+        /* Form panels */
+        .form-step {
             display: none;
             flex-direction: column;
             gap: 18px;
             animation: fadeSlideIn 0.35s ease;
         }
-        .form-panel.active { display: flex; }
+        .form-step.active { display: flex; }
 
         @keyframes fadeSlideIn {
             from { opacity: 0; transform: translateY(10px); }
@@ -185,21 +188,12 @@
             box-shadow: 0 4px 16px rgba(79,70,229,0.3);
             margin-top: 6px;
         }
-        .btn-primary:hover {
+        .btn-primary:hover:not(:disabled) {
             background: linear-gradient(135deg, #4338ca, #6d28d9);
             box-shadow: 0 6px 22px rgba(79,70,229,0.4);
             transform: translateY(-1px);
         }
         .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; transform: none; box-shadow: none; }
-        .btn-signout {
-            background: #fff;
-            color: #dc2626;
-            border: 2px solid #fecaca;
-            box-shadow: none;
-            margin-top: 8px;
-            font-weight: 600;
-        }
-        .btn-signout:hover { background: #fef2f2; border-color: #fca5a5; }
 
         .message {
             padding: 12px 16px;
@@ -235,20 +229,7 @@
         }
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        /* ========== PROFILE SETUP PANEL ========== */
-        .profile-setup-container {
-            display: none;
-            background: var(--card-bg);
-            border-radius: var(--radius);
-            box-shadow: var(--shadow-lg);
-            padding: 40px 36px;
-            text-align: center;
-        }
-        .profile-setup-container.active { display: block; animation: fadeSlideIn 0.4s ease; }
-        .profile-setup-container h2 { font-size: 1.5rem; margin-bottom: 8px; }
-        .profile-setup-container .subtitle { color: var(--text-secondary); margin-bottom: 28px; font-size: 0.9rem; }
-
-        /* ========== HOME SCREEN ========== */
+        /* ===== HOME SCREEN ===== */
         .home-container {
             display: none;
             width: 100%;
@@ -259,7 +240,7 @@
         .home-container.active { display: flex; }
 
         .navbar {
-            height: var(--nav-height);
+            height: 64px;
             background: white;
             box-shadow: var(--shadow-sm);
             display: flex;
@@ -281,7 +262,7 @@
             color: white;
         }
         .nav-logo svg { width: 20px; height: 20px; }
-        .nav-title { font-weight: 700; font-size: 1.1rem; letter-spacing: -0.3px; }
+        .nav-title { font-weight: 700; font-size: 1.1rem; }
         .nav-tabs { display: flex; gap: 8px; }
         .nav-tab {
             padding: 8px 16px;
@@ -305,7 +286,6 @@
             border-radius: 30px;
             font-size: 0.85rem;
             font-weight: 600;
-            color: var(--text);
         }
         .avatar-circle {
             width: 30px; height: 30px;
@@ -317,6 +297,20 @@
             justify-content: center;
             font-weight: 700;
         }
+        .btn-signout {
+            background: #fff;
+            color: #dc2626;
+            border: 2px solid #fecaca;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition);
+        }
+        .btn-signout:hover {
+            background: #fef2f2;
+            border-color: #fca5a5;
+        }
 
         .home-content {
             flex: 1;
@@ -326,7 +320,7 @@
             width: 100%;
         }
         .home-header { margin-bottom: 28px; }
-        .home-header h2 { font-size: 1.8rem; font-weight: 700; letter-spacing: -0.5px; }
+        .home-header h2 { font-size: 1.8rem; font-weight: 700; }
         .home-header p { color: var(--text-secondary); margin-top: 4px; }
         .home-grid {
             display: grid;
@@ -353,11 +347,10 @@
             color: var(--primary);
         }
         .home-card h3 { font-size: 1rem; font-weight: 600; margin-bottom: 6px; }
-        .home-card p { font-size: 0.85rem; color: var(--text-secondary); line-height: 1.4; }
+        .home-card p { font-size: 0.85rem; color: var(--text-secondary); }
 
         @media (max-width: 640px) {
             .navbar { padding: 0 16px; }
-            .nav-tab { padding: 6px 12px; font-size: 0.8rem; }
             .home-content { padding: 24px 16px; }
             .home-grid { grid-template-columns: 1fr; }
         }
@@ -365,9 +358,8 @@
 </head>
 <body>
 
-    <!-- ==================== AUTH CONTAINER ==================== -->
-    <div class="auth-container" id="authContainer">
-        <!-- Login / Signup Card -->
+    <!-- ===== AUTH AREA (login / signup / profile setup) ===== -->
+    <div class="auth-wrapper" id="authWrapper">
         <div class="card" id="authCard">
             <div class="brand">
                 <div class="icon-wrapper">
@@ -377,15 +369,17 @@
                     </svg>
                 </div>
                 <h1>TamTam</h1>
-                <p>Connect &amp; chat with friends</p>
+                <p id="brandSubtitle">Connect &amp; chat with friends</p>
             </div>
 
+            <!-- Tab buttons -->
             <div class="tabs" id="tabContainer">
-                <button class="active" data-tab="login">Sign In</button>
-                <button data-tab="signup">Create Account</button>
+                <button id="tabLogin" class="active" data-step="login">Sign In</button>
+                <button id="tabSignup" data-step="signup">Create Account</button>
             </div>
 
-            <div class="form-panel active" id="loginPanel">
+            <!-- Step 1: Login -->
+            <div class="form-step active" id="stepLogin">
                 <div id="loginMessage" class="message"></div>
                 <div class="form-group">
                     <label for="loginEmail">Email</label>
@@ -400,7 +394,8 @@
                 </button>
             </div>
 
-            <div class="form-panel" id="signupPanel">
+            <!-- Step 2: Signup -->
+            <div class="form-step" id="stepSignup">
                 <div id="signupMessage" class="message"></div>
                 <div class="form-group">
                     <label for="signupEmail">Email</label>
@@ -418,36 +413,26 @@
                     <span id="signupBtnText">Create Account</span>
                 </button>
             </div>
-        </div>
 
-        <!-- Profile Setup Panel (shown after first signup) -->
-        <div class="profile-setup-container" id="profileSetupPanel">
-            <div class="brand">
-                <div class="icon-wrapper">
-                    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                        d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
-                    </svg>
+            <!-- Step 3: Profile Setup (hidden until signup) -->
+            <div class="form-step" id="stepProfile">
+                <div id="profileMessage" class="message"></div>
+                <div class="form-group">
+                    <label for="profileUsername">Username</label>
+                    <input type="text" id="profileUsername" placeholder="Your unique username" autocomplete="off">
                 </div>
-                <h2>Complete Your Profile</h2>
-                <p class="subtitle">Tell us a bit about yourself</p>
+                <div class="form-group">
+                    <label for="profileBio">Bio</label>
+                    <textarea id="profileBio" placeholder="A short description about you..."></textarea>
+                </div>
+                <button class="btn btn-primary" id="saveProfileBtn">
+                    <span id="saveProfileBtnText">Save & Continue</span>
+                </button>
             </div>
-            <div id="profileMessage" class="message"></div>
-            <div class="form-group">
-                <label for="profileUsername">Username</label>
-                <input type="text" id="profileUsername" placeholder="Your unique username" autocomplete="off">
-            </div>
-            <div class="form-group">
-                <label for="profileBio">Bio</label>
-                <textarea id="profileBio" placeholder="A short description about you..."></textarea>
-            </div>
-            <button class="btn btn-primary" id="saveProfileBtn">
-                <span id="saveProfileBtnText">Save & Continue</span>
-            </button>
         </div>
     </div>
 
-    <!-- ==================== HOME SCREEN ==================== -->
+    <!-- ===== HOME SCREEN ===== -->
     <div class="home-container" id="homeContainer">
         <nav class="navbar">
             <div class="nav-left">
@@ -459,9 +444,9 @@
                 </div>
                 <span class="nav-title">TamTam</span>
                 <div class="nav-tabs">
-                    <button class="nav-tab active" data-home-tab="home">Home</button>
-                    <button class="nav-tab" data-home-tab="messages">Messages</button>
-                    <button class="nav-tab" data-home-tab="settings">Settings</button>
+                    <button class="nav-tab active">Home</button>
+                    <button class="nav-tab">Messages</button>
+                    <button class="nav-tab">Settings</button>
                 </div>
             </div>
             <div class="nav-right">
@@ -469,13 +454,10 @@
                     <div class="avatar-circle" id="avatarCircle">?</div>
                     <span id="navbarEmail">user@example.com</span>
                 </div>
-                <button class="btn btn-signout" id="signoutBtn" style="width:auto; padding:8px 20px; margin:0;">
-                    Sign Out
-                </button>
+                <button class="btn-signout" id="signoutBtn">Sign Out</button>
             </div>
         </nav>
-
-        <main class="home-content" id="homeTabContent">
+        <main class="home-content">
             <div class="home-header">
                 <h2>Welcome back! 👋</h2>
                 <p>Here's what's happening with your chats today.</p>
@@ -531,17 +513,24 @@
             const db = firebase.firestore();
 
             // ==================== DOM ELEMENTS ====================
-            // Auth UI
-            const authContainer = document.getElementById('authContainer');
+            // Auth wrapper & steps
+            const authWrapper = document.getElementById('authWrapper');
             const authCard = document.getElementById('authCard');
-            const tabContainer = document.getElementById('tabContainer');
-            const loginPanel = document.getElementById('loginPanel');
-            const signupPanel = document.getElementById('signupPanel');
+            const tabLogin = document.getElementById('tabLogin');
+            const tabSignup = document.getElementById('tabSignup');
+            const stepLogin = document.getElementById('stepLogin');
+            const stepSignup = document.getElementById('stepSignup');
+            const stepProfile = document.getElementById('stepProfile');
+            const brandSubtitle = document.getElementById('brandSubtitle');
+
+            // Login fields
             const loginEmail = document.getElementById('loginEmail');
             const loginPassword = document.getElementById('loginPassword');
             const loginBtn = document.getElementById('loginBtn');
             const loginBtnText = document.getElementById('loginBtnText');
             const loginMessage = document.getElementById('loginMessage');
+
+            // Signup fields
             const signupEmail = document.getElementById('signupEmail');
             const signupPassword = document.getElementById('signupPassword');
             const signupConfirm = document.getElementById('signupConfirm');
@@ -549,168 +538,167 @@
             const signupBtnText = document.getElementById('signupBtnText');
             const signupMessage = document.getElementById('signupMessage');
 
-            // Profile Setup UI
-            const profileSetupPanel = document.getElementById('profileSetupPanel');
+            // Profile fields
             const profileUsername = document.getElementById('profileUsername');
             const profileBio = document.getElementById('profileBio');
             const saveProfileBtn = document.getElementById('saveProfileBtn');
             const saveProfileBtnText = document.getElementById('saveProfileBtnText');
             const profileMessage = document.getElementById('profileMessage');
 
-            // Home UI
+            // Home screen
             const homeContainer = document.getElementById('homeContainer');
             const avatarCircle = document.getElementById('avatarCircle');
             const navbarEmail = document.getElementById('navbarEmail');
             const signoutBtn = document.getElementById('signoutBtn');
-            const navTabs = document.querySelectorAll('.nav-tab');
 
-            // ==================== TAB SWITCHING (Auth forms) ====================
-            tabContainer.querySelectorAll('button').forEach(button => {
-                button.addEventListener('click', () => {
-                    const tab = button.getAttribute('data-tab');
-                    tabContainer.querySelectorAll('button').forEach(b => b.classList.remove('active'));
-                    button.classList.add('active');
-                    if (tab === 'login') {
-                        loginPanel.classList.add('active');
-                        signupPanel.classList.remove('active');
-                    } else {
-                        signupPanel.classList.add('active');
-                        loginPanel.classList.remove('active');
-                    }
-                    clearAuthMessages();
-                });
-            });
+            // ==================== HELPER FUNCTIONS ====================
+            function showStep(stepId) {
+                [stepLogin, stepSignup, stepProfile].forEach(s => s.classList.remove('active'));
+                const target = document.getElementById(stepId);
+                if (target) target.classList.add('active');
 
-            function clearAuthMessages() {
-                loginMessage.textContent = '';
-                loginMessage.className = 'message';
-                signupMessage.textContent = '';
-                signupMessage.className = 'message';
+                // Update tab buttons (only login/signup tabs are visible)
+                if (stepId === 'stepLogin') {
+                    tabLogin.classList.add('active');
+                    tabSignup.classList.remove('active');
+                    tabLogin.disabled = false;
+                    tabSignup.disabled = false;
+                } else if (stepId === 'stepSignup') {
+                    tabSignup.classList.add('active');
+                    tabLogin.classList.remove('active');
+                    tabLogin.disabled = false;
+                    tabSignup.disabled = false;
+                } else if (stepId === 'stepProfile') {
+                    // Disable both tabs when profile is active
+                    tabLogin.classList.remove('active');
+                    tabSignup.classList.remove('active');
+                    tabLogin.disabled = true;
+                    tabSignup.disabled = true;
+                }
             }
 
-            function showAuthMessage(element, text, type) {
-                element.textContent = text;
-                element.className = 'message ' + type;
+            function clearMessage(el) {
+                el.textContent = '';
+                el.className = 'message';
             }
 
-            // ==================== LOADING STATE ====================
-            function setLoading(btn, btnText, isLoading) {
+            function setMessage(el, text, type) {
+                el.textContent = text;
+                el.className = 'message ' + type;
+            }
+
+            function setLoading(btn, btnText, isLoading, originalText) {
                 if (isLoading) {
                     btn.disabled = true;
                     btnText.innerHTML = '<span class="spinner"></span> Please wait...';
                 } else {
                     btn.disabled = false;
-                    btnText.textContent = btn === loginBtn ? 'Sign In' : 
-                                          btn === signupBtn ? 'Create Account' : 'Save & Continue';
+                    btnText.textContent = originalText;
                 }
             }
 
-            // ==================== AUTH STATE OBSERVER ====================
-            auth.onAuthStateChanged((user) => {
-                if (user) {
-                    // Check if user needs to complete profile setup
-                    if (sessionStorage.getItem('pendingProfileSetup') === 'true') {
-                        showProfileSetup();
-                    } else {
-                        showHomeScreen(user);
-                    }
-                } else {
-                    showAuthScreen();
-                }
-            });
-
-            function showProfileSetup() {
-                // Hide auth card and home, show profile panel
-                authCard.style.display = 'none';
-                homeContainer.classList.remove('active');
-                profileSetupPanel.classList.add('active');
-                authContainer.style.display = 'block';
-                document.body.classList.remove('logged-in');
-                // Clear fields
-                profileUsername.value = '';
-                profileBio.value = '';
-                profileMessage.textContent = '';
-                profileMessage.className = 'message';
-            }
-
-            function showHomeScreen(user) {
-                authContainer.style.display = 'none';
+            function goToHome(user) {
+                authWrapper.style.display = 'none';
                 homeContainer.classList.add('active');
-                document.body.classList.add('logged-in');
-                profileSetupPanel.classList.remove('active');
-
+                document.body.classList.add('home-view');
                 const email = user.email || 'User';
                 navbarEmail.textContent = email;
                 avatarCircle.textContent = email.charAt(0).toUpperCase();
-
-                document.querySelector('.nav-tab[data-home-tab="home"]').classList.add('active');
             }
 
-            function showAuthScreen() {
-                authContainer.style.display = 'block';
-                authCard.style.display = 'block';
-                profileSetupPanel.classList.remove('active');
+            function goToAuth() {
                 homeContainer.classList.remove('active');
-                document.body.classList.remove('logged-in');
-
-                // Reset to login tab
-                tabContainer.querySelectorAll('button').forEach(b => b.classList.remove('active'));
-                tabContainer.querySelector('button[data-tab="login"]').classList.add('active');
-                loginPanel.classList.add('active');
-                signupPanel.classList.remove('active');
-
+                document.body.classList.remove('home-view');
+                authWrapper.style.display = 'block';
+                // Reset to login step
+                showStep('stepLogin');
+                // Clear all inputs and messages
                 loginEmail.value = '';
                 loginPassword.value = '';
                 signupEmail.value = '';
                 signupPassword.value = '';
                 signupConfirm.value = '';
-                clearAuthMessages();
-
+                profileUsername.value = '';
+                profileBio.value = '';
+                clearMessage(loginMessage);
+                clearMessage(signupMessage);
+                clearMessage(profileMessage);
+                brandSubtitle.textContent = 'Connect & chat with friends';
+                // Re-enable buttons
                 loginBtn.disabled = false;
                 loginBtnText.textContent = 'Sign In';
                 signupBtn.disabled = false;
                 signupBtnText.textContent = 'Create Account';
+                saveProfileBtn.disabled = false;
+                saveProfileBtnText.textContent = 'Save & Continue';
             }
+
+            // ==================== TAB SWITCHING ====================
+            tabLogin.addEventListener('click', () => showStep('stepLogin'));
+            tabSignup.addEventListener('click', () => showStep('stepSignup'));
+
+            // ==================== AUTH STATE OBSERVER ====================
+            auth.onAuthStateChanged(async (user) => {
+                if (user) {
+                    // Check if profile exists in Firestore
+                    try {
+                        const doc = await db.collection('users').doc(user.uid).get();
+                        if (doc.exists && doc.data().username) {
+                            // Profile already set -> go home
+                            goToHome(user);
+                        } else {
+                            // No profile yet -> show profile setup
+                            authWrapper.style.display = 'block';
+                            homeContainer.classList.remove('active');
+                            document.body.classList.remove('home-view');
+                            showStep('stepProfile');
+                            brandSubtitle.textContent = 'Complete your profile';
+                            // Pre-fill email if needed? Not necessary.
+                            // Clear profile fields for fresh entry
+                            profileUsername.value = '';
+                            profileBio.value = '';
+                            clearMessage(profileMessage);
+                        }
+                    } catch (err) {
+                        console.error('Error checking profile:', err);
+                        goToHome(user); // fallback
+                    }
+                } else {
+                    goToAuth();
+                }
+            });
 
             // ==================== LOGIN ====================
             loginBtn.addEventListener('click', async () => {
                 const email = loginEmail.value.trim();
                 const password = loginPassword.value;
 
-                showAuthMessage(loginMessage, '', '');
-                if (!email) {
-                    showAuthMessage(loginMessage, 'Please enter your email address.', 'error');
-                    loginEmail.focus();
-                    return;
-                }
-                if (!password) {
-                    showAuthMessage(loginMessage, 'Please enter your password.', 'error');
-                    loginPassword.focus();
-                    return;
-                }
+                clearMessage(loginMessage);
+                if (!email) { setMessage(loginMessage, 'Please enter your email.', 'error'); loginEmail.focus(); return; }
+                if (!password) { setMessage(loginMessage, 'Please enter your password.', 'error'); loginPassword.focus(); return; }
 
-                setLoading(loginBtn, loginBtnText, true);
+                setLoading(loginBtn, loginBtnText, true, 'Sign In');
                 try {
                     await auth.signInWithEmailAndPassword(email, password);
                 } catch (error) {
                     let msg = 'An error occurred.';
                     switch (error.code) {
                         case 'auth/invalid-email': msg = 'Invalid email format.'; break;
-                        case 'auth/user-not-found': msg = 'No account found with this email.'; break;
+                        case 'auth/user-not-found': msg = 'No account found.'; break;
                         case 'auth/wrong-password': msg = 'Incorrect password.'; break;
-                        case 'auth/invalid-credential': msg = 'Invalid email or password.'; break;
-                        case 'auth/too-many-requests': msg = 'Too many attempts. Please wait.'; break;
-                        case 'auth/user-disabled': msg = 'This account has been disabled.'; break;
-                        default: msg = error.message || msg;
+                        case 'auth/invalid-credential': msg = 'Invalid credentials.'; break;
+                        case 'auth/too-many-requests': msg = 'Too many attempts. Try later.'; break;
+                        case 'auth/user-disabled': msg = 'Account disabled.'; break;
+                        default: msg = error.message;
                     }
-                    showAuthMessage(loginMessage, msg, 'error');
+                    setMessage(loginMessage, msg, 'error');
                 } finally {
-                    setLoading(loginBtn, loginBtnText, false);
+                    setLoading(loginBtn, loginBtnText, false, 'Sign In');
                 }
             });
 
-            loginPassword.addEventListener('keydown', (e) => { if (e.key === 'Enter') loginBtn.click(); });
-            loginEmail.addEventListener('keydown', (e) => { if (e.key === 'Enter') loginPassword.focus(); });
+            loginPassword.addEventListener('keydown', e => { if (e.key === 'Enter') loginBtn.click(); });
+            loginEmail.addEventListener('keydown', e => { if (e.key === 'Enter') loginPassword.focus(); });
 
             // ==================== SIGNUP ====================
             signupBtn.addEventListener('click', async () => {
@@ -718,51 +706,34 @@
                 const password = signupPassword.value;
                 const confirm = signupConfirm.value;
 
-                showAuthMessage(signupMessage, '', '');
-                if (!email) {
-                    showAuthMessage(signupMessage, 'Please enter your email.', 'error');
-                    signupEmail.focus();
-                    return;
-                }
-                if (!password) {
-                    showAuthMessage(signupMessage, 'Please create a password.', 'error');
-                    signupPassword.focus();
-                    return;
-                }
-                if (password.length < 6) {
-                    showAuthMessage(signupMessage, 'Password must be at least 6 characters.', 'error');
-                    signupPassword.focus();
-                    return;
-                }
-                if (password !== confirm) {
-                    showAuthMessage(signupMessage, 'Passwords do not match.', 'error');
-                    signupConfirm.focus();
-                    return;
-                }
+                clearMessage(signupMessage);
+                if (!email) { setMessage(signupMessage, 'Please enter your email.', 'error'); signupEmail.focus(); return; }
+                if (!password) { setMessage(signupMessage, 'Please create a password.', 'error'); signupPassword.focus(); return; }
+                if (password.length < 6) { setMessage(signupMessage, 'Password must be at least 6 characters.', 'error'); signupPassword.focus(); return; }
+                if (password !== confirm) { setMessage(signupMessage, 'Passwords do not match.', 'error'); signupConfirm.focus(); return; }
 
-                setLoading(signupBtn, signupBtnText, true);
+                setLoading(signupBtn, signupBtnText, true, 'Create Account');
                 try {
                     await auth.createUserWithEmailAndPassword(email, password);
-                    // Set flag so auth state observer will show profile setup
-                    sessionStorage.setItem('pendingProfileSetup', 'true');
-                    // The observer will fire and call showProfileSetup()
+                    // The observer will detect no profile -> show stepProfile
                 } catch (error) {
                     let msg = 'An error occurred.';
                     switch (error.code) {
-                        case 'auth/email-already-in-use': msg = 'An account with this email already exists.'; break;
-                        case 'auth/invalid-email': msg = 'Invalid email format.'; break;
-                        case 'auth/weak-password': msg = 'Password is too weak. Use at least 6 characters.'; break;
-                        case 'auth/operation-not-allowed': msg = 'Email/password sign-up is not enabled.'; break;
-                        default: msg = error.message || msg;
+                        case 'auth/email-already-in-use': msg = 'Email already in use.'; break;
+                        case 'auth/invalid-email': msg = 'Invalid email.'; break;
+                        case 'auth/weak-password': msg = 'Password too weak (min 6 chars).'; break;
+                        case 'auth/operation-not-allowed': msg = 'Sign-up not enabled.'; break;
+                        default: msg = error.message;
                     }
-                    showAuthMessage(signupMessage, msg, 'error');
-                    setLoading(signupBtn, signupBtnText, false);
+                    setMessage(signupMessage, msg, 'error');
+                } finally {
+                    setLoading(signupBtn, signupBtnText, false, 'Create Account');
                 }
             });
 
-            signupConfirm.addEventListener('keydown', (e) => { if (e.key === 'Enter') signupBtn.click(); });
-            signupEmail.addEventListener('keydown', (e) => { if (e.key === 'Enter') signupPassword.focus(); });
-            signupPassword.addEventListener('keydown', (e) => { if (e.key === 'Enter') signupConfirm.focus(); });
+            signupConfirm.addEventListener('keydown', e => { if (e.key === 'Enter') signupBtn.click(); });
+            signupEmail.addEventListener('keydown', e => { if (e.key === 'Enter') signupPassword.focus(); });
+            signupPassword.addEventListener('keydown', e => { if (e.key === 'Enter') signupConfirm.focus(); });
 
             // ==================== PROFILE SETUP ====================
             saveProfileBtn.addEventListener('click', async () => {
@@ -770,61 +741,46 @@
                 const bio = profileBio.value.trim();
                 const user = auth.currentUser;
 
-                if (!user) {
-                    showAuthMessage(profileMessage, 'You must be logged in.', 'error');
-                    return;
-                }
-                if (!username) {
-                    showAuthMessage(profileMessage, 'Please enter a username.', 'error');
-                    profileUsername.focus();
-                    return;
-                }
-                if (username.length < 3) {
-                    showAuthMessage(profileMessage, 'Username must be at least 3 characters.', 'error');
-                    profileUsername.focus();
-                    return;
-                }
+                clearMessage(profileMessage);
+                if (!user) { setMessage(profileMessage, 'You must be logged in.', 'error'); return; }
+                if (!username) { setMessage(profileMessage, 'Please enter a username.', 'error'); profileUsername.focus(); return; }
+                if (username.length < 3) { setMessage(profileMessage, 'Username must be at least 3 characters.', 'error'); profileUsername.focus(); return; }
 
-                setLoading(saveProfileBtn, saveProfileBtnText, true);
+                setLoading(saveProfileBtn, saveProfileBtnText, true, 'Save & Continue');
                 try {
-                    // Save to Firestore under users/{uid}
                     await db.collection('users').doc(user.uid).set({
                         username: username,
                         bio: bio,
                         email: user.email,
-                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
                     }, { merge: true });
-
-                    // Remove the pending flag
-                    sessionStorage.removeItem('pendingProfileSetup');
-                    // Show home screen (re‑evaluate auth observer will fire, but we can force)
-                    showHomeScreen(user);
+                    // Observer will fire again, find the profile, and go to home
                 } catch (error) {
                     console.error('Profile save error:', error);
-                    showAuthMessage(profileMessage, 'Failed to save profile. Please try again.', 'error');
-                    setLoading(saveProfileBtn, saveProfileBtnText, false);
+                    setMessage(profileMessage, 'Failed to save profile. Try again.', 'error');
+                } finally {
+                    setLoading(saveProfileBtn, saveProfileBtnText, false, 'Save & Continue');
                 }
-            });
-
-            // ==================== HOME TAB NAVIGATION ====================
-            navTabs.forEach(tab => {
-                tab.addEventListener('click', () => {
-                    navTabs.forEach(t => t.classList.remove('active'));
-                    tab.classList.add('active');
-                });
             });
 
             // ==================== SIGN OUT ====================
             signoutBtn.addEventListener('click', async () => {
-                // Clear any pending profile flag on sign out
-                sessionStorage.removeItem('pendingProfileSetup');
                 try {
                     await auth.signOut();
                 } catch (error) {
                     console.error('Sign out error:', error);
-                    showAuthScreen();
+                    goToAuth();
                 }
             });
+
+            // ==================== HOME TABS (cosmetic) ====================
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                });
+            });
+
         })();
     </script>
 </body>
