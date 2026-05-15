@@ -444,7 +444,7 @@
                         <button id="sendChatBtn">Send</button>
                     </div>
                 </div>
-                <button class="btn-danger" id="disconnectPartnerBtn" style="margin-top:12px;">Disconnect Partner</button>
+
             </div>
         </div>
 
@@ -620,7 +620,6 @@
             const chatMessages = document.getElementById('chatMessages');
             const chatInput = document.getElementById('chatInput');
             const sendChatBtn = document.getElementById('sendChatBtn');
-            const disconnectPartnerBtn = document.getElementById('disconnectPartnerBtn');
 
             let currentUser = null;
             let unsubscribeChat = null;
@@ -792,7 +791,6 @@
                 const myDoc = await db.collection('users').doc(auth.currentUser.uid).get();
                 const partnerId = myDoc.data().partnerId;
                 const partnerConnectArea = document.getElementById('partnerConnectArea');
-                const chatArea = document.getElementById('chatArea');
                 if (partnerId) {
                     partnerConnectArea.style.display = 'none';
                     chatArea.style.display = 'block';
@@ -846,16 +844,7 @@
             connectPartnerBtn.addEventListener('click', () => connectToPartner(partnerCodeInput.value));
             partnerCodeInput.addEventListener('keydown', e => { if (e.key === 'Enter') connectPartnerBtn.click(); });
 
-            disconnectPartnerBtn.addEventListener('click', async () => {
-                if (!confirm('Disconnect from your partner?')) return;
-                const batch = db.batch();
-                batch.update(db.collection('users').doc(auth.currentUser.uid), { partnerId: null });
-                if (currentPartnerId) {
-                    batch.update(db.collection('users').doc(currentPartnerId), { partnerId: null });
-                }
-                await batch.commit();
-                // listener will handle UI reset
-            });
+
 
             function attachPrivateChatListener(chatId) {
                 if (unsubscribeChat) unsubscribeChat();
