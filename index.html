@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TamTam – Complete Your Profile</title>
+    <title>TamTam – Chat & Connect</title>
 
     <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
@@ -23,12 +23,11 @@
             --input-focus: #4f46e5;
             --error-bg: #fef2f2;
             --error-text: #dc2626;
-            --error-border: #fecaca;
             --success-bg: #f0fdf4;
             --success-text: #16a34a;
             --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
-            --shadow-md: 0 4px 6px rgba(0,0,0,0.07), 0 2px 4px rgba(0,0,0,0.06);
-            --shadow-lg: 0 20px 25px rgba(0,0,0,0.1), 0 10px 10px rgba(0,0,0,0.04);
+            --shadow-md: 0 4px 6px rgba(0,0,0,0.07);
+            --shadow-lg: 0 20px 25px rgba(0,0,0,0.1);
             --radius: 16px;
             --radius-sm: 10px;
             --transition: 0.2s cubic-bezier(0.4,0,0.2,1);
@@ -37,7 +36,7 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
-            font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+            font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
             background: linear-gradient(135deg, #e0e7ff 0%, #ede9fe 30%, #fce7f3 60%, #e0e7ff 100%);
             background-size: 400% 400%;
             animation: gradientShift 20s ease infinite;
@@ -64,11 +63,7 @@
         }
 
         /* ===== AUTH CARD ===== */
-        .auth-wrapper {
-            width: 100%;
-            max-width: 440px;
-        }
-
+        .auth-wrapper { width: 100%; max-width: 440px; }
         .card {
             background: var(--card-bg);
             border-radius: var(--radius);
@@ -200,21 +195,9 @@
             font-size: 0.85rem;
             font-weight: 500;
             display: none;
-            letter-spacing: 0.2px;
-            line-height: 1.4;
         }
-        .message.error {
-            display: block;
-            background: var(--error-bg);
-            color: var(--error-text);
-            border: 1px solid var(--error-border);
-        }
-        .message.success {
-            display: block;
-            background: var(--success-bg);
-            color: var(--success-text);
-            border: 1px solid #bbf7d0;
-        }
+        .message.error { display: block; background: var(--error-bg); color: var(--error-text); border: 1px solid var(--error-border); }
+        .message.success { display: block; background: var(--success-bg); color: var(--success-text); border: 1px solid #bbf7d0; }
 
         .spinner {
             display: inline-block;
@@ -249,8 +232,9 @@
             position: sticky;
             top: 0;
             z-index: 10;
+            gap: 12px;
         }
-        .nav-left { display: flex; align-items: center; gap: 12px; }
+        .nav-left { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
         .nav-logo {
             width: 36px; height: 36px;
             border-radius: 12px;
@@ -262,20 +246,20 @@
         }
         .nav-logo svg { width: 20px; height: 20px; }
         .nav-title { font-weight: 700; font-size: 1.1rem; }
-        .nav-tabs { display: flex; gap: 8px; }
+        .nav-tabs { display: flex; gap: 6px; }
         .nav-tab {
-            padding: 8px 16px;
+            padding: 8px 14px;
             border-radius: 20px;
             background: transparent;
             border: none;
             font-weight: 600;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             color: var(--text-secondary);
             cursor: pointer;
             transition: all var(--transition);
         }
         .nav-tab.active { background: #e0e7ff; color: var(--primary); }
-        .nav-right { display: flex; align-items: center; gap: 16px; }
+        .nav-right { display: flex; align-items: center; gap: 12px; }
         .user-badge {
             display: flex;
             align-items: center;
@@ -300,21 +284,19 @@
             background: #fff;
             color: #dc2626;
             border: 2px solid #fecaca;
-            padding: 8px 20px;
+            padding: 8px 16px;
             border-radius: 20px;
             font-weight: 600;
             cursor: pointer;
             transition: all var(--transition);
         }
-        .btn-signout:hover {
-            background: #fef2f2;
-            border-color: #fca5a5;
-        }
+        .btn-signout:hover { background: #fef2f2; border-color: #fca5a5; }
 
+        /* Panels */
         .home-panel {
             flex: 1;
             padding: 32px 24px;
-            max-width: 900px;
+            max-width: 1000px;
             margin: 0 auto;
             width: 100%;
             display: none;
@@ -322,13 +304,12 @@
         }
         .home-panel.active { display: block; }
 
+        /* Home cards */
         .home-header { margin-bottom: 28px; }
         .home-header h2 { font-size: 1.8rem; font-weight: 700; }
-        .home-header p { color: var(--text-secondary); margin-top: 4px; }
-
         .home-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
             gap: 20px;
         }
         .home-card {
@@ -350,23 +331,113 @@
             margin-bottom: 14px;
             color: var(--primary);
         }
-        .home-card h3 { font-size: 1rem; font-weight: 600; margin-bottom: 6px; }
-        .home-card p { font-size: 0.85rem; color: var(--text-secondary); }
 
-        .placeholder-panel {
+        /* Global Chat */
+        .chat-container {
             background: white;
             border-radius: var(--radius);
-            padding: 40px;
-            text-align: center;
-            color: var(--text-secondary);
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            flex-direction: column;
+            height: calc(100vh - 150px);
+            min-height: 400px;
+        }
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .chat-message {
+            display: flex;
+            gap: 10px;
+            max-width: 80%;
+        }
+        .chat-message.own {
+            align-self: flex-end;
+            flex-direction: row-reverse;
+        }
+        .msg-bubble {
+            background: #f3f4f6;
+            padding: 10px 16px;
+            border-radius: 18px;
+            font-size: 0.9rem;
+        }
+        .chat-message.own .msg-bubble {
+            background: var(--primary);
+            color: white;
+        }
+        .msg-user {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 4px;
+        }
+        .chat-input-area {
+            display: flex;
+            padding: 16px;
+            border-top: 1px solid #e5e7eb;
+            gap: 8px;
+        }
+        .chat-input-area input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 2px solid var(--input-border);
+            border-radius: 30px;
+            font-size: 0.9rem;
+            outline: none;
+        }
+        .chat-input-area button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            padding: 0 24px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        /* People list */
+        .people-search {
+            margin-bottom: 20px;
+        }
+        .people-search input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid var(--input-border);
+            border-radius: 30px;
+            font-size: 0.9rem;
+            outline: none;
+        }
+        .user-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 16px;
+        }
+        .user-card {
+            background: white;
+            border-radius: var(--radius-sm);
+            padding: 16px;
             box-shadow: var(--shadow-sm);
         }
-        .placeholder-panel h3 { color: var(--text); margin-bottom: 12px; }
+        .user-card .username {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        .user-card .bio {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
 
-        @media (max-width: 640px) {
-            .navbar { padding: 0 16px; }
-            .home-panel { padding: 24px 16px; }
-            .home-grid { grid-template-columns: 1fr; }
+        /* Settings */
+        .settings-form {
+            background: white;
+            border-radius: var(--radius);
+            padding: 32px;
+            box-shadow: var(--shadow-sm);
+            max-width: 500px;
         }
     </style>
 </head>
@@ -391,7 +462,6 @@
                 <button id="tabSignup" data-step="signup">Create Account</button>
             </div>
 
-            <!-- Step 1: Login -->
             <div class="form-step active" id="stepLogin">
                 <div id="loginMessage" class="message"></div>
                 <div class="form-group">
@@ -407,7 +477,6 @@
                 </button>
             </div>
 
-            <!-- Step 2: Signup -->
             <div class="form-step" id="stepSignup">
                 <div id="signupMessage" class="message"></div>
                 <div class="form-group">
@@ -427,7 +496,6 @@
                 </button>
             </div>
 
-            <!-- Step 3: Profile Setup -->
             <div class="form-step" id="stepProfile">
                 <div id="profileMessage" class="message"></div>
                 <div class="form-group">
@@ -459,6 +527,7 @@
                 <div class="nav-tabs" id="homeNavTabs">
                     <button class="nav-tab active" data-panel="home">Home</button>
                     <button class="nav-tab" data-panel="messages">Messages</button>
+                    <button class="nav-tab" data-panel="people">People</button>
                     <button class="nav-tab" data-panel="settings">Settings</button>
                 </div>
             </div>
@@ -471,55 +540,79 @@
             </div>
         </nav>
 
-        <!-- Home Panels -->
+        <!-- Panel: Home -->
         <div class="home-panel active" id="panelHome">
             <div class="home-header">
                 <h2>Welcome back! 👋</h2>
                 <p>Here's what's happening with your chats today.</p>
             </div>
             <div class="home-grid">
-                <div class="home-card">
+                <div class="home-card" onclick="document.querySelector('[data-panel=messages]').click()">
                     <div class="icon-bg">
                         <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 0 1-.923 1.785A5.969 5.969 0 0 0 6 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337Z" />
                         </svg>
                     </div>
-                    <h3>New Messages</h3>
-                    <p>You have 3 unread conversations waiting.</p>
+                    <h3>Global Chat</h3>
+                    <p>Join the conversation with everyone.</p>
                 </div>
-                <div class="home-card">
+                <div class="home-card" onclick="document.querySelector('[data-panel=people]').click()">
                     <div class="icon-bg">
                         <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z" />
                         </svg>
                     </div>
-                    <h3>Friends Online</h3>
-                    <p>5 friends are active right now.</p>
+                    <h3>Find People</h3>
+                    <p>Discover and connect with others.</p>
                 </div>
-                <div class="home-card">
+                <div class="home-card" onclick="document.querySelector('[data-panel=settings]').click()">
                     <div class="icon-bg">
                         <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28Z" />
                             <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
                         </svg>
                     </div>
-                    <h3>Preferences</h3>
-                    <p>Customize your chat theme and notifications.</p>
+                    <h3>Settings</h3>
+                    <p>Update your profile and preferences.</p>
                 </div>
             </div>
         </div>
 
+        <!-- Panel: Messages (Global Chat) -->
         <div class="home-panel" id="panelMessages">
-            <div class="placeholder-panel">
-                <h3>💬 Messages</h3>
-                <p>Your conversations will appear here. Start a new chat!</p>
+            <div class="home-header"><h2>💬 Global Chat</h2></div>
+            <div class="chat-container">
+                <div class="chat-messages" id="chatMessages"></div>
+                <div class="chat-input-area">
+                    <input type="text" id="chatInput" placeholder="Type a message..." autocomplete="off">
+                    <button id="sendChatBtn">Send</button>
+                </div>
             </div>
         </div>
 
+        <!-- Panel: People -->
+        <div class="home-panel" id="panelPeople">
+            <div class="home-header"><h2>👥 People</h2></div>
+            <div class="people-search">
+                <input type="text" id="peopleSearch" placeholder="Search by username...">
+            </div>
+            <div class="user-list" id="userList"></div>
+        </div>
+
+        <!-- Panel: Settings -->
         <div class="home-panel" id="panelSettings">
-            <div class="placeholder-panel">
-                <h3>⚙️ Settings</h3>
-                <p>Update your profile, change password, or adjust notifications.</p>
+            <div class="home-header"><h2>⚙️ Settings</h2></div>
+            <div class="settings-form">
+                <div id="settingsMessage" class="message"></div>
+                <div class="form-group">
+                    <label for="settingsUsername">Username</label>
+                    <input type="text" id="settingsUsername" autocomplete="off">
+                </div>
+                <div class="form-group">
+                    <label for="settingsBio">Bio</label>
+                    <textarea id="settingsBio"></textarea>
+                </div>
+                <button class="btn btn-primary" id="updateProfileBtn">Update Profile</button>
             </div>
         </div>
     </div>
@@ -541,7 +634,8 @@
             const auth = firebase.auth();
             const db = firebase.firestore();
 
-            // ==================== DOM ELEMENTS ====================
+            // ==================== DOM REFERENCES ====================
+            // Auth
             const authWrapper = document.getElementById('authWrapper');
             const tabLogin = document.getElementById('tabLogin');
             const tabSignup = document.getElementById('tabSignup');
@@ -549,57 +643,66 @@
             const stepSignup = document.getElementById('stepSignup');
             const stepProfile = document.getElementById('stepProfile');
             const brandSubtitle = document.getElementById('brandSubtitle');
-
             const loginEmail = document.getElementById('loginEmail');
             const loginPassword = document.getElementById('loginPassword');
             const loginBtn = document.getElementById('loginBtn');
             const loginBtnText = document.getElementById('loginBtnText');
             const loginMessage = document.getElementById('loginMessage');
-
             const signupEmail = document.getElementById('signupEmail');
             const signupPassword = document.getElementById('signupPassword');
             const signupConfirm = document.getElementById('signupConfirm');
             const signupBtn = document.getElementById('signupBtn');
             const signupBtnText = document.getElementById('signupBtnText');
             const signupMessage = document.getElementById('signupMessage');
-
             const profileUsername = document.getElementById('profileUsername');
             const profileBio = document.getElementById('profileBio');
             const saveProfileBtn = document.getElementById('saveProfileBtn');
             const saveProfileBtnText = document.getElementById('saveProfileBtnText');
             const profileMessage = document.getElementById('profileMessage');
 
+            // Home
             const homeContainer = document.getElementById('homeContainer');
             const avatarCircle = document.getElementById('avatarCircle');
             const navbarEmail = document.getElementById('navbarEmail');
             const signoutBtn = document.getElementById('signoutBtn');
-
-            // Home panels
+            const homeNavTabs = document.querySelectorAll('#homeNavTabs .nav-tab');
             const panelHome = document.getElementById('panelHome');
             const panelMessages = document.getElementById('panelMessages');
+            const panelPeople = document.getElementById('panelPeople');
             const panelSettings = document.getElementById('panelSettings');
-            const homeNavTabs = document.querySelectorAll('#homeNavTabs .nav-tab');
+
+            // Chat
+            const chatMessages = document.getElementById('chatMessages');
+            const chatInput = document.getElementById('chatInput');
+            const sendChatBtn = document.getElementById('sendChatBtn');
+
+            // People
+            const peopleSearch = document.getElementById('peopleSearch');
+            const userList = document.getElementById('userList');
+
+            // Settings
+            const settingsUsername = document.getElementById('settingsUsername');
+            const settingsBio = document.getElementById('settingsBio');
+            const updateProfileBtn = document.getElementById('updateProfileBtn');
+            const settingsMessage = document.getElementById('settingsMessage');
+
+            let currentUser = null;
+            let allUsers = []; // cache for people search
+            let unsubscribeMessages = null;
 
             // ==================== HELPERS ====================
             function showStep(stepId) {
                 [stepLogin, stepSignup, stepProfile].forEach(s => s.classList.remove('active'));
                 document.getElementById(stepId).classList.add('active');
-
                 if (stepId === 'stepLogin') {
-                    tabLogin.classList.add('active');
-                    tabSignup.classList.remove('active');
-                    tabLogin.disabled = false;
-                    tabSignup.disabled = false;
+                    tabLogin.classList.add('active'); tabSignup.classList.remove('active');
+                    tabLogin.disabled = false; tabSignup.disabled = false;
                 } else if (stepId === 'stepSignup') {
-                    tabSignup.classList.add('active');
-                    tabLogin.classList.remove('active');
-                    tabLogin.disabled = false;
-                    tabSignup.disabled = false;
+                    tabSignup.classList.add('active'); tabLogin.classList.remove('active');
+                    tabLogin.disabled = false; tabSignup.disabled = false;
                 } else if (stepId === 'stepProfile') {
-                    tabLogin.classList.remove('active');
-                    tabSignup.classList.remove('active');
-                    tabLogin.disabled = true;
-                    tabSignup.disabled = true;
+                    tabLogin.classList.remove('active'); tabSignup.classList.remove('active');
+                    tabLogin.disabled = true; tabSignup.disabled = true;
                 }
             }
 
@@ -616,19 +719,8 @@
                 }
             }
 
-            function goToHome(user) {
-                authWrapper.style.display = 'none';
-                homeContainer.classList.add('active');
-                document.body.classList.add('home-view');
-                const email = user.email || 'User';
-                navbarEmail.textContent = email;
-                avatarCircle.textContent = email.charAt(0).toUpperCase();
-                // Activate Home tab by default
-                switchHomeTab('home');
-            }
-
             function switchHomeTab(panelName) {
-                [panelHome, panelMessages, panelSettings].forEach(p => p.classList.remove('active'));
+                [panelHome, panelMessages, panelPeople, panelSettings].forEach(p => p.classList.remove('active'));
                 document.getElementById('panel' + panelName.charAt(0).toUpperCase() + panelName.slice(1)).classList.add('active');
                 homeNavTabs.forEach(tab => {
                     tab.classList.remove('active');
@@ -636,30 +728,34 @@
                 });
             }
 
+            function goToHome(user) {
+                authWrapper.style.display = 'none';
+                homeContainer.classList.add('active');
+                document.body.classList.add('home-view');
+                currentUser = user;
+                const email = user.email || 'User';
+                navbarEmail.textContent = email;
+                avatarCircle.textContent = email.charAt(0).toUpperCase();
+                switchHomeTab('home');
+                loadSettingsProfile();
+                loadPeople();
+                attachChatListener();
+            }
+
             function goToAuth() {
                 homeContainer.classList.remove('active');
                 document.body.classList.remove('home-view');
                 authWrapper.style.display = 'block';
                 showStep('stepLogin');
-                // Clear inputs
-                loginEmail.value = '';
-                loginPassword.value = '';
-                signupEmail.value = '';
-                signupPassword.value = '';
-                signupConfirm.value = '';
-                profileUsername.value = '';
-                profileBio.value = '';
-                clearMessage(loginMessage);
-                clearMessage(signupMessage);
-                clearMessage(profileMessage);
+                loginEmail.value = ''; loginPassword.value = '';
+                signupEmail.value = ''; signupPassword.value = ''; signupConfirm.value = '';
+                profileUsername.value = ''; profileBio.value = '';
+                clearMessage(loginMessage); clearMessage(signupMessage); clearMessage(profileMessage);
                 brandSubtitle.textContent = 'Connect & chat with friends';
-                // Re-enable buttons
-                loginBtn.disabled = false;
-                loginBtnText.textContent = 'Sign In';
-                signupBtn.disabled = false;
-                signupBtnText.textContent = 'Create Account';
-                saveProfileBtn.disabled = false;
-                saveProfileBtnText.textContent = 'Save & Continue';
+                loginBtn.disabled = false; loginBtnText.textContent = 'Sign In';
+                signupBtn.disabled = false; signupBtnText.textContent = 'Create Account';
+                saveProfileBtn.disabled = false; saveProfileBtnText.textContent = 'Save & Continue';
+                if (unsubscribeMessages) { unsubscribeMessages(); unsubscribeMessages = null; }
             }
 
             // ==================== AUTH TABS ====================
@@ -679,12 +775,11 @@
                             document.body.classList.remove('home-view');
                             showStep('stepProfile');
                             brandSubtitle.textContent = 'Complete your profile';
-                            profileUsername.value = '';
-                            profileBio.value = '';
+                            profileUsername.value = ''; profileBio.value = '';
                             clearMessage(profileMessage);
                         }
                     } catch (err) {
-                        console.error('Error checking profile:', err);
+                        console.error('Profile check error:', err);
                         goToHome(user);
                     }
                 } else {
@@ -697,21 +792,17 @@
                 const email = loginEmail.value.trim();
                 const password = loginPassword.value;
                 clearMessage(loginMessage);
-                if (!email) { setMessage(loginMessage, 'Please enter your email.', 'error'); loginEmail.focus(); return; }
-                if (!password) { setMessage(loginMessage, 'Please enter your password.', 'error'); loginPassword.focus(); return; }
-
+                if (!email) { setMessage(loginMessage, 'Please enter your email.', 'error'); return; }
+                if (!password) { setMessage(loginMessage, 'Please enter your password.', 'error'); return; }
                 setLoading(loginBtn, loginBtnText, true, 'Sign In');
                 try {
                     await auth.signInWithEmailAndPassword(email, password);
                 } catch (error) {
                     let msg = 'An error occurred.';
                     switch (error.code) {
-                        case 'auth/invalid-email': msg = 'Invalid email format.'; break;
+                        case 'auth/invalid-email': msg = 'Invalid email.'; break;
                         case 'auth/user-not-found': msg = 'No account found.'; break;
                         case 'auth/wrong-password': msg = 'Incorrect password.'; break;
-                        case 'auth/invalid-credential': msg = 'Invalid credentials.'; break;
-                        case 'auth/too-many-requests': msg = 'Too many attempts. Try later.'; break;
-                        case 'auth/user-disabled': msg = 'Account disabled.'; break;
                         default: msg = error.message;
                     }
                     setMessage(loginMessage, msg, 'error');
@@ -720,20 +811,16 @@
                 }
             });
 
-            loginPassword.addEventListener('keydown', e => { if (e.key === 'Enter') loginBtn.click(); });
-            loginEmail.addEventListener('keydown', e => { if (e.key === 'Enter') loginPassword.focus(); });
-
             // ==================== SIGNUP ====================
             signupBtn.addEventListener('click', async () => {
                 const email = signupEmail.value.trim();
                 const password = signupPassword.value;
                 const confirm = signupConfirm.value;
                 clearMessage(signupMessage);
-                if (!email) { setMessage(signupMessage, 'Please enter your email.', 'error'); signupEmail.focus(); return; }
-                if (!password) { setMessage(signupMessage, 'Please create a password.', 'error'); signupPassword.focus(); return; }
-                if (password.length < 6) { setMessage(signupMessage, 'Password must be at least 6 characters.', 'error'); signupPassword.focus(); return; }
-                if (password !== confirm) { setMessage(signupMessage, 'Passwords do not match.', 'error'); signupConfirm.focus(); return; }
-
+                if (!email) { setMessage(signupMessage, 'Please enter your email.', 'error'); return; }
+                if (!password) { setMessage(signupMessage, 'Please create a password.', 'error'); return; }
+                if (password.length < 6) { setMessage(signupMessage, 'Min 6 characters.', 'error'); return; }
+                if (password !== confirm) { setMessage(signupMessage, 'Passwords do not match.', 'error'); return; }
                 setLoading(signupBtn, signupBtnText, true, 'Create Account');
                 try {
                     await auth.createUserWithEmailAndPassword(email, password);
@@ -741,9 +828,7 @@
                     let msg = 'An error occurred.';
                     switch (error.code) {
                         case 'auth/email-already-in-use': msg = 'Email already in use.'; break;
-                        case 'auth/invalid-email': msg = 'Invalid email.'; break;
-                        case 'auth/weak-password': msg = 'Password too weak (min 6 chars).'; break;
-                        case 'auth/operation-not-allowed': msg = 'Sign-up not enabled.'; break;
+                        case 'auth/weak-password': msg = 'Password too weak.'; break;
                         default: msg = error.message;
                     }
                     setMessage(signupMessage, msg, 'error');
@@ -752,31 +837,22 @@
                 }
             });
 
-            signupConfirm.addEventListener('keydown', e => { if (e.key === 'Enter') signupBtn.click(); });
-            signupEmail.addEventListener('keydown', e => { if (e.key === 'Enter') signupPassword.focus(); });
-            signupPassword.addEventListener('keydown', e => { if (e.key === 'Enter') signupConfirm.focus(); });
-
-            // ==================== PROFILE SETUP ====================
+            // ==================== PROFILE SETUP (after signup) ====================
             saveProfileBtn.addEventListener('click', async () => {
                 const username = profileUsername.value.trim();
                 const bio = profileBio.value.trim();
                 const user = auth.currentUser;
                 clearMessage(profileMessage);
-                if (!user) { setMessage(profileMessage, 'You must be logged in.', 'error'); return; }
-                if (!username) { setMessage(profileMessage, 'Please enter a username.', 'error'); profileUsername.focus(); return; }
-                if (username.length < 3) { setMessage(profileMessage, 'Username must be at least 3 characters.', 'error'); profileUsername.focus(); return; }
-
+                if (!user) { setMessage(profileMessage, 'Not logged in.', 'error'); return; }
+                if (!username || username.length < 3) { setMessage(profileMessage, 'Username min 3 chars.', 'error'); return; }
                 setLoading(saveProfileBtn, saveProfileBtnText, true, 'Save & Continue');
                 try {
                     await db.collection('users').doc(user.uid).set({
-                        username: username,
-                        bio: bio,
-                        email: user.email,
+                        username, bio, email: user.email,
                         updatedAt: firebase.firestore.FieldValue.serverTimestamp()
                     }, { merge: true });
                 } catch (error) {
-                    console.error('Profile save error:', error);
-                    setMessage(profileMessage, 'Failed to save profile. Try again.', 'error');
+                    setMessage(profileMessage, 'Save failed.', 'error');
                 } finally {
                     setLoading(saveProfileBtn, saveProfileBtnText, false, 'Save & Continue');
                 }
@@ -785,20 +861,114 @@
             // ==================== HOME TABS ====================
             homeNavTabs.forEach(tab => {
                 tab.addEventListener('click', () => {
-                    const panel = tab.dataset.panel;
-                    switchHomeTab(panel);
+                    switchHomeTab(tab.dataset.panel);
+                    if (tab.dataset.panel === 'people') loadPeople();
+                    if (tab.dataset.panel === 'settings') loadSettingsProfile();
                 });
+            });
+
+            // ==================== GLOBAL CHAT ====================
+            function attachChatListener() {
+                if (unsubscribeMessages) unsubscribeMessages();
+                unsubscribeMessages = db.collection('messages')
+                    .orderBy('timestamp', 'asc')
+                    .limit(100)
+                    .onSnapshot(snapshot => {
+                        chatMessages.innerHTML = '';
+                        snapshot.forEach(doc => {
+                            const msg = doc.data();
+                            const div = document.createElement('div');
+                            div.className = 'chat-message' + (msg.userId === auth.currentUser.uid ? ' own' : '');
+                            div.innerHTML = `
+                                <div>
+                                    <div class="msg-user">${msg.username || 'Unknown'}</div>
+                                    <div class="msg-bubble">${msg.text}</div>
+                                </div>`;
+                            chatMessages.appendChild(div);
+                        });
+                        chatMessages.scrollTop = chatMessages.scrollHeight;
+                    });
+            }
+
+            sendChatBtn.addEventListener('click', async () => {
+                const text = chatInput.value.trim();
+                if (!text || !auth.currentUser) return;
+                const userDoc = await db.collection('users').doc(auth.currentUser.uid).get();
+                const username = userDoc.exists ? userDoc.data().username : 'Anonymous';
+                await db.collection('messages').add({
+                    text,
+                    userId: auth.currentUser.uid,
+                    username,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                chatInput.value = '';
+            });
+
+            chatInput.addEventListener('keydown', e => { if (e.key === 'Enter') sendChatBtn.click(); });
+
+            // ==================== PEOPLE ====================
+            async function loadPeople() {
+                const snapshot = await db.collection('users').get();
+                allUsers = [];
+                snapshot.forEach(doc => allUsers.push({ id: doc.id, ...doc.data() }));
+                renderPeople(allUsers);
+            }
+
+            function renderPeople(users) {
+                userList.innerHTML = users.map(u => `
+                    <div class="user-card">
+                        <div class="username">${u.username || 'No username'}</div>
+                        <div class="bio">${u.bio || ''}</div>
+                    </div>`).join('');
+            }
+
+            peopleSearch.addEventListener('input', () => {
+                const term = peopleSearch.value.toLowerCase();
+                const filtered = allUsers.filter(u => (u.username || '').toLowerCase().includes(term));
+                renderPeople(filtered);
+            });
+
+            // ==================== SETTINGS ====================
+            async function loadSettingsProfile() {
+                if (!auth.currentUser) return;
+                const doc = await db.collection('users').doc(auth.currentUser.uid).get();
+                if (doc.exists) {
+                    settingsUsername.value = doc.data().username || '';
+                    settingsBio.value = doc.data().bio || '';
+                }
+            }
+
+            updateProfileBtn.addEventListener('click', async () => {
+                const username = settingsUsername.value.trim();
+                const bio = settingsBio.value.trim();
+                clearMessage(settingsMessage);
+                if (!username || username.length < 3) {
+                    setMessage(settingsMessage, 'Username min 3 characters.', 'error');
+                    return;
+                }
+                setLoading(updateProfileBtn, { textContent: 'Update Profile' }, true, 'Update Profile');
+                try {
+                    await db.collection('users').doc(auth.currentUser.uid).update({
+                        username, bio,
+                        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                    setMessage(settingsMessage, 'Profile updated!', 'success');
+                    // update navbar badge if needed
+                    navbarEmail.textContent = auth.currentUser.email;
+                } catch (error) {
+                    setMessage(settingsMessage, 'Update failed.', 'error');
+                } finally {
+                    updateProfileBtn.disabled = false;
+                    updateProfileBtn.textContent = 'Update Profile';
+                }
             });
 
             // ==================== SIGN OUT ====================
             signoutBtn.addEventListener('click', async () => {
-                try {
-                    await auth.signOut();
-                } catch (error) {
-                    console.error('Sign out error:', error);
-                    goToAuth();
-                }
+                if (unsubscribeMessages) { unsubscribeMessages(); unsubscribeMessages = null; }
+                await auth.signOut();
             });
+
         })();
     </script>
 </body>
