@@ -1,1208 +1,774 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-  <title>Twogether — Couple Space</title>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <style>
-    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TamTam - Login</title>
 
-    :root {
-      --ink: #1a1018;
-      --ink-muted: #7a6c76;
-      --parchment: #fdf8f5;
-      --surface: #f5efe9;
-      --surface-2: #ede4dd;
-      --rose: #c9485b;
-      --rose-light: #e87a8a;
-      --rose-pale: #fce8eb;
-      --gold: #c8973b;
-      --gold-pale: #fdf3e3;
-      --sage: #6b8c6e;
-      --border: #e2d8d0;
-      --border-strong: #cbbfb6;
-      --radius: 18px;
-      --radius-sm: 10px;
-      --shadow-sm: 0 2px 8px rgba(26,16,24,0.06);
-      --shadow: 0 6px 24px rgba(26,16,24,0.10);
-      --shadow-lg: 0 16px 48px rgba(26,16,24,0.14);
-    }
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js">
+    </script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js">
+    </script>
 
-    body {
-      font-family: 'DM Sans', sans-serif;
-      background: var(--parchment);
-      color: var(--ink);
-      font-size: 14px;
-      line-height: 1.55;
-      height: 100vh;
-      overflow: hidden;
-    }
+    <style>
+        :root {
+            --bg: #f0f2f5;
+            --card-bg: #ffffff;
+            --text: #1a1a2e;
+            --text-secondary: #6b7280;
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --input-bg: #f9fafb;
+            --input-border: #e5e7eb;
+            --input-focus: #4f46e5;
+            --error-bg: #fef2f2;
+            --error-text: #dc2626;
+            --error-border: #fecaca;
+            --success-bg: #f0fdf4;
+            --success-text: #16a34a;
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07), 0 2px 4px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 20px 25px rgba(0, 0, 0, 0.1), 0 10px 10px rgba(0, 0, 0, 0.04);
+            --radius: 16px;
+            --radius-sm: 10px;
+            --transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
 
-    ::-webkit-scrollbar { width: 4px; }
-    ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 10px; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    /* ─── AUTH SCREEN ─── */
-    #auth-screen {
-      position: fixed; inset: 0;
-      background: var(--parchment);
-      z-index: 1000;
-      display: flex; align-items: center; justify-content: center;
-      padding: 1.5rem;
-      overflow-y: auto;
-      transition: opacity 0.5s ease, visibility 0.5s;
-    }
-    #auth-screen::before {
-      content: '';
-      position: fixed; inset: 0;
-      background:
-        radial-gradient(ellipse 60% 40% at 15% 20%, rgba(201,72,91,0.08) 0%, transparent 70%),
-        radial-gradient(ellipse 50% 60% at 85% 80%, rgba(200,151,59,0.07) 0%, transparent 70%);
-      pointer-events: none;
-    }
-    #auth-screen.gone { opacity: 0; visibility: hidden; pointer-events: none; }
+        body {
+            font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #e0e7ff 0%, #ede9fe 30%, #fce7f3 60%, #e0e7ff 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 20s ease infinite;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            color: var(--text);
+        }
 
-    .auth-card {
-      position: relative;
-      max-width: 420px; width: 100%;
-      background: white;
-      border-radius: 28px;
-      padding: 2.5rem 2rem;
-      box-shadow: var(--shadow-lg);
-      border: 1px solid var(--border);
-      animation: cardIn 0.6s cubic-bezier(0.34,1.56,0.64,1);
-    }
-    @keyframes cardIn {
-      from { opacity: 0; transform: translateY(24px) scale(0.97); }
-      to { opacity: 1; transform: translateY(0) scale(1); }
-    }
+        @keyframes gradientShift {
+            0%,
+            100% {
+                background-position: 0% 50%;
+            }
+            25% {
+                background-position: 100% 0%;
+            }
+            50% {
+                background-position: 100% 100%;
+            }
+            75% {
+                background-position: 0% 100%;
+            }
+        }
 
-    .logo {
-      text-align: center;
-      margin-bottom: 2rem;
-    }
-    .logo-mark {
-      font-family: 'Playfair Display', serif;
-      font-size: 34px;
-      font-style: italic;
-      font-weight: 500;
-      color: var(--ink);
-      letter-spacing: -0.5px;
-      display: block;
-      line-height: 1;
-    }
-    .logo-mark em {
-      color: var(--rose);
-      font-style: italic;
-    }
-    .logo-sub {
-      font-size: 11px;
-      letter-spacing: 2.5px;
-      text-transform: uppercase;
-      color: var(--ink-muted);
-      margin-top: 6px;
-      display: block;
-    }
+        /* Main Container */
+        .container {
+            width: 100%;
+            max-width: 440px;
+            position: relative;
+        }
 
-    .tabs {
-      display: flex;
-      gap: 4px;
-      background: var(--surface);
-      border-radius: 50px;
-      padding: 4px;
-      margin-bottom: 1.8rem;
-    }
-    .tab {
-      flex: 1; text-align: center;
-      padding: 9px 0;
-      font-weight: 500; font-size: 13px;
-      color: var(--ink-muted);
-      cursor: pointer;
-      border-radius: 50px;
-      transition: all 0.25s;
-    }
-    .tab.active {
-      background: var(--ink);
-      color: white;
-      box-shadow: 0 2px 8px rgba(26,16,24,0.2);
-    }
+        /* Card */
+        .card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-lg);
+            padding: 40px 36px;
+            transition: all var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
 
-    .step-group { display: none; }
-    .step-group.active { display: block; animation: fadeUp 0.3s ease; }
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #4f46e5, #7c3aed, #a855f7, #4f46e5);
+            background-size: 200% 100%;
+            animation: shimmer 3s ease infinite;
+        }
 
-    .field { margin-bottom: 12px; }
-    .field label {
-      display: block; font-size: 11px; font-weight: 600;
-      letter-spacing: 1px; text-transform: uppercase;
-      color: var(--ink-muted); margin-bottom: 6px;
-    }
-    .field input {
-      width: 100%; padding: 12px 14px;
-      border: 1.5px solid var(--border);
-      border-radius: var(--radius-sm);
-      font-size: 14px; font-family: inherit;
-      background: var(--surface);
-      outline: none; color: var(--ink);
-      transition: all 0.2s;
-    }
-    .field input:focus {
-      border-color: var(--rose);
-      background: white;
-      box-shadow: 0 0 0 3px rgba(201,72,91,0.08);
-    }
-    .field input::placeholder { color: var(--border-strong); }
+        @keyframes shimmer {
+            0%,
+            100% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+        }
 
-    .btn {
-      width: 100%; padding: 13px;
-      background: var(--ink); color: white;
-      border: none; border-radius: 50px;
-      font-family: inherit; font-weight: 600; font-size: 14px;
-      cursor: pointer; transition: all 0.2s;
-      margin-top: 6px;
-      letter-spacing: 0.3px;
-    }
-    .btn:hover { background: #2e1f2b; transform: translateY(-1px); box-shadow: var(--shadow); }
-    .btn:active { transform: translateY(0); }
-    .btn.rose { background: var(--rose); }
-    .btn.rose:hover { background: #b03d50; }
-    .btn.ghost {
-      background: transparent; border: 1.5px solid var(--border);
-      color: var(--ink);
-    }
-    .btn.ghost:hover { background: var(--surface); }
-    .btn.sm { width: auto; padding: 7px 16px; font-size: 12px; margin: 0; }
+        /* Logo / Brand */
+        .brand {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+        .brand .icon-wrapper {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 56px;
+            height: 56px;
+            border-radius: 16px;
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            margin-bottom: 14px;
+            box-shadow: 0 8px 24px rgba(79, 70, 229, 0.3);
+        }
+        .brand .icon-wrapper svg {
+            width: 28px;
+            height: 28px;
+            color: white;
+        }
+        .brand h1 {
+            font-size: 1.6rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            color: var(--text);
+        }
+        .brand p {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
 
-    .code-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      padding: 12px 14px;
-      display: flex; justify-content: space-between; align-items: center;
-      margin: 10px 0;
-    }
-    .code-label { font-size: 11px; color: var(--ink-muted); display: block; margin-bottom: 2px; }
-    .code-val { font-family: 'Courier New', monospace; font-weight: 700; font-size: 14px; color: var(--rose); letter-spacing: 1px; }
+        /* Tabs */
+        .tabs {
+            display: flex;
+            background: #f3f4f6;
+            border-radius: 30px;
+            padding: 4px;
+            margin-bottom: 28px;
+            position: relative;
+        }
+        .tabs button {
+            flex: 1;
+            padding: 11px 20px;
+            border: none;
+            background: transparent;
+            border-radius: 26px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            transition: all var(--transition);
+            position: relative;
+            z-index: 1;
+            letter-spacing: 0.2px;
+        }
+        .tabs button.active {
+            background: #ffffff;
+            color: var(--primary);
+            box-shadow: var(--shadow-sm);
+        }
+        .tabs button:hover:not(.active) {
+            color: #374151;
+        }
 
-    .dot-loader { display: flex; justify-content: center; gap: 8px; padding: 1.8rem; }
-    .dot-loader span {
-      width: 9px; height: 9px;
-      background: var(--rose); border-radius: 50%;
-      animation: dotPulse 1.3s ease-in-out infinite;
-    }
-    .dot-loader span:nth-child(2) { animation-delay: 0.15s; }
-    .dot-loader span:nth-child(3) { animation-delay: 0.30s; }
-    @keyframes dotPulse {
-      0%, 100% { opacity: 0.2; transform: scale(0.7); }
-      50% { opacity: 1; transform: scale(1); }
-    }
+        /* Forms */
+        .form-panel {
+            display: none;
+            flex-direction: column;
+            gap: 18px;
+            animation: fadeSlideIn 0.35s ease;
+        }
+        .form-panel.active {
+            display: flex;
+        }
 
-    .connected-state {
-      text-align: center; padding: 1rem 0 0.5rem;
-    }
-    .heart-burst { font-size: 52px; display: block; margin-bottom: 12px; animation: heartBeat 0.6s ease; }
-    @keyframes heartBeat {
-      0% { transform: scale(0.5); opacity: 0; }
-      60% { transform: scale(1.15); }
-      100% { transform: scale(1); opacity: 1; }
-    }
+        @keyframes fadeSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
 
-    .setup-guide {
-      background: #edf4ff; border-left: 3px solid #4a90d9;
-      padding: 12px 14px; border-radius: var(--radius-sm);
-      margin-bottom: 1.2rem; font-size: 12px; line-height: 1.6;
-    }
-    .error-msg {
-      color: var(--rose); font-size: 12px; text-align: center; margin-top: 8px; min-height: 18px;
-    }
-    .divider {
-      display: flex; align-items: center; gap: 12px;
-      margin: 1.2rem 0; font-size: 11px; color: var(--ink-muted);
-    }
-    .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .form-group label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #374151;
+            letter-spacing: 0.2px;
+        }
+        .form-group input {
+            padding: 13px 16px;
+            border: 2px solid var(--input-border);
+            border-radius: var(--radius-sm);
+            font-size: 0.95rem;
+            background: var(--input-bg);
+            transition: all var(--transition);
+            outline: none;
+            color: var(--text);
+            letter-spacing: 0.3px;
+        }
+        .form-group input:focus {
+            border-color: var(--input-focus);
+            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.08);
+            background: #fff;
+        }
+        .form-group input::placeholder {
+            color: #cbd5e1;
+        }
 
-    /* ─── TOAST ─── */
-    #toast {
-      position: fixed; bottom: 76px; left: 50%;
-      transform: translateX(-50%) translateY(10px);
-      background: rgba(26,16,24,0.88);
-      backdrop-filter: blur(12px);
-      color: white; padding: 9px 20px;
-      border-radius: 50px; font-size: 13px; font-weight: 500;
-      z-index: 3000; opacity: 0;
-      transition: opacity 0.2s, transform 0.2s;
-      pointer-events: none; white-space: nowrap;
-    }
-    #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+        /* Buttons */
+        .btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition);
+            letter-spacing: 0.3px;
+            position: relative;
+            overflow: hidden;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            color: #fff;
+            box-shadow: 0 4px 16px rgba(79, 70, 229, 0.3);
+            margin-top: 6px;
+        }
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #4338ca, #6d28d9);
+            box-shadow: 0 6px 22px rgba(79, 70, 229, 0.4);
+            transform: translateY(-1px);
+        }
+        .btn-primary:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 8px rgba(79, 70, 229, 0.3);
+        }
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
 
-    /* ─── APP ─── */
-    #app { display: flex; flex-direction: column; height: 100vh; background: var(--parchment); }
+        /* Messages */
+        .message {
+            padding: 12px 16px;
+            border-radius: var(--radius-sm);
+            font-size: 0.85rem;
+            font-weight: 500;
+            display: none;
+            letter-spacing: 0.2px;
+            line-height: 1.4;
+        }
+        .message.error {
+            display: block;
+            background: var(--error-bg);
+            color: var(--error-text);
+            border: 1px solid var(--error-border);
+        }
+        .message.success {
+            display: block;
+            background: var(--success-bg);
+            color: var(--success-text);
+            border: 1px solid #bbf7d0;
+        }
 
-    .header {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 0 1.2rem; height: 58px;
-      background: white;
-      border-bottom: 1px solid var(--border);
-    }
-    .header-logo {
-      font-family: 'Playfair Display', serif;
-      font-size: 20px; font-style: italic;
-      color: var(--ink); letter-spacing: -0.3px;
-    }
-    .header-logo em { color: var(--rose); }
-    .couple-pill {
-      display: flex; align-items: center; gap: 6px;
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: 50px; padding: 5px 10px 5px 5px;
-    }
-    .avatar {
-      width: 26px; height: 26px; border-radius: 50%;
-      background: linear-gradient(135deg, var(--gold) 0%, var(--rose) 100%);
-      display: inline-flex; align-items: center; justify-content: center;
-      font-weight: 700; color: white; font-size: 11px;
-      flex-shrink: 0;
-    }
-    .avatar.partner { background: linear-gradient(135deg, var(--rose) 0%, #8b3a6b 100%); }
-    .couple-names { font-size: 11px; font-weight: 600; color: var(--ink); }
-    .hdr-action { background: none; border: none; font-size: 18px; cursor: pointer; padding: 6px; }
+        /* Divider */
+        .divider {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #cbd5e1;
+            font-size: 0.8rem;
+            margin: 4px 0;
+        }
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: #e5e7eb;
+        }
 
-    /* ─── BOTTOM NAV ─── */
-    .bottom-nav {
-      display: flex; background: white;
-      border-top: 1px solid var(--border);
-      height: 62px; padding-bottom: env(safe-area-inset-bottom);
-    }
-    .nav-btn {
-      flex: 1; display: flex; flex-direction: column;
-      align-items: center; justify-content: center; gap: 3px;
-      background: none; border: none; cursor: pointer;
-      color: var(--border-strong); transition: all 0.2s;
-      position: relative;
-    }
-    .nav-btn .nav-icon { font-size: 20px; transition: transform 0.2s; }
-    .nav-btn .nav-label { font-size: 9px; font-weight: 600; letter-spacing: 0.8px; text-transform: uppercase; }
-    .nav-btn.active { color: var(--rose); }
-    .nav-btn.active .nav-icon { transform: scale(1.1); }
-    .nav-btn::after {
-      content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%);
-      width: 0; height: 2px; background: var(--rose); border-radius: 0 0 4px 4px;
-      transition: width 0.25s;
-    }
-    .nav-btn.active::after { width: 28px; }
+        /* Footer text */
+        .footer-text {
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-top: 8px;
+        }
 
-    /* ─── PAGES ─── */
-    .page { display: none; flex: 1; overflow-y: auto; flex-direction: column; }
-    .page.active { display: flex; animation: fadeUp 0.25s ease; }
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(6px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
+        /* Dashboard (hidden by default) */
+        .dashboard {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            gap: 20px;
+            animation: fadeSlideIn 0.4s ease;
+        }
+        .dashboard.active {
+            display: flex;
+        }
+        .dashboard .welcome-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #4f46e5, #a855f7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: white;
+            font-weight: 700;
+            box-shadow: 0 8px 28px rgba(79, 70, 229, 0.3);
+        }
+        .dashboard h2 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+        }
+        .dashboard .user-email {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            background: #f3f4f6;
+            padding: 8px 18px;
+            border-radius: 20px;
+        }
+        .dashboard .btn-signout {
+            background: #fff;
+            color: #dc2626;
+            border: 2px solid #fecaca;
+            box-shadow: none;
+            margin-top: 8px;
+            font-weight: 600;
+        }
+        .dashboard .btn-signout:hover {
+            background: #fef2f2;
+            border-color: #fca5a5;
+            box-shadow: 0 4px 14px rgba(220, 38, 38, 0.12);
+            transform: translateY(-1px);
+        }
 
-    /* ─── FAB ─── */
-    .fab {
-      position: fixed; bottom: 76px; right: 20px;
-      width: 52px; height: 52px;
-      background: var(--rose); border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      color: white; font-size: 24px; border: none;
-      box-shadow: 0 4px 20px rgba(201,72,91,0.4);
-      cursor: pointer; z-index: 99;
-      transition: transform 0.2s, box-shadow 0.2s;
-    }
-    .fab:hover { transform: scale(1.06); box-shadow: 0 6px 28px rgba(201,72,91,0.5); }
+        /* Spinner */
+        .spinner {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border: 2.5px solid rgba(255, 255, 255, 0.4);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+            vertical-align: middle;
+            margin-right: 6px;
+        }
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
 
-    /* ─── FEED ─── */
-    .stories-strip {
-      display: flex; gap: 14px; padding: 14px 14px;
-      overflow-x: auto; background: white;
-      border-bottom: 1px solid var(--border);
-    }
-    .stories-strip::-webkit-scrollbar { display: none; }
-    .story-item {
-      display: flex; flex-direction: column; align-items: center; gap: 6px;
-      cursor: pointer; flex-shrink: 0;
-    }
-    .story-ring {
-      width: 64px; height: 64px; border-radius: 50%;
-      background: linear-gradient(135deg, var(--gold), var(--rose));
-      padding: 2.5px;
-    }
-    .story-ring.empty { background: var(--border); }
-    .story-inner {
-      width: 100%; height: 100%; border-radius: 50%;
-      background: white; border: 2px solid white;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 26px;
-    }
-    .story-name { font-size: 10px; font-weight: 600; color: var(--ink-muted); }
-
-    .post-card {
-      background: white; margin: 10px 12px;
-      border-radius: 20px; overflow: hidden;
-      border: 1px solid var(--border);
-      box-shadow: var(--shadow-sm);
-    }
-    .post-header {
-      display: flex; align-items: center; gap: 10px;
-      padding: 12px 14px;
-    }
-    .post-author { font-weight: 600; font-size: 13px; }
-    .post-time { font-size: 11px; color: var(--ink-muted); margin-left: auto; }
-    .post-img {
-      width: 100%; aspect-ratio: 1/1;
-      background: var(--surface);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 3.5rem; background-size: cover; background-position: center;
-    }
-    .post-actions { padding: 10px 14px; display: flex; align-items: center; gap: 16px; }
-    .action-btn {
-      background: none; border: none; font-size: 22px; cursor: pointer;
-      transition: transform 0.15s;
-      display: flex; align-items: center; gap: 6px;
-    }
-    .action-btn:active { transform: scale(0.9); }
-    .like-count { font-size: 12px; font-weight: 600; color: var(--ink-muted); }
-    .post-caption { padding: 0 14px 14px; font-size: 13px; line-height: 1.5; }
-    .post-caption strong { font-weight: 600; }
-
-    .empty-feed {
-      text-align: center; padding: 3rem 2rem; color: var(--ink-muted);
-    }
-    .empty-feed .emoji { font-size: 48px; display: block; margin-bottom: 12px; }
-    .empty-feed p { font-size: 14px; }
-
-    /* ─── CHAT ─── */
-    .chat-header {
-      display: flex; align-items: center; gap: 10px;
-      padding: 12px 14px; background: white;
-      border-bottom: 1px solid var(--border);
-    }
-    .online-dot { width: 8px; height: 8px; background: var(--sage); border-radius: 50%; margin-left: 4px; }
-    .messages {
-      flex: 1; overflow-y: auto;
-      padding: 14px; display: flex; flex-direction: column; gap: 6px;
-      background: var(--parchment);
-    }
-    .msg { max-width: 78%; display: flex; flex-direction: column; }
-    .msg.me { align-self: flex-end; align-items: flex-end; }
-    .msg.them { align-self: flex-start; }
-    .bubble {
-      padding: 9px 14px; border-radius: 18px;
-      background: white; font-size: 14px; line-height: 1.45;
-      border: 1px solid var(--border);
-      box-shadow: 0 1px 3px rgba(26,16,24,0.05);
-    }
-    .msg.me .bubble {
-      background: var(--ink); color: white;
-      border-color: var(--ink); border-bottom-right-radius: 5px;
-    }
-    .msg.them .bubble { border-bottom-left-radius: 5px; }
-    .msg-time { font-size: 10px; color: var(--ink-muted); margin-top: 3px; padding: 0 4px; }
-    .chat-input-bar {
-      display: flex; gap: 10px;
-      padding: 10px 14px 10px;
-      background: white; border-top: 1px solid var(--border);
-    }
-    .chat-input {
-      flex: 1; border: 1.5px solid var(--border);
-      border-radius: 24px; padding: 10px 16px;
-      resize: none; font-family: inherit; font-size: 14px;
-      outline: none; background: var(--surface);
-      transition: border-color 0.2s;
-      max-height: 100px;
-    }
-    .chat-input:focus { border-color: var(--rose); background: white; }
-    .send-btn {
-      width: 44px; height: 44px; border-radius: 50%;
-      background: var(--rose); color: white; border: none;
-      font-size: 18px; cursor: pointer; flex-shrink: 0;
-      display: flex; align-items: center; justify-content: center;
-      transition: all 0.2s; align-self: flex-end;
-    }
-    .send-btn:hover { background: #b03d50; transform: scale(1.05); }
-
-    /* ─── MAP ─── */
-    #real-map { height: 280px; width: 100%; z-index: 1; }
-    .map-controls {
-      background: white; padding: 12px 14px;
-      border-bottom: 1px solid var(--border);
-      display: flex; justify-content: space-between; align-items: center;
-    }
-    .map-label { font-size: 12px; font-weight: 600; color: var(--ink-muted); }
-    .distance-display {
-      padding: 14px 16px; background: var(--rose-pale);
-      border-bottom: 1px solid var(--border);
-      font-weight: 600; font-size: 14px;
-      text-align: center; color: var(--rose);
-    }
-    .places-section { padding: 14px 14px 1rem; }
-    .places-section h4 { font-family: 'Playfair Display', serif; font-size: 16px; margin-bottom: 10px; }
-    .place-item {
-      display: flex; align-items: center; gap: 10px;
-      padding: 10px 12px; background: white;
-      border: 1px solid var(--border); border-radius: var(--radius-sm);
-      margin-bottom: 8px; font-size: 13px;
-    }
-
-    /* ─── MEMORIES ─── */
-    .memories-header {
-      padding: 16px 14px 10px;
-      display: flex; justify-content: space-between; align-items: center;
-    }
-    .memories-header h3 { font-family: 'Playfair Display', serif; font-size: 20px; }
-    .timeline { padding: 0 14px 80px; }
-    .memory-item {
-      display: flex; gap: 14px; margin-bottom: 20px;
-      padding-bottom: 20px; border-bottom: 1px dashed var(--border);
-    }
-    .memory-icon-col {
-      display: flex; flex-direction: column; align-items: center; gap: 0;
-    }
-    .memory-icon-wrap {
-      width: 48px; height: 48px; border-radius: 50%;
-      background: var(--rose-pale); border: 2px solid var(--rose);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 22px; flex-shrink: 0;
-    }
-    .memory-body { flex: 1; padding-top: 2px; }
-    .memory-date { font-size: 11px; color: var(--ink-muted); margin-bottom: 4px; letter-spacing: 0.5px; }
-    .memory-title { font-weight: 600; font-size: 15px; margin-bottom: 4px; }
-    .memory-desc { font-size: 13px; color: var(--ink-muted); }
-    .empty-memories {
-      text-align: center; padding: 3rem 2rem; color: var(--ink-muted);
-    }
-
-    /* ─── MODALS ─── */
-    .modal {
-      position: fixed; inset: 0;
-      background: rgba(26,16,24,0.45);
-      backdrop-filter: blur(6px);
-      display: flex; align-items: flex-end;
-      z-index: 1000; visibility: hidden; opacity: 0;
-      transition: opacity 0.25s, visibility 0.25s;
-    }
-    .modal.active { visibility: visible; opacity: 1; }
-    .modal-sheet {
-      background: white; width: 100%;
-      border-radius: 28px 28px 0 0;
-      padding: 1.5rem;
-      transform: translateY(40px); opacity: 0;
-      transition: transform 0.3s cubic-bezier(0.34,1.3,0.64,1), opacity 0.25s;
-    }
-    .modal.active .modal-sheet { transform: translateY(0); opacity: 1; }
-    .modal-handle {
-      width: 40px; height: 4px; background: var(--border);
-      border-radius: 10px; margin: 0 auto 18px;
-    }
-    .modal-title { font-family: 'Playfair Display', serif; font-size: 20px; margin-bottom: 14px; }
-    .image-preview {
-      width: 100%; aspect-ratio: 1/1;
-      background: var(--surface); border-radius: 14px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 2.5rem; color: var(--ink-muted);
-      overflow: hidden; margin: 10px 0;
-    }
-    .file-input-label {
-      display: block; padding: 10px 14px;
-      border: 1.5px dashed var(--border-strong);
-      border-radius: var(--radius-sm);
-      cursor: pointer; text-align: center;
-      font-size: 13px; color: var(--ink-muted);
-      transition: all 0.2s; margin-bottom: 10px;
-    }
-    .file-input-label:hover { border-color: var(--rose); color: var(--rose); }
-    .post-textarea {
-      width: 100%; padding: 10px 14px;
-      border: 1.5px solid var(--border); border-radius: var(--radius-sm);
-      font-size: 14px; font-family: inherit; resize: none;
-      outline: none; background: var(--surface); margin-bottom: 12px;
-    }
-    .post-textarea:focus { border-color: var(--rose); background: white; }
-    .modal-actions { display: flex; gap: 10px; }
-
-    #storyViewer {
-      background: rgba(0,0,0,0.9); backdrop-filter: blur(20px);
-      align-items: center; justify-content: center;
-    }
-    .story-viewer-content {
-      text-align: center; padding: 2.5rem 2rem;
-      background: rgba(255,255,255,0.05); border-radius: 24px;
-      border: 1px solid rgba(255,255,255,0.1);
-    }
-    #storyContent { font-size: 72px; display: block; margin-bottom: 20px; }
-    .story-close-btn {
-      padding: 10px 28px; background: white; border: none;
-      border-radius: 50px; font-weight: 600; cursor: pointer;
-      font-family: inherit;
-    }
-  </style>
+        /* Responsive */
+        @media (max-width: 480px) {
+            .card {
+                padding: 28px 20px;
+                border-radius: 20px;
+            }
+            .brand h1 {
+                font-size: 1.4rem;
+            }
+            .tabs button {
+                font-size: 0.82rem;
+                padding: 10px 14px;
+            }
+        }
+    </style>
 </head>
 <body>
 
-<!-- AUTH -->
-<div id="auth-screen">
-  <div class="auth-card">
-    <div class="logo">
-      <span class="logo-mark">two<em>gether</em></span>
-      <span class="logo-sub">your private couple space</span>
-    </div>
-    <div id="firebase-setup-guide" class="setup-guide" style="display:none;"></div>
-    <div class="tabs">
-      <div class="tab active" data-tab="signup" onclick="switchTab('signup')">Create account</div>
-      <div class="tab" data-tab="login" onclick="switchTab('login')">Sign in</div>
-    </div>
+    <div class="container">
+        <!-- Card -->
+        <div class="card" id="authCard">
+            <!-- Brand -->
+            <div class="brand">
+                <div class="icon-wrapper">
+                    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M8.625 9.75a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375m-13.5 3.01c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.184-4.183a1.14 1.14 0 0 1 .778-.332 48.294 48.294 0 0 0 5.83-.498c1.585-.233 2.708-1.626 2.708-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z" />
+                    </svg>
+                </div>
+                <h1>TamTam</h1>
+                <p>Connect &amp; chat with friends</p>
+            </div>
 
-    <!-- SIGNUP -->
-    <div id="signup-panel" class="step-group active">
-      <div id="step-0" class="step-pane active">
-        <div class="field">
-          <label>Your name</label>
-          <input type="text" id="signup-name" placeholder="e.g. Sofia">
+            <!-- Tabs -->
+            <div class="tabs" id="tabContainer">
+                <button class="active" data-tab="login">Sign In</button>
+                <button data-tab="signup">Create Account</button>
+            </div>
+
+            <!-- Login Form -->
+            <div class="form-panel active" id="loginPanel">
+                <div id="loginMessage" class="message"></div>
+                <div class="form-group">
+                    <label for="loginEmail">Email</label>
+                    <input type="email" id="loginEmail" placeholder="you@example.com" autocomplete="email">
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Password</label>
+                    <input type="password" id="loginPassword" placeholder="••••••••" autocomplete="current-password">
+                </div>
+                <button class="btn btn-primary" id="loginBtn">
+                    <span id="loginBtnText">Sign In</span>
+                </button>
+                <p class="footer-text">Welcome back! 👋</p>
+            </div>
+
+            <!-- Signup Form -->
+            <div class="form-panel" id="signupPanel">
+                <div id="signupMessage" class="message"></div>
+                <div class="form-group">
+                    <label for="signupEmail">Email</label>
+                    <input type="email" id="signupEmail" placeholder="you@example.com" autocomplete="email">
+                </div>
+                <div class="form-group">
+                    <label for="signupPassword">Password</label>
+                    <input type="password" id="signupPassword" placeholder="Min. 6 characters" autocomplete="new-password">
+                </div>
+                <div class="form-group">
+                    <label for="signupConfirm">Confirm Password</label>
+                    <input type="password" id="signupConfirm" placeholder="Re-enter password" autocomplete="new-password">
+                </div>
+                <button class="btn btn-primary" id="signupBtn">
+                    <span id="signupBtnText">Create Account</span>
+                </button>
+                <p class="footer-text">Join the community! 🎉</p>
+            </div>
+
+            <!-- Dashboard (hidden initially) -->
+            <div class="dashboard" id="dashboardPanel">
+                <div class="welcome-avatar" id="avatarInitial">?</div>
+                <h2>Welcome!</h2>
+                <span class="user-email" id="userEmailDisplay">user@example.com</span>
+                <p style="color:#6b7280;font-size:0.9rem;">You are now signed in to TamTam.</p>
+                <button class="btn btn-primary btn-signout" id="signoutBtn">
+                    Sign Out
+                </button>
+            </div>
         </div>
-        <div class="field">
-          <label>Email</label>
-          <input type="email" id="signup-email" placeholder="you@example.com">
-        </div>
-        <div class="field">
-          <label>Password</label>
-          <input type="password" id="signup-pw" placeholder="Min 6 characters">
-        </div>
-        <button class="btn rose" id="start-signup">Continue →</button>
-        <div id="signup-error" class="error-msg"></div>
-      </div>
-
-      <div id="step-1" class="step-pane" style="display:none">
-        <p style="font-size:13px; color:var(--ink-muted); margin-bottom:14px;">Share your invite code with your partner so they can join.</p>
-        <div class="code-card">
-          <div><span class="code-label">🔐 Your login code</span><span class="code-val" id="myCodeDisplay">---</span></div>
-          <button class="btn ghost sm" onclick="window.copyText('myCodeDisplay')">Copy</button>
-        </div>
-        <div class="code-card">
-          <div><span class="code-label">💌 Partner invite code</span><span class="code-val" id="partnerCodeDisplay">---</span></div>
-          <button class="btn ghost sm" onclick="window.copyText('partnerCodeDisplay')">Copy</button>
-        </div>
-        <button class="btn" id="next-step2" style="margin-top:16px;">I've shared the code →</button>
-      </div>
-
-      <div id="step-2" class="step-pane" style="display:none">
-        <p style="text-align:center; color:var(--ink-muted); font-size:13px; margin-bottom:8px;">Waiting for your partner to join…</p>
-        <div class="dot-loader"><span></span><span></span><span></span></div>
-        <button class="btn ghost" id="skip-wait" style="margin-top:4px;">Skip — enter now</button>
-      </div>
-
-      <div id="step-3" class="step-pane" style="display:none">
-        <div class="connected-state">
-          <span class="heart-burst">❤️</span>
-          <div style="font-family:'Playfair Display',serif; font-size:22px; margin-bottom:6px;">You're connected!</div>
-          <p style="color:var(--ink-muted); font-size:13px; margin-bottom:1.5rem;">Your couple space is ready.</p>
-        </div>
-        <button class="btn rose" id="enter-app-btn">Open Twogether →</button>
-      </div>
     </div>
 
-    <!-- LOGIN -->
-    <div id="login-panel" class="step-group">
-      <div class="field">
-        <label>Email or LOVE-XXXX-XXXX</label>
-        <input type="text" id="login-email" placeholder="Email or code">
-      </div>
-      <div class="field">
-        <label>Password</label>
-        <input type="password" id="login-password" placeholder="Your password">
-      </div>
-      <button class="btn" id="do-login">Sign in</button>
-      <div id="login-error" class="error-msg"></div>
-      <div class="divider">or join with partner invite</div>
-      <div class="field">
-        <label>Invite code</label>
-        <input type="text" id="invite-code" placeholder="PAIR-XXXX-XXXX">
-      </div>
-      <div class="field">
-        <label>Your name</label>
-        <input type="text" id="partner-name" placeholder="Your name">
-      </div>
-      <div class="field">
-        <label>Your email</label>
-        <input type="email" id="partner-email" placeholder="you@example.com">
-      </div>
-      <div class="field">
-        <label>Create password</label>
-        <input type="password" id="partner-pw" placeholder="Min 6 characters">
-      </div>
-      <button class="btn ghost" id="use-invite">Join as partner →</button>
-      <div id="invite-error" class="error-msg"></div>
-    </div>
-  </div>
-</div>
+    <script>
+        (function() {
+            // ==================== FIREBASE CONFIG ====================
+            const firebaseConfig = {
+                apiKey: "AIzaSyBZvyyRS_NKLbXswsm_JTWVb45Eg6Mc_QA",
+                authDomain: "tam-tam-eef1f.firebaseapp.com",
+                projectId: "tam-tam-eef1f",
+                storageBucket: "tam-tam-eef1f.firebasestorage.app",
+                messagingSenderId: "633575617588",
+                appId: "1:633575617588:web:fe6494db927782c8384661",
+                measurementId: "G-Z6T5XXBHF1"
+            };
 
-<div id="toast" class="toast"></div>
+            // Initialize Firebase
+            firebase.initializeApp(firebaseConfig);
+            const auth = firebase.auth();
 
-<script>
-  function switchTab(tabId) {
-    document.getElementById('signup-panel').classList.remove('active');
-    document.getElementById('login-panel').classList.remove('active');
-    document.getElementById(tabId === 'signup' ? 'signup-panel' : 'login-panel').classList.add('active');
-    document.querySelectorAll('.tab').forEach(btn => btn.classList.toggle('active', btn.dataset.tab === tabId));
-  }
-</script>
+            // ==================== DOM ELEMENTS ====================
+            const authCard = document.getElementById('authCard');
+            const tabContainer = document.getElementById('tabContainer');
+            const loginPanel = document.getElementById('loginPanel');
+            const signupPanel = document.getElementById('signupPanel');
+            const dashboardPanel = document.getElementById('dashboardPanel');
+            const brandSection = authCard.querySelector('.brand');
 
-<!-- APP -->
-<div id="app" style="display:none;">
-  <div class="header">
-    <div class="header-logo">two<em>gether</em></div>
-    <div class="couple-pill">
-      <span class="avatar" id="myAvatar">Y</span>
-      <span style="font-size:10px; color:var(--rose); font-weight:700;">♥</span>
-      <span class="avatar partner" id="partnerAvatar">P</span>
-      <span class="couple-names" id="coupleNames">You & Partner</span>
-    </div>
-    <button class="hdr-action" onclick="window.showToast('Together always 💖')">💖</button>
-  </div>
+            // Tabs
+            const tabButtons = tabContainer.querySelectorAll('button');
 
-  <!-- FEED -->
-  <div id="page-feed" class="page">
-    <div class="stories-strip" id="storiesContainer"></div>
-    <div id="feedPosts"></div>
-  </div>
+            // Login
+            const loginEmail = document.getElementById('loginEmail');
+            const loginPassword = document.getElementById('loginPassword');
+            const loginBtn = document.getElementById('loginBtn');
+            const loginBtnText = document.getElementById('loginBtnText');
+            const loginMessage = document.getElementById('loginMessage');
 
-  <!-- CHAT -->
-  <div id="page-chat" class="page">
-    <div class="chat-header">
-      <span class="avatar partner" id="chatPartnerAvatar">P</span>
-      <div>
-        <div style="font-weight:600; font-size:14px;" id="chatPartnerName">Partner</div>
-        <div style="display:flex;align-items:center;gap:5px;"><div class="online-dot"></div><span style="font-size:11px; color:var(--sage);">online</span></div>
-      </div>
-    </div>
-    <div class="messages" id="chatMessages"></div>
-    <div class="chat-input-bar">
-      <textarea id="chatInput" class="chat-input" rows="1" placeholder="Say something sweet…"></textarea>
-      <button id="sendChatBtn" class="send-btn">↑</button>
-    </div>
-  </div>
+            // Signup
+            const signupEmail = document.getElementById('signupEmail');
+            const signupPassword = document.getElementById('signupPassword');
+            const signupConfirm = document.getElementById('signupConfirm');
+            const signupBtn = document.getElementById('signupBtn');
+            const signupBtnText = document.getElementById('signupBtnText');
+            const signupMessage = document.getElementById('signupMessage');
 
-  <!-- MAP -->
-  <div id="page-map" class="page">
-    <div id="real-map"></div>
-    <div class="map-controls">
-      <span class="map-label">📍 Live location</span>
-      <button id="shareLocationBtn" class="btn ghost sm">Share my location</button>
-    </div>
-    <div class="distance-display" id="distanceText">Distance: calculating…</div>
-    <div class="places-section">
-      <h4>❤️ Favourite spots</h4>
-      <div id="placesList"></div>
-    </div>
-  </div>
+            // Dashboard
+            const avatarInitial = document.getElementById('avatarInitial');
+            const userEmailDisplay = document.getElementById('userEmailDisplay');
+            const signoutBtn = document.getElementById('signoutBtn');
 
-  <!-- MEMORIES -->
-  <div id="page-memories" class="page">
-    <div class="memories-header">
-      <h3>Our Story</h3>
-      <button id="addMemoryBtn" class="btn ghost sm">+ Add</button>
-    </div>
-    <div class="timeline" id="timelineContainer"></div>
-  </div>
+            // ==================== TAB SWITCHING ====================
+            tabButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const tab = button.getAttribute('data-tab');
 
-  <button class="fab" id="createPostFab">+</button>
+                    // Update active tab button
+                    tabButtons.forEach(b => b.classList.remove('active'));
+                    button.classList.add('active');
 
-  <div class="bottom-nav">
-    <button class="nav-btn active" data-page="feed">
-      <span class="nav-icon">🏠</span><span class="nav-label">Feed</span>
-    </button>
-    <button class="nav-btn" data-page="chat">
-      <span class="nav-icon">💬</span><span class="nav-label">Chat</span>
-    </button>
-    <button class="nav-btn" data-page="map">
-      <span class="nav-icon">📍</span><span class="nav-label">Map</span>
-    </button>
-    <button class="nav-btn" data-page="memories">
-      <span class="nav-icon">📔</span><span class="nav-label">Memories</span>
-    </button>
-  </div>
-</div>
+                    // Show/hide panels
+                    if (tab === 'login') {
+                        loginPanel.classList.add('active');
+                        signupPanel.classList.remove('active');
+                        dashboardPanel.classList.remove('active');
+                        brandSection.style.display = '';
+                        clearMessages();
+                    } else if (tab === 'signup') {
+                        signupPanel.classList.add('active');
+                        loginPanel.classList.remove('active');
+                        dashboardPanel.classList.remove('active');
+                        brandSection.style.display = '';
+                        clearMessages();
+                    }
+                });
+            });
 
-<!-- MODALS -->
-<div id="postModal" class="modal">
-  <div class="modal-sheet">
-    <div class="modal-handle"></div>
-    <div class="modal-title">Share a moment</div>
-    <input type="file" id="postImageFile" accept="image/*" style="display:none;">
-    <label for="postImageFile" class="file-input-label">📷 Tap to add a photo</label>
-    <div class="image-preview" id="postPreview">📷</div>
-    <textarea id="postCaption" class="post-textarea" placeholder="Write a caption…" rows="2"></textarea>
-    <div class="modal-actions">
-      <button class="btn rose" id="submitPostBtn" style="flex:1;">Share</button>
-      <button class="btn ghost" id="closePostModal" style="flex:1;">Cancel</button>
-    </div>
-  </div>
-</div>
+            function clearMessages() {
+                loginMessage.textContent = '';
+                loginMessage.className = 'message';
+                signupMessage.textContent = '';
+                signupMessage.className = 'message';
+            }
 
-<div id="storyViewer" class="modal" style="background:rgba(0,0,0,0.9); align-items:center; justify-content:center;">
-  <div class="story-viewer-content">
-    <span id="storyContent" style="font-size:72px; display:block; margin-bottom:20px;"></span>
-    <button class="story-close-btn" onclick="window.closeStoryViewer()">Close</button>
-  </div>
-</div>
+            function showMessage(element, text, type) {
+                element.textContent = text;
+                element.className = 'message ' + type;
+            }
 
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
-  import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
-  import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, query, where, onSnapshot, addDoc, orderBy, getDocs, serverTimestamp, increment } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
-  import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-storage.js";
+            // ==================== LOADING STATE ====================
+            function setLoading(btn, btnText, isLoading) {
+                if (isLoading) {
+                    btn.disabled = true;
+                    btnText.innerHTML = '<span class="spinner"></span> Please wait...';
+                } else {
+                    btn.disabled = false;
+                    btnText.textContent = btn === loginBtn ? 'Sign In' : 'Create Account';
+                }
+            }
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyBZvyyRS_NKLbXswsm_JTWVb45Eg6Mc_QA",
-    authDomain: "tam-tam-eef1f.firebaseapp.com",
-    projectId: "tam-tam-eef1f",
-    storageBucket: "tam-tam-eef1f.firebasestorage.app",
-    messagingSenderId: "633575617588",
-    appId: "1:633575617588:web:fe6494db927782c8384661",
-    measurementId: "G-Z6T5XXBHF1"
-  };
+            // ==================== AUTH STATE OBSERVER ====================
+            auth.onAuthStateChanged((user) => {
+                if (user) {
+                    // User is signed in
+                    showDashboard(user);
+                } else {
+                    // User is signed out
+                    showAuthForms();
+                }
+            });
 
-  let app, auth, db, storage;
-  let firebaseReady = false;
+            function showDashboard(user) {
+                loginPanel.classList.remove('active');
+                signupPanel.classList.remove('active');
+                dashboardPanel.classList.add('active');
+                brandSection.style.display = '';
+                tabContainer.style.display = 'none';
 
-  try {
-    app = initializeApp(firebaseConfig);
-    auth = getAuth(app);
-    db = getFirestore(app);
-    storage = getStorage(app);
-    firebaseReady = true;
-  } catch (e) { console.error(e); }
+                // Set user info
+                const email = user.email || 'User';
+                userEmailDisplay.textContent = email;
+                const initial = email.charAt(0).toUpperCase();
+                avatarInitial.textContent = initial;
 
-  // Helpers
-  window.showToast = (msg) => {
-    const t = document.getElementById('toast');
-    t.innerText = msg; t.classList.add('show');
-    setTimeout(() => t.classList.remove('show'), 2500);
-  };
-  window.copyText = (elId) => {
-    navigator.clipboard.writeText(document.getElementById(elId).innerText);
-    window.showToast('Copied!');
-  };
-  function genCode(prefix) {
-    const rnd = () => Math.floor(Math.random() * 9000 + 1000);
-    return `${prefix}-${rnd()}-${rnd()}`;
-  }
-  function escapeHtml(str) {
-    return str?.replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[m])) || '';
-  }
+                clearMessages();
+            }
 
-  function showFirebaseError() {
-    const g = document.getElementById('firebase-setup-guide');
-    g.style.display = 'block';
-    g.innerHTML = `<strong>🔧 Firebase Setup</strong><br><br>
-      1. Go to <a href="https://console.firebase.google.com/project/tam-tam-eef1f/authentication" target="_blank">Firebase Console → Auth</a><br>
-      2. Enable <strong>Email/Password</strong> provider → Save<br>
-      3. Refresh this page.`;
-  }
+            function showAuthForms() {
+                dashboardPanel.classList.remove('active');
+                brandSection.style.display = '';
+                tabContainer.style.display = 'flex';
 
-  // State
-  let currentUserData = null;
-  let unsubFeed, unsubChat, unsubStories, unsubLocations;
-  let mapInstance = null;
-  let markers = { me: null, partner: null };
-  let waitInterval = null;
+                // Reset to login tab
+                tabButtons.forEach(b => b.classList.remove('active'));
+                tabButtons[0].classList.add('active');
+                loginPanel.classList.add('active');
+                signupPanel.classList.remove('active');
 
-  // ── SIGNUP ──
-  document.getElementById('start-signup').onclick = async () => {
-    if (!firebaseReady) { showFirebaseError(); return; }
-    const name = document.getElementById('signup-name').value.trim();
-    const email = document.getElementById('signup-email').value.trim();
-    const pw = document.getElementById('signup-pw').value;
-    const errEl = document.getElementById('signup-error');
-    if (!name || !email || pw.length < 6) { errEl.innerText = 'Please fill all fields, password ≥ 6 characters.'; return; }
-    errEl.innerText = '';
-    try {
-      const cred = await createUserWithEmailAndPassword(auth, email, pw);
-      const uid = cred.user.uid;
-      const myCode = genCode('LOVE');
-      const invCode = genCode('PAIR');
-      await setDoc(doc(db,'profiles',uid), { name, email, my_code: myCode, partner_invite_code: invCode, pair_id: uid, partner_id: null, partner_name: null, createdAt: serverTimestamp() });
-      await setDoc(doc(db,'invite_codes',invCode), { code: invCode, owner_id: uid, owner_name: name, used: false, pair_id: uid });
-      currentUserData = { uid, name, pairId: uid, partnerId: null, partnerName: null, myCode };
-      document.getElementById('myCodeDisplay').innerText = myCode;
-      document.getElementById('partnerCodeDisplay').innerText = invCode;
-      showStep('step-1');
-      window.showToast('Account created! Share the code 🎉');
-    } catch(err) {
-      if (err.code === 'auth/configuration-not-found') showFirebaseError();
-      else errEl.innerText = err.message;
-    }
-  };
+                // Clear inputs
+                loginEmail.value = '';
+                loginPassword.value = '';
+                signupEmail.value = '';
+                signupPassword.value = '';
+                signupConfirm.value = '';
+                clearMessages();
 
-  function showStep(stepId) {
-    document.querySelectorAll('.step-pane').forEach(p => p.style.display = 'none');
-    document.getElementById(stepId).style.display = 'block';
-  }
+                // Re-enable buttons
+                loginBtn.disabled = false;
+                loginBtnText.textContent = 'Sign In';
+                signupBtn.disabled = false;
+                signupBtnText.textContent = 'Create Account';
+            }
 
-  document.getElementById('next-step2').onclick = () => {
-    showStep('step-2');
-    startWaiting();
-  };
-  document.getElementById('skip-wait').onclick = () => {
-    if (waitInterval) clearInterval(waitInterval);
-    showStep('step-3');
-  };
-  document.getElementById('enter-app-btn').onclick = () => startApp();
+            // ==================== LOGIN ====================
+            loginBtn.addEventListener('click', async () => {
+                const email = loginEmail.value.trim();
+                const password = loginPassword.value;
 
-  function startWaiting() {
-    if (waitInterval) clearInterval(waitInterval);
-    waitInterval = setInterval(async () => {
-      if (!currentUserData) return;
-      const snap = await getDoc(doc(db,'profiles',currentUserData.uid));
-      if (snap.exists() && snap.data().partner_id) {
-        clearInterval(waitInterval);
-        const d = snap.data();
-        currentUserData.partnerId = d.partner_id;
-        currentUserData.partnerName = d.partner_name;
-        currentUserData.pairId = d.pair_id;
-        showStep('step-3');
-        window.showToast(`Connected with ${currentUserData.partnerName}! 💕`);
-      }
-    }, 3000);
-  }
+                // Clear previous message
+                showMessage(loginMessage, '', '');
 
-  // ── LOGIN ──
-  document.getElementById('do-login').onclick = async () => {
-    if (!firebaseReady) { showFirebaseError(); return; }
-    let login = document.getElementById('login-email').value.trim();
-    const pw = document.getElementById('login-password').value;
-    const errEl = document.getElementById('login-error');
-    let email = login;
-    if (!login.includes('@')) {
-      const q = query(collection(db,'profiles'), where('my_code','==',login.toUpperCase()));
-      const snap = await getDocs(q);
-      if (snap.empty) { errEl.innerText = 'Invalid code'; return; }
-      email = snap.docs[0].data().email;
-    }
-    try {
-      await signInWithEmailAndPassword(auth, email, pw);
-    } catch(err) {
-      if (err.code === 'auth/configuration-not-found') showFirebaseError();
-      else errEl.innerText = err.message;
-    }
-  };
+                // Validation
+                if (!email) {
+                    showMessage(loginMessage, 'Please enter your email address.', 'error');
+                    loginEmail.focus();
+                    return;
+                }
+                if (!password) {
+                    showMessage(loginMessage, 'Please enter your password.', 'error');
+                    loginPassword.focus();
+                    return;
+                }
 
-  // ── INVITE ──
-  document.getElementById('use-invite').onclick = async () => {
-    if (!firebaseReady) { showFirebaseError(); return; }
-    const inviteCode = document.getElementById('invite-code').value.trim().toUpperCase();
-    const name = document.getElementById('partner-name').value.trim();
-    const email = document.getElementById('partner-email').value.trim();
-    const pw = document.getElementById('partner-pw').value;
-    const errEl = document.getElementById('invite-error');
-    if (!inviteCode || !name || !email || pw.length < 6) { errEl.innerText = 'All fields required, password ≥ 6'; return; }
-    try {
-      const invDoc = await getDoc(doc(db,'invite_codes',inviteCode));
-      if (!invDoc.exists() || invDoc.data().used) throw new Error('Invalid or already used invite code');
-      const invData = invDoc.data();
-      const cred = await createUserWithEmailAndPassword(auth, email, pw);
-      const uid = cred.user.uid;
-      const myCode = genCode('LOVE');
-      const newInv = genCode('PAIR');
-      await setDoc(doc(db,'profiles',uid), { name, email, my_code: myCode, partner_invite_code: newInv, pair_id: invData.pair_id, partner_id: invData.owner_id, partner_name: invData.owner_name, createdAt: serverTimestamp() });
-      await updateDoc(doc(db,'profiles',invData.owner_id), { partner_id: uid, partner_name: name });
-      await updateDoc(doc(db,'invite_codes',inviteCode), { used: true });
-      currentUserData = { uid, name, pairId: invData.pair_id, partnerId: invData.owner_id, partnerName: invData.owner_name, myCode };
-      startApp();
-    } catch(err) { errEl.innerText = err.message; }
-  };
+                setLoading(loginBtn, loginBtnText, true);
 
-  // ── AUTH STATE ──
-  onAuthStateChanged(auth, async (user) => {
-    if (user && !currentUserData) {
-      const snap = await getDoc(doc(db,'profiles',user.uid));
-      if (snap.exists()) {
-        const p = snap.data();
-        currentUserData = { uid: user.uid, name: p.name, pairId: p.pair_id, partnerId: p.partner_id, partnerName: p.partner_name, myCode: p.my_code };
-        if (p.partner_id) startApp();
-        else {
-          document.getElementById('auth-screen').classList.remove('gone');
-          switchTab('signup');
-          showStep('step-2');
-          document.getElementById('myCodeDisplay').innerText = p.my_code;
-          document.getElementById('partnerCodeDisplay').innerText = p.partner_invite_code;
-          startWaiting();
-        }
-      }
-    }
-  });
+                try {
+                    await auth.signInWithEmailAndPassword(email, password);
+                    // onAuthStateChanged will handle UI update
+                } catch (error) {
+                    let errorMsg = 'An error occurred. Please try again.';
+                    switch (error.code) {
+                        case 'auth/invalid-email':
+                            errorMsg = 'Invalid email format.';
+                            break;
+                        case 'auth/user-not-found':
+                            errorMsg = 'No account found with this email.';
+                            break;
+                        case 'auth/wrong-password':
+                            errorMsg = 'Incorrect password. Please try again.';
+                            break;
+                        case 'auth/invalid-credential':
+                            errorMsg = 'Invalid email or password. Please check your credentials.';
+                            break;
+                        case 'auth/too-many-requests':
+                            errorMsg = 'Too many attempts. Please wait a moment and try again.';
+                            break;
+                        case 'auth/user-disabled':
+                            errorMsg = 'This account has been disabled.';
+                            break;
+                        default:
+                            errorMsg = error.message || errorMsg;
+                    }
+                    showMessage(loginMessage, errorMsg, 'error');
+                } finally {
+                    setLoading(loginBtn, loginBtnText, false);
+                }
+            });
 
-  // ── MAIN APP ──
-  async function startApp() {
-    if (!currentUserData?.partnerId) return;
-    if (waitInterval) clearInterval(waitInterval);
-    document.getElementById('auth-screen').classList.add('gone');
-    document.getElementById('app').style.display = 'flex';
-    updateUI();
-    await loadFeed();
-    await loadStories();
-    await loadChat();
-    await loadMemories();
-    loadPlaces();
-    startRealtime();
-    initMap();
+            // Login on Enter key
+            loginPassword.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') loginBtn.click();
+            });
+            loginEmail.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') loginPassword.focus();
+            });
 
-    document.getElementById('createPostFab').onclick = () => document.getElementById('postModal').classList.add('active');
-    document.getElementById('closePostModal').onclick = () => document.getElementById('postModal').classList.remove('active');
-    document.getElementById('submitPostBtn').onclick = createPost;
-    document.getElementById('shareLocationBtn').onclick = shareLocation;
-    document.getElementById('addMemoryBtn').onclick = addMemory;
-    document.getElementById('sendChatBtn').onclick = sendMessage;
-    document.getElementById('chatInput').addEventListener('keypress', e => {
-      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
-    });
-    document.getElementById('postImageFile').addEventListener('change', e => {
-      if (e.target.files[0]) document.getElementById('postPreview').innerHTML = `<img src="${URL.createObjectURL(e.target.files[0])}" style="width:100%;height:100%;object-fit:cover;">`;
-    });
+            // ==================== SIGNUP ====================
+            signupBtn.addEventListener('click', async () => {
+                const email = signupEmail.value.trim();
+                const password = signupPassword.value;
+                const confirm = signupConfirm.value;
 
-    document.querySelectorAll('.nav-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const page = btn.dataset.page;
-        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-        document.getElementById(`page-${page}`).classList.add('active');
-        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        if (page === 'map') setTimeout(() => mapInstance?.invalidateSize(), 150);
-      });
-    });
-    document.querySelector('.nav-btn[data-page="feed"]').click();
-  }
+                // Clear previous message
+                showMessage(signupMessage, '', '');
 
-  function updateUI() {
-    const myI = currentUserData.name[0].toUpperCase();
-    const ptI = (currentUserData.partnerName || 'P')[0].toUpperCase();
-    document.getElementById('myAvatar').innerText = myI;
-    document.getElementById('partnerAvatar').innerText = ptI;
-    document.getElementById('coupleNames').innerText = `${currentUserData.name} & ${currentUserData.partnerName}`;
-    document.getElementById('chatPartnerName').innerText = currentUserData.partnerName;
-    document.getElementById('chatPartnerAvatar').innerText = ptI;
-  }
+                // Validation
+                if (!email) {
+                    showMessage(signupMessage, 'Please enter your email address.', 'error');
+                    signupEmail.focus();
+                    return;
+                }
+                if (!password) {
+                    showMessage(signupMessage, 'Please create a password.', 'error');
+                    signupPassword.focus();
+                    return;
+                }
+                if (password.length < 6) {
+                    showMessage(signupMessage, 'Password must be at least 6 characters.', 'error');
+                    signupPassword.focus();
+                    return;
+                }
+                if (password !== confirm) {
+                    showMessage(signupMessage, 'Passwords do not match.', 'error');
+                    signupConfirm.focus();
+                    return;
+                }
 
-  // ── FEED ──
-  async function loadFeed() {
-    const q = query(collection(db,'posts'), where('pair_id','==',currentUserData.pairId), orderBy('createdAt','desc'));
-    const snap = await getDocs(q);
-    const container = document.getElementById('feedPosts');
-    container.innerHTML = '';
-    if (snap.empty) {
-      container.innerHTML = `<div class="empty-feed"><span class="emoji">📸</span><p>No posts yet.<br>Share your first moment!</p></div>`;
-      return;
-    }
-    for (const docSnap of snap.docs) {
-      const post = docSnap.data();
-      const isMe = post.user_id === currentUserData.uid;
-      const author = isMe ? currentUserData.name : currentUserData.partnerName;
-      const liked = post.likedBy?.includes(currentUserData.uid);
-      const time = post.createdAt ? new Date(post.createdAt.toDate()).toLocaleDateString([], {month:'short',day:'numeric'}) : '';
-      const div = document.createElement('div'); div.className = 'post-card';
-      div.innerHTML = `
-        <div class="post-header">
-          <div class="avatar${isMe ? '' : ' partner'}">${author[0]}</div>
-          <span class="post-author">${escapeHtml(author)}</span>
-          <span class="post-time">${time}</span>
-        </div>
-        <div class="post-img" style="background-image:url('${post.imageUrl||''}');background-size:cover;">${post.imageUrl ? '' : '📸'}</div>
-        <div class="post-actions">
-          <button class="action-btn like-btn" data-id="${docSnap.id}">${liked ? '❤️' : '🤍'} <span class="like-count">${post.likesCount||0}</span></button>
-          <button class="action-btn">💬</button>
-        </div>
-        <div class="post-caption"><strong>${escapeHtml(author)}</strong> ${escapeHtml(post.caption||'')}</div>
-      `;
-      container.appendChild(div);
-      const likeBtn = div.querySelector('.like-btn');
-      likeBtn.onclick = () => toggleLike(docSnap.id, likeBtn, post.likesCount||0, liked);
-    }
-  }
+                setLoading(signupBtn, signupBtnText, true);
 
-  async function toggleLike(postId, btn, currentLikes, wasLiked) {
-    const postRef = doc(db,'posts',postId);
-    const snap = await getDoc(postRef);
-    const likedBy = snap.data()?.likedBy || [];
-    if (wasLiked) {
-      await updateDoc(postRef, { likesCount: increment(-1), likedBy: likedBy.filter(id => id !== currentUserData.uid) });
-      btn.innerHTML = `🤍 <span class="like-count">${currentLikes - 1}</span>`;
-    } else {
-      await updateDoc(postRef, { likesCount: increment(1), likedBy: [...likedBy, currentUserData.uid] });
-      btn.innerHTML = `❤️ <span class="like-count">${currentLikes + 1}</span>`;
-    }
-  }
+                try {
+                    await auth.createUserWithEmailAndPassword(email, password);
+                    // onAuthStateChanged will handle UI update
+                } catch (error) {
+                    let errorMsg = 'An error occurred. Please try again.';
+                    switch (error.code) {
+                        case 'auth/email-already-in-use':
+                            errorMsg = 'An account with this email already exists.';
+                            break;
+                        case 'auth/invalid-email':
+                            errorMsg = 'Invalid email format.';
+                            break;
+                        case 'auth/weak-password':
+                            errorMsg = 'Password is too weak. Use at least 6 characters.';
+                            break;
+                        case 'auth/operation-not-allowed':
+                            errorMsg = 'Email/password sign-up is not enabled.';
+                            break;
+                        default:
+                            errorMsg = error.message || errorMsg;
+                    }
+                    showMessage(signupMessage, errorMsg, 'error');
+                } finally {
+                    setLoading(signupBtn, signupBtnText, false);
+                }
+            });
 
-  async function createPost() {
-    const file = document.getElementById('postImageFile').files[0];
-    const caption = document.getElementById('postCaption').value;
-    let imageUrl = '';
-    if (file) {
-      const r = ref(storage, `posts/${currentUserData.uid}/${Date.now()}_${file.name}`);
-      await uploadBytes(r, file);
-      imageUrl = await getDownloadURL(r);
-    }
-    await addDoc(collection(db,'posts'), { pair_id: currentUserData.pairId, user_id: currentUserData.uid, imageUrl, caption, likesCount: 0, likedBy: [], createdAt: serverTimestamp() });
-    document.getElementById('postModal').classList.remove('active');
-    document.getElementById('postCaption').value = '';
-    document.getElementById('postImageFile').value = '';
-    document.getElementById('postPreview').innerHTML = '📷';
-    window.showToast('Posted! 💕');
-  }
+            // Signup on Enter key
+            signupConfirm.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') signupBtn.click();
+            });
+            signupEmail.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') signupPassword.focus();
+            });
+            signupPassword.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') signupConfirm.focus();
+            });
 
-  // ── STORIES ──
-  async function loadStories() {
-    const q = query(collection(db,'stories'), where('pair_id','==',currentUserData.pairId), where('expiresAt','>',new Date()));
-    const snap = await getDocs(q);
-    const container = document.getElementById('storiesContainer');
-    container.innerHTML = `<div class="story-item" id="addStoryBtn"><div class="story-ring empty"><div class="story-inner" style="font-size:28px;color:var(--ink-muted);">+</div></div><span class="story-name">Your story</span></div>`;
-    snap.forEach(docSnap => {
-      const s = docSnap.data();
-      const isMine = s.user_id === currentUserData.uid;
-      const div = document.createElement('div'); div.className = 'story-item';
-      div.innerHTML = `<div class="story-ring"><div class="story-inner">${s.mediaEmoji||'✨'}</div></div><span class="story-name">${isMine ? currentUserData.name : currentUserData.partnerName}</span>`;
-      div.onclick = () => { document.getElementById('storyContent').innerHTML = s.mediaEmoji; document.getElementById('storyViewer').classList.add('active'); };
-      container.appendChild(div);
-    });
-    document.getElementById('addStoryBtn')?.addEventListener('click', async () => {
-      const emoji = prompt('Share a moment (pick an emoji):', '🌸');
-      if (emoji) await addDoc(collection(db,'stories'), { pair_id: currentUserData.pairId, user_id: currentUserData.uid, mediaEmoji: emoji, expiresAt: new Date(Date.now() + 24*3600000), createdAt: serverTimestamp() });
-    });
-  }
-
-  // ── CHAT ──
-  async function loadChat() {
-    const q = query(collection(db,'messages'), where('pair_id','==',currentUserData.pairId), orderBy('createdAt','asc'));
-    const snap = await getDocs(q);
-    const container = document.getElementById('chatMessages');
-    container.innerHTML = '';
-    snap.forEach(docSnap => {
-      const m = docSnap.data();
-      appendMessage(m);
-    });
-    container.scrollTop = container.scrollHeight;
-  }
-
-  function appendMessage(m) {
-    const container = document.getElementById('chatMessages');
-    const isMe = m.sender_id === currentUserData.uid;
-    const div = document.createElement('div'); div.className = `msg ${isMe ? 'me' : 'them'}`;
-    const time = m.createdAt ? new Date(m.createdAt.toDate()).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}) : '';
-    div.innerHTML = `<div class="bubble">${escapeHtml(m.content)}</div><div class="msg-time">${time}</div>`;
-    container.appendChild(div);
-    container.scrollTop = container.scrollHeight;
-  }
-
-  async function sendMessage() {
-    const input = document.getElementById('chatInput');
-    const text = input.value.trim();
-    if (!text) return;
-    await addDoc(collection(db,'messages'), { pair_id: currentUserData.pairId, sender_id: currentUserData.uid, content: text, createdAt: serverTimestamp() });
-    input.value = '';
-  }
-
-  // ── MAP ──
-  function initMap() {
-    mapInstance = L.map('real-map').setView([40.7128, -74.0060], 13);
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', { attribution: '&copy; OSM' }).addTo(mapInstance);
-    fetchLocations();
-  }
-
-  async function shareLocation() {
-    if (!navigator.geolocation) { window.showToast('Geolocation not supported'); return; }
-    navigator.geolocation.getCurrentPosition(async pos => {
-      await setDoc(doc(db,'locations',`${currentUserData.pairId}_${currentUserData.uid}`), {
-        pair_id: currentUserData.pairId, user_id: currentUserData.uid,
-        lat: pos.coords.latitude, lng: pos.coords.longitude, updatedAt: serverTimestamp()
-      });
-      fetchLocations();
-      window.showToast('📍 Location shared');
-    });
-  }
-
-  async function fetchLocations() {
-    const meDoc = await getDoc(doc(db,'locations',`${currentUserData.pairId}_${currentUserData.uid}`));
-    const ptDoc = await getDoc(doc(db,'locations',`${currentUserData.pairId}_${currentUserData.partnerId}`));
-    const me = meDoc.exists() ? meDoc.data() : null;
-    const pt = ptDoc.exists() ? ptDoc.data() : null;
-    if (me && mapInstance) {
-      if (markers.me) mapInstance.removeLayer(markers.me);
-      markers.me = L.marker([me.lat, me.lng]).bindPopup(currentUserData.name).addTo(mapInstance);
-    }
-    if (pt && mapInstance) {
-      if (markers.partner) mapInstance.removeLayer(markers.partner);
-      markers.partner = L.marker([pt.lat, pt.lng], { icon: L.divIcon({ html: '💕', iconSize: [24,24] }) }).bindPopup(currentUserData.partnerName).addTo(mapInstance);
-    }
-    if (me && pt) {
-      const dist = haversine(me.lat, me.lng, pt.lat, pt.lng);
-      document.getElementById('distanceText').innerHTML = `💕 You're ${dist.toFixed(1)} km apart`;
-      mapInstance.fitBounds(L.latLngBounds([[me.lat, me.lng], [pt.lat, pt.lng]]), { padding: [40,40] });
-    }
-  }
-
-  function haversine(lat1, lon1, lat2, lon2) {
-    const R = 6371, dLat = (lat2-lat1)*Math.PI/180, dLon = (lon2-lon1)*Math.PI/180;
-    const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)**2;
-    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-  }
-
-  // ── MEMORIES ──
-  async function loadMemories() {
-    const q = query(collection(db,'memories'), where('pair_id','==',currentUserData.pairId), orderBy('eventDate','desc'));
-    const snap = await getDocs(q);
-    const container = document.getElementById('timelineContainer');
-    if (snap.empty) {
-      container.innerHTML = `<div class="empty-memories"><span class="emoji">📔</span><p>Your story starts here.<br>Add your first memory!</p></div>`;
-      return;
-    }
-    container.innerHTML = '';
-    snap.forEach(docSnap => {
-      const m = docSnap.data();
-      const date = m.eventDate?.toDate().toLocaleDateString([],{year:'numeric',month:'long',day:'numeric'}) || 'Recently';
-      container.innerHTML += `
-        <div class="memory-item">
-          <div class="memory-icon-col">
-            <div class="memory-icon-wrap">${m.icon||'📅'}</div>
-          </div>
-          <div class="memory-body">
-            <div class="memory-date">${date}</div>
-            <div class="memory-title">${escapeHtml(m.title)}</div>
-            <div class="memory-desc">${escapeHtml(m.description||'')}</div>
-          </div>
-        </div>`;
-    });
-  }
-
-  async function addMemory() {
-    const title = prompt('Memory title:');
-    if (!title) return;
-    const desc = prompt('Description (optional):');
-    const icon = prompt('Pick an emoji for this memory:', '💖');
-    await addDoc(collection(db,'memories'), { pair_id: currentUserData.pairId, title, description: desc||'', icon: icon||'💖', eventDate: new Date(), createdAt: serverTimestamp() });
-    loadMemories();
-    window.showToast('Memory saved 💖');
-  }
-
-  function loadPlaces() {
-    document.getElementById('placesList').innerHTML = `
-      <div class="place-item">☕ <span>Our coffee shop · 0.2 km</span></div>
-      <div class="place-item">🌳 <span>Riverside park · 1.1 km</span></div>
-      <div class="place-item">🍜 <span>Favourite ramen spot · 2.3 km</span></div>`;
-  }
-
-  // ── REALTIME ──
-  function startRealtime() {
-    if (unsubFeed) unsubFeed();
-    if (unsubChat) unsubChat();
-    if (unsubStories) unsubStories();
-    if (unsubLocations) unsubLocations();
-    unsubFeed = onSnapshot(query(collection(db,'posts'), where('pair_id','==',currentUserData.pairId)), () => loadFeed());
-    unsubChat = onSnapshot(query(collection(db,'messages'), where('pair_id','==',currentUserData.pairId), orderBy('createdAt','asc')), () => loadChat());
-    unsubStories = onSnapshot(query(collection(db,'stories'), where('pair_id','==',currentUserData.pairId)), () => loadStories());
-    unsubLocations = onSnapshot(query(collection(db,'locations'), where('pair_id','==',currentUserData.pairId)), () => fetchLocations());
-  }
-
-  window.closeStoryViewer = () => document.getElementById('storyViewer').classList.remove('active');
-</script>
+            // ==================== SIGNOUT ====================
+            signoutBtn.addEventListener('click', async () => {
+                try {
+                    await auth.signOut();
+                    // onAuthStateChanged will handle UI update
+                } catch (error) {
+                    console.error('Sign out error:', error);
+                    // Force UI reset even if signOut fails
+                    showAuthForms();
+                }
+            });
+        })();
+    </script>
 </body>
 </html>
