@@ -3,13 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TamTam - Home</title>
+    <title>TamTam - Complete Your Profile</title>
 
     <!-- Firebase SDKs -->
-    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js">
-    </script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js">
-    </script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 
     <style>
         :root {
@@ -36,11 +35,7 @@
             --nav-height: 64px;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
@@ -69,7 +64,7 @@
             75% { background-position: 0% 100%; }
         }
 
-        /* ========== AUTH CARD (centered) ========== */
+        /* ========== AUTH CARD ========== */
         .auth-container {
             width: 100%;
             max-width: 440px;
@@ -116,17 +111,8 @@
             width: 28px; height: 28px;
             color: white;
         }
-        .brand h1 {
-            font-size: 1.6rem;
-            font-weight: 700;
-            letter-spacing: -0.5px;
-            color: var(--text);
-        }
-        .brand p {
-            font-size: 0.9rem;
-            color: var(--text-secondary);
-            margin-top: 4px;
-        }
+        .brand h1 { font-size: 1.6rem; font-weight: 700; letter-spacing: -0.5px; }
+        .brand p { font-size: 0.9rem; color: var(--text-secondary); margin-top: 4px; }
 
         .tabs {
             display: flex;
@@ -147,11 +133,7 @@
             color: var(--text-secondary);
             transition: all var(--transition);
         }
-        .tabs button.active {
-            background: #ffffff;
-            color: var(--primary);
-            box-shadow: var(--shadow-sm);
-        }
+        .tabs button.active { background: #ffffff; color: var(--primary); box-shadow: var(--shadow-sm); }
 
         .form-panel {
             display: none;
@@ -159,26 +141,16 @@
             gap: 18px;
             animation: fadeSlideIn 0.35s ease;
         }
-        .form-panel.active {
-            display: flex;
-        }
+        .form-panel.active { display: flex; }
 
         @keyframes fadeSlideIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-        .form-group label {
-            font-size: 0.85rem;
-            font-weight: 600;
-            color: #374151;
-        }
-        .form-group input {
+        .form-group { display: flex; flex-direction: column; gap: 6px; }
+        .form-group label { font-size: 0.85rem; font-weight: 600; color: #374151; }
+        .form-group input, .form-group textarea {
             padding: 13px 16px;
             border: 2px solid var(--input-border);
             border-radius: var(--radius-sm);
@@ -187,12 +159,14 @@
             transition: all var(--transition);
             outline: none;
             color: var(--text);
+            font-family: inherit;
         }
-        .form-group input:focus {
+        .form-group input:focus, .form-group textarea:focus {
             border-color: var(--input-focus);
             box-shadow: 0 0 0 4px rgba(79,70,229,0.08);
             background: #fff;
         }
+        textarea { resize: vertical; min-height: 80px; }
 
         .btn {
             width: 100%;
@@ -216,12 +190,7 @@
             box-shadow: 0 6px 22px rgba(79,70,229,0.4);
             transform: translateY(-1px);
         }
-        .btn-primary:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
-        }
+        .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; transform: none; box-shadow: none; }
         .btn-signout {
             background: #fff;
             color: #dc2626;
@@ -230,12 +199,7 @@
             margin-top: 8px;
             font-weight: 600;
         }
-        .btn-signout:hover {
-            background: #fef2f2;
-            border-color: #fca5a5;
-            box-shadow: 0 4px 14px rgba(220,38,38,0.12);
-            transform: translateY(-1px);
-        }
+        .btn-signout:hover { background: #fef2f2; border-color: #fca5a5; }
 
         .message {
             padding: 12px 16px;
@@ -271,7 +235,20 @@
         }
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        /* ========== HOME SCREEN (after login) ========== */
+        /* ========== PROFILE SETUP PANEL ========== */
+        .profile-setup-container {
+            display: none;
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-lg);
+            padding: 40px 36px;
+            text-align: center;
+        }
+        .profile-setup-container.active { display: block; animation: fadeSlideIn 0.4s ease; }
+        .profile-setup-container h2 { font-size: 1.5rem; margin-bottom: 8px; }
+        .profile-setup-container .subtitle { color: var(--text-secondary); margin-bottom: 28px; font-size: 0.9rem; }
+
+        /* ========== HOME SCREEN ========== */
         .home-container {
             display: none;
             width: 100%;
@@ -279,11 +256,8 @@
             background: var(--bg);
             flex-direction: column;
         }
-        .home-container.active {
-            display: flex;
-        }
+        .home-container.active { display: flex; }
 
-        /* Top navigation bar */
         .navbar {
             height: var(--nav-height);
             background: white;
@@ -296,11 +270,7 @@
             top: 0;
             z-index: 10;
         }
-        .nav-left {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
+        .nav-left { display: flex; align-items: center; gap: 12px; }
         .nav-logo {
             width: 36px; height: 36px;
             border-radius: 12px;
@@ -310,18 +280,9 @@
             justify-content: center;
             color: white;
         }
-        .nav-logo svg {
-            width: 20px; height: 20px;
-        }
-        .nav-title {
-            font-weight: 700;
-            font-size: 1.1rem;
-            letter-spacing: -0.3px;
-        }
-        .nav-tabs {
-            display: flex;
-            gap: 8px;
-        }
+        .nav-logo svg { width: 20px; height: 20px; }
+        .nav-title { font-weight: 700; font-size: 1.1rem; letter-spacing: -0.3px; }
+        .nav-tabs { display: flex; gap: 8px; }
         .nav-tab {
             padding: 8px 16px;
             border-radius: 20px;
@@ -333,18 +294,8 @@
             cursor: pointer;
             transition: all var(--transition);
         }
-        .nav-tab.active {
-            background: #e0e7ff;
-            color: var(--primary);
-        }
-        .nav-tab:hover:not(.active) {
-            background: #f3f4f6;
-        }
-        .nav-right {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-        }
+        .nav-tab.active { background: #e0e7ff; color: var(--primary); }
+        .nav-right { display: flex; align-items: center; gap: 16px; }
         .user-badge {
             display: flex;
             align-items: center;
@@ -367,7 +318,6 @@
             font-weight: 700;
         }
 
-        /* Home content area */
         .home-content {
             flex: 1;
             padding: 32px 24px;
@@ -375,18 +325,9 @@
             margin: 0 auto;
             width: 100%;
         }
-        .home-header {
-            margin-bottom: 28px;
-        }
-        .home-header h2 {
-            font-size: 1.8rem;
-            font-weight: 700;
-            letter-spacing: -0.5px;
-        }
-        .home-header p {
-            color: var(--text-secondary);
-            margin-top: 4px;
-        }
+        .home-header { margin-bottom: 28px; }
+        .home-header h2 { font-size: 1.8rem; font-weight: 700; letter-spacing: -0.5px; }
+        .home-header p { color: var(--text-secondary); margin-top: 4px; }
         .home-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
@@ -400,10 +341,7 @@
             transition: all var(--transition);
             cursor: pointer;
         }
-        .home-card:hover {
-            box-shadow: var(--shadow-md);
-            transform: translateY(-2px);
-        }
+        .home-card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
         .home-card .icon-bg {
             width: 44px; height: 44px;
             border-radius: 14px;
@@ -414,38 +352,22 @@
             margin-bottom: 14px;
             color: var(--primary);
         }
-        .home-card h3 {
-            font-size: 1rem;
-            font-weight: 600;
-            margin-bottom: 6px;
-        }
-        .home-card p {
-            font-size: 0.85rem;
-            color: var(--text-secondary);
-            line-height: 1.4;
-        }
+        .home-card h3 { font-size: 1rem; font-weight: 600; margin-bottom: 6px; }
+        .home-card p { font-size: 0.85rem; color: var(--text-secondary); line-height: 1.4; }
 
         @media (max-width: 640px) {
-            .navbar {
-                padding: 0 16px;
-            }
-            .nav-tab {
-                padding: 6px 12px;
-                font-size: 0.8rem;
-            }
-            .home-content {
-                padding: 24px 16px;
-            }
-            .home-grid {
-                grid-template-columns: 1fr;
-            }
+            .navbar { padding: 0 16px; }
+            .nav-tab { padding: 6px 12px; font-size: 0.8rem; }
+            .home-content { padding: 24px 16px; }
+            .home-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
 
-    <!-- ==================== AUTH CARD ==================== -->
+    <!-- ==================== AUTH CONTAINER ==================== -->
     <div class="auth-container" id="authContainer">
+        <!-- Login / Signup Card -->
         <div class="card" id="authCard">
             <div class="brand">
                 <div class="icon-wrapper">
@@ -463,7 +385,6 @@
                 <button data-tab="signup">Create Account</button>
             </div>
 
-            <!-- Login Form -->
             <div class="form-panel active" id="loginPanel">
                 <div id="loginMessage" class="message"></div>
                 <div class="form-group">
@@ -479,7 +400,6 @@
                 </button>
             </div>
 
-            <!-- Signup Form -->
             <div class="form-panel" id="signupPanel">
                 <div id="signupMessage" class="message"></div>
                 <div class="form-group">
@@ -499,11 +419,36 @@
                 </button>
             </div>
         </div>
+
+        <!-- Profile Setup Panel (shown after first signup) -->
+        <div class="profile-setup-container" id="profileSetupPanel">
+            <div class="brand">
+                <div class="icon-wrapper">
+                    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+                    </svg>
+                </div>
+                <h2>Complete Your Profile</h2>
+                <p class="subtitle">Tell us a bit about yourself</p>
+            </div>
+            <div id="profileMessage" class="message"></div>
+            <div class="form-group">
+                <label for="profileUsername">Username</label>
+                <input type="text" id="profileUsername" placeholder="Your unique username" autocomplete="off">
+            </div>
+            <div class="form-group">
+                <label for="profileBio">Bio</label>
+                <textarea id="profileBio" placeholder="A short description about you..."></textarea>
+            </div>
+            <button class="btn btn-primary" id="saveProfileBtn">
+                <span id="saveProfileBtnText">Save & Continue</span>
+            </button>
+        </div>
     </div>
 
-    <!-- ==================== HOME SCREEN (visible after login) ==================== -->
+    <!-- ==================== HOME SCREEN ==================== -->
     <div class="home-container" id="homeContainer">
-        <!-- Top navigation bar -->
         <nav class="navbar">
             <div class="nav-left">
                 <div class="nav-logo">
@@ -530,7 +475,6 @@
             </div>
         </nav>
 
-        <!-- Home tab content -->
         <main class="home-content" id="homeTabContent">
             <div class="home-header">
                 <h2>Welcome back! 👋</h2>
@@ -584,10 +528,12 @@
 
             firebase.initializeApp(firebaseConfig);
             const auth = firebase.auth();
+            const db = firebase.firestore();
 
             // ==================== DOM ELEMENTS ====================
             // Auth UI
             const authContainer = document.getElementById('authContainer');
+            const authCard = document.getElementById('authCard');
             const tabContainer = document.getElementById('tabContainer');
             const loginPanel = document.getElementById('loginPanel');
             const signupPanel = document.getElementById('signupPanel');
@@ -602,6 +548,14 @@
             const signupBtn = document.getElementById('signupBtn');
             const signupBtnText = document.getElementById('signupBtnText');
             const signupMessage = document.getElementById('signupMessage');
+
+            // Profile Setup UI
+            const profileSetupPanel = document.getElementById('profileSetupPanel');
+            const profileUsername = document.getElementById('profileUsername');
+            const profileBio = document.getElementById('profileBio');
+            const saveProfileBtn = document.getElementById('saveProfileBtn');
+            const saveProfileBtnText = document.getElementById('saveProfileBtnText');
+            const profileMessage = document.getElementById('profileMessage');
 
             // Home UI
             const homeContainer = document.getElementById('homeContainer');
@@ -646,47 +600,65 @@
                     btnText.innerHTML = '<span class="spinner"></span> Please wait...';
                 } else {
                     btn.disabled = false;
-                    btnText.textContent = btn === loginBtn ? 'Sign In' : 'Create Account';
+                    btnText.textContent = btn === loginBtn ? 'Sign In' : 
+                                          btn === signupBtn ? 'Create Account' : 'Save & Continue';
                 }
             }
 
             // ==================== AUTH STATE OBSERVER ====================
             auth.onAuthStateChanged((user) => {
                 if (user) {
-                    showHomeScreen(user);
+                    // Check if user needs to complete profile setup
+                    if (sessionStorage.getItem('pendingProfileSetup') === 'true') {
+                        showProfileSetup();
+                    } else {
+                        showHomeScreen(user);
+                    }
                 } else {
                     showAuthScreen();
                 }
             });
 
+            function showProfileSetup() {
+                // Hide auth card and home, show profile panel
+                authCard.style.display = 'none';
+                homeContainer.classList.remove('active');
+                profileSetupPanel.classList.add('active');
+                authContainer.style.display = 'block';
+                document.body.classList.remove('logged-in');
+                // Clear fields
+                profileUsername.value = '';
+                profileBio.value = '';
+                profileMessage.textContent = '';
+                profileMessage.className = 'message';
+            }
+
             function showHomeScreen(user) {
-                // Hide auth container, show home
                 authContainer.style.display = 'none';
                 homeContainer.classList.add('active');
                 document.body.classList.add('logged-in');
+                profileSetupPanel.classList.remove('active');
 
-                // Set user info
                 const email = user.email || 'User';
                 navbarEmail.textContent = email;
                 avatarCircle.textContent = email.charAt(0).toUpperCase();
 
-                // Activate Home tab by default
                 document.querySelector('.nav-tab[data-home-tab="home"]').classList.add('active');
-                // Ensure Home content is visible (it's the only content area)
             }
 
             function showAuthScreen() {
-                authContainer.style.display = 'flex';
+                authContainer.style.display = 'block';
+                authCard.style.display = 'block';
+                profileSetupPanel.classList.remove('active');
                 homeContainer.classList.remove('active');
                 document.body.classList.remove('logged-in');
 
-                // Reset auth forms to login tab
+                // Reset to login tab
                 tabContainer.querySelectorAll('button').forEach(b => b.classList.remove('active'));
                 tabContainer.querySelector('button[data-tab="login"]').classList.add('active');
                 loginPanel.classList.add('active');
                 signupPanel.classList.remove('active');
 
-                // Clear inputs and messages
                 loginEmail.value = '';
                 loginPassword.value = '';
                 signupEmail.value = '';
@@ -694,7 +666,6 @@
                 signupConfirm.value = '';
                 clearAuthMessages();
 
-                // Re-enable buttons
                 loginBtn.disabled = false;
                 loginBtnText.textContent = 'Sign In';
                 signupBtn.disabled = false;
@@ -772,6 +743,9 @@
                 setLoading(signupBtn, signupBtnText, true);
                 try {
                     await auth.createUserWithEmailAndPassword(email, password);
+                    // Set flag so auth state observer will show profile setup
+                    sessionStorage.setItem('pendingProfileSetup', 'true');
+                    // The observer will fire and call showProfileSetup()
                 } catch (error) {
                     let msg = 'An error occurred.';
                     switch (error.code) {
@@ -782,7 +756,6 @@
                         default: msg = error.message || msg;
                     }
                     showAuthMessage(signupMessage, msg, 'error');
-                } finally {
                     setLoading(signupBtn, signupBtnText, false);
                 }
             });
@@ -791,22 +764,65 @@
             signupEmail.addEventListener('keydown', (e) => { if (e.key === 'Enter') signupPassword.focus(); });
             signupPassword.addEventListener('keydown', (e) => { if (e.key === 'Enter') signupConfirm.focus(); });
 
+            // ==================== PROFILE SETUP ====================
+            saveProfileBtn.addEventListener('click', async () => {
+                const username = profileUsername.value.trim();
+                const bio = profileBio.value.trim();
+                const user = auth.currentUser;
+
+                if (!user) {
+                    showAuthMessage(profileMessage, 'You must be logged in.', 'error');
+                    return;
+                }
+                if (!username) {
+                    showAuthMessage(profileMessage, 'Please enter a username.', 'error');
+                    profileUsername.focus();
+                    return;
+                }
+                if (username.length < 3) {
+                    showAuthMessage(profileMessage, 'Username must be at least 3 characters.', 'error');
+                    profileUsername.focus();
+                    return;
+                }
+
+                setLoading(saveProfileBtn, saveProfileBtnText, true);
+                try {
+                    // Save to Firestore under users/{uid}
+                    await db.collection('users').doc(user.uid).set({
+                        username: username,
+                        bio: bio,
+                        email: user.email,
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                    }, { merge: true });
+
+                    // Remove the pending flag
+                    sessionStorage.removeItem('pendingProfileSetup');
+                    // Show home screen (re‑evaluate auth observer will fire, but we can force)
+                    showHomeScreen(user);
+                } catch (error) {
+                    console.error('Profile save error:', error);
+                    showAuthMessage(profileMessage, 'Failed to save profile. Please try again.', 'error');
+                    setLoading(saveProfileBtn, saveProfileBtnText, false);
+                }
+            });
+
             // ==================== HOME TAB NAVIGATION ====================
             navTabs.forEach(tab => {
                 tab.addEventListener('click', () => {
                     navTabs.forEach(t => t.classList.remove('active'));
                     tab.classList.add('active');
-                    // For now, all home tabs show the same content (you can expand later)
                 });
             });
 
             // ==================== SIGN OUT ====================
             signoutBtn.addEventListener('click', async () => {
+                // Clear any pending profile flag on sign out
+                sessionStorage.removeItem('pendingProfileSetup');
                 try {
                     await auth.signOut();
                 } catch (error) {
                     console.error('Sign out error:', error);
-                    showAuthScreen(); // force reset if needed
+                    showAuthScreen();
                 }
             });
         })();
