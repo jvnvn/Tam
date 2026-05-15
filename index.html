@@ -40,6 +40,282 @@
             --danger-text: #991b1b;
             --danger-border: #fecaca;
         }
+        body.dark {
+            --bg: #0f172a;
+            --card-bg: #1e293b;
+            --text: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --primary: #818cf8;
+            --primary-hover: #6366f1;
+            --input-bg: #1e293b;
+            --input-border: #334155;
+            --input-focus: #818cf8;
+            --error-bg: #7f1d1d;
+            --error-text: #fca5a5;
+            --success-bg: #14532d;
+            --success-text: #86efac;
+            --shadow-sm: 0 1px 2px rgba(0,0,0,0.3);
+            --shadow-md: 0 4px 6px rgba(0,0,0,0.4);
+            --shadow-lg: 0 20px 25px rgba(0,0,0,0.5);
+            --nav-bg: #1e293b;
+            --nav-text: #f1f5f9;
+            --chat-own-bg: #818cf8;
+            --chat-other-bg: #334155;
+            --danger-bg: #7f1d1d;
+            --danger-text: #fca5a5;
+            --danger-border: #991b1b;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+            background: linear-gradient(135deg, #e0e7ff 0%, #ede9fe 30%, #fce7f3 60%, #e0e7ff 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 20s ease infinite;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            color: var(--text);
+            transition: background 0.3s, color 0.3s;
+        }
+        body.dark {
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 30%, #312e81 60%, #0f172a 100%);
+            background-size: 400% 400%;
+        }
+        body.home-view {
+            background: var(--bg);
+            animation: none;
+            display: block;
+            padding: 0;
+        }
+
+        @keyframes gradientShift {
+            0%,100% { background-position: 0% 50%; }
+            25% { background-position: 100% 0%; }
+            50% { background-position: 100% 100%; }
+            75% { background-position: 0% 100%; }
+        }
+
+        /* ===== AUTH CARD ===== */
+        .auth-wrapper { width: 100%; max-width: 440px; }
+        .card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-lg);
+            padding: 40px 36px;
+            position: relative;
+            overflow: hidden;
+            animation: cardIn 0.4s ease;
+            color: var(--text);
+        }
+        @keyframes cardIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), #7c3aed, #a855f7, var(--primary));
+            background-size: 200% 100%;
+            animation: shimmer 3s ease infinite;
+        }
+        @keyframes shimmer { 0%,100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
+
+        .brand { text-align: center; margin-bottom: 28px; }
+        .brand .icon-wrapper { display: inline-flex; align-items: center; justify-content: center; width: 56px; height: 56px; border-radius: 16px; background: linear-gradient(135deg, #4f46e5, #7c3aed); margin-bottom: 14px; box-shadow: 0 8px 24px rgba(79,70,229,0.3); }
+        .brand .icon-wrapper svg { width: 28px; height: 28px; color: white; }
+        .brand h1 { font-size: 1.6rem; font-weight: 700; letter-spacing: -0.5px; color: var(--text); }
+        .brand p { font-size: 0.9rem; color: var(--text-secondary); margin-top: 4px; }
+
+        .tabs { display: flex; background: #f3f4f6; border-radius: 30px; padding: 4px; margin-bottom: 28px; }
+        .tabs button { flex: 1; padding: 11px 20px; border: none; background: transparent; border-radius: 26px; cursor: pointer; font-weight: 600; font-size: 0.9rem; color: var(--text-secondary); transition: all var(--transition); white-space: nowrap; }
+        .tabs button.active { background: #ffffff; color: var(--primary); box-shadow: var(--shadow-sm); }
+        .tabs button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .form-step { display: none; flex-direction: column; gap: 18px; animation: fadeSlideIn 0.35s ease; }
+        .form-step.active { display: flex; }
+
+        @keyframes fadeSlideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .form-group { display: flex; flex-direction: column; gap: 6px; }
+        .form-group label { font-size: 0.85rem; font-weight: 600; color: var(--text); }
+        .form-group input, .form-group textarea {
+            padding: 13px 16px; border: 2px solid var(--input-border);
+            border-radius: var(--radius-sm); font-size: 0.95rem;
+            background: var(--input-bg); transition: all var(--transition);
+            outline: none; color: var(--text); font-family: inherit;
+        }
+        .form-group input:focus, .form-group textarea:focus {
+            border-color: var(--input-focus); box-shadow: 0 0 0 4px rgba(79,70,229,0.08);
+        }
+        textarea { resize: vertical; min-height: 80px; }
+
+        .btn {
+            width: 100%; padding: 14px; border: none; border-radius: var(--radius-sm);
+            font-size: 0.95rem; font-weight: 600; cursor: pointer; transition: all var(--transition);
+            letter-spacing: 0.3px;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #4f46e5, #7c3aed); color: #fff;
+            box-shadow: 0 4px 16px rgba(79,70,229,0.3); margin-top: 6px;
+        }
+        .btn-primary:hover:not(:disabled) {
+            background: linear-gradient(135deg, var(--primary-hover), #6d28d9); transform: translateY(-1px);
+        }
+        .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; transform: none; box-shadow: none; }
+
+        .message { padding: 12px 16px; border-radius: var(--radius-sm); font-size: 0.85rem; font-weight: 500; display: none; }
+        .message.error { display: block; background: var(--error-bg); color: var(--error-text); border: 1px solid var(--error-border); }
+        .message.success { display: block; background: var(--success-bg); color: var(--success-text); border: 1px solid #bbf7d0; }
+
+        .spinner {
+            display: inline-block; width: 18px; height: 18px;
+            border: 2.5px solid rgba(255,255,255,0.4); border-top-color: #fff;
+            border-radius: 50%; animation: spin 0.7s linear infinite;
+            vertical-align: middle; margin-right: 6px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* code display after signup */
+        .code-result {
+            background: var(--card-bg);
+            padding: 12px;
+            border-radius: var(--radius-sm);
+            text-align: center;
+            border: 2px solid var(--primary);
+            margin-bottom: 18px;
+        }
+        .code-result .label { font-size: 0.8rem; color: var(--text-secondary); }
+        .code-result .value {
+            font-family: monospace;
+            font-size: 1.4rem;
+            letter-spacing: 3px;
+            font-weight: 700;
+            color: var(--primary);
+            cursor: pointer;
+        }
+
+        /* ===== HOME SCREEN (same as before) ===== */
+        .home-container { display: none; width: 100%; min-height: 100vh; background: var(--bg); flex-direction: column; }
+        .home-container.active { display: flex; }
+        .navbar {
+            height: 64px; background: var(--nav-bg); box-shadow: var(--shadow-sm);
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 24px; position: sticky; top: 0; z-index: 10; gap: 12px;
+        }
+        .nav-left { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+        .nav-logo { width: 36px; height: 36px; border-radius: 12px; background: linear-gradient(135deg, #4f46e5, #7c3aed); display: flex; align-items: center; justify-content: center; color: white; }
+        .nav-logo svg { width: 20px; height: 20px; }
+        .nav-title { font-weight: 700; font-size: 1.1rem; color: var(--nav-text); }
+        .nav-tabs { display: flex; gap: 6px; }
+        .nav-tab { padding: 8px 14px; border-radius: 20px; background: transparent; border: none; font-weight: 600; font-size: 0.85rem; color: var(--text-secondary); cursor: pointer; transition: all var(--transition); }
+        .nav-tab.active { background: #e0e7ff; color: var(--primary); }
+        .nav-right { display: flex; align-items: center; gap: 12px; }
+        .user-badge { display: flex; align-items: center; gap: 8px; background: var(--input-bg); padding: 6px 14px; border-radius: 30px; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all var(--transition); color: var(--text); }
+        .user-badge:hover { background: var(--primary); color: white; }
+        .user-badge:hover .avatar-circle { background: white; color: var(--primary); }
+        .avatar-circle { width: 30px; height: 30px; border-radius: 50%; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; transition: all var(--transition); }
+        .btn-signout { background: #fff; color: #dc2626; border: 2px solid #fecaca; padding: 8px 16px; border-radius: 20px; font-weight: 600; cursor: pointer; }
+        .btn-signout:hover { background: #fef2f2; border-color: #fca5a5; }
+
+        .home-panel { flex: 1; padding: 32px 24px; max-width: 1000px; margin: 0 auto; width: 100%; display: none; animation: fadeSlideIn 0.3s ease; }
+        .home-panel.active { display: block; }
+        .home-header { margin-bottom: 28px; }
+        .home-header h2 { font-size: 1.8rem; font-weight: 700; color: var(--text); }
+        .home-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; }
+        .home-card { background: var(--card-bg); border-radius: var(--radius); padding: 24px; box-shadow: var(--shadow-sm); transition: all var(--transition); cursor: pointer; color: var(--text); }
+        .home-card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
+        .home-card .icon-bg { width: 44px; height: 44px; border-radius: 14px; background: #e0e7ff; display: flex; align-items: center; justify-content: center; margin-bottom: 14px; color: var(--primary); }
+        .profile-card .profile-detail { margin-top: 12px; }
+        .profile-card .username { font-size: 1.2rem; font-weight: 700; }
+        .profile-card .bio { font-size: 0.85rem; color: var(--text-secondary); margin-top: 4px; }
+        .partner-code { margin-top: 12px; font-size: 0.9rem; color: var(--primary); }
+        .code-box { background: var(--input-bg); padding: 8px 12px; border-radius: 8px; font-family: monospace; font-size: 1rem; letter-spacing: 2px; text-align: center; margin-top: 8px; cursor: pointer; user-select: all; }
+
+        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.4); display: none; align-items: center; justify-content: center; z-index: 100; backdrop-filter: blur(4px); }
+        .modal-overlay.active { display: flex; }
+        .modal { background: var(--card-bg); border-radius: var(--radius); padding: 32px; width: 90%; max-width: 420px; box-shadow: var(--shadow-lg); animation: cardIn 0.3s ease; color: var(--text); }
+        .modal h3 { font-size: 1.3rem; margin-bottom: 20px; }
+        .modal-actions { display: flex; gap: 12px; margin-top: 20px; }
+        .btn-cancel { background: var(--input-bg); border: none; color: var(--text); padding: 12px 20px; border-radius: var(--radius-sm); font-weight: 600; cursor: pointer; flex: 1; }
+        .btn-save { background: var(--primary); color: white; border: none; padding: 12px 20px; border-radius: var(--radius-sm); font-weight: 600; cursor: pointer; flex: 1; }
+
+        .partner-connect { background: var(--card-bg); border-radius: var(--radius); padding: 24px; box-shadow: var(--shadow-sm); margin-bottom: 20px; }
+        .partner-connect input { flex: 1; padding: 12px 16px; border: 2px solid var(--input-border); border-radius: 30px; font-size: 0.9rem; outline: none; background: var(--input-bg); color: var(--text); margin-right: 8px; }
+        .partner-connect button { background: var(--primary); color: white; border: none; border-radius: 30px; padding: 0 24px; font-weight: 600; cursor: pointer; }
+        .partner-info { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; color: var(--text); }
+
+        .chat-container { background: var(--card-bg); border-radius: var(--radius); box-shadow: var(--shadow-sm); display: flex; flex-direction: column; height: calc(100vh - 300px); min-height: 400px; }
+        .chat-messages { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 12px; }
+        .chat-message { display: flex; gap: 10px; max-width: 80%; }
+        .chat-message.own { align-self: flex-end; flex-direction: row-reverse; }
+        .msg-bubble { background: var(--chat-other-bg); padding: 10px 16px; border-radius: 18px; font-size: 0.9rem; color: var(--text); }
+        .chat-message.own .msg-bubble { background: var(--chat-own-bg); color: white; }
+        .msg-user { font-size: 0.75rem; font-weight: 600; color: var(--primary); margin-bottom: 4px; }
+        .chat-input-area { display: flex; padding: 16px; border-top: 1px solid var(--input-border); gap: 8px; }
+        .chat-input-area input { flex: 1; padding: 12px 16px; border: 2px solid var(--input-border); border-radius: 30px; font-size: 0.9rem; outline: none; background: var(--input-bg); color: var(--text); }
+        .chat-input-area button { background: var(--primary); color: white; border: none; border-radius: 30px; padding: 0 24px; font-weight: 600; cursor: pointer; }
+
+        .people-search { margin-bottom: 20px; }
+        .people-search input { width: 100%; padding: 12px 16px; border: 2px solid var(--input-border); border-radius: 30px; font-size: 0.9rem; outline: none; background: var(--input-bg); color: var(--text); }
+        .user-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; }
+        .user-card { background: var(--card-bg); border-radius: var(--radius-sm); padding: 16px; box-shadow: var(--shadow-sm); }
+        .user-card .username { font-weight: 600; margin-bottom: 4px; color: var(--text); }
+        .user-card .bio { font-size: 0.8rem; color: var(--text-secondary); }
+
+        .toggle-container { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--input-border); }
+        .toggle-label { color: var(--text); font-weight: 500; }
+        .toggle-switch { position: relative; width: 50px; height: 28px; background: #cbd5e1; border-radius: 30px; cursor: pointer; transition: background var(--transition); }
+        .toggle-switch.active { background: var(--primary); }
+        .toggle-switch::after { content: ''; position: absolute; top: 2px; left: 2px; width: 24px; height: 24px; background: white; border-radius: 50%; transition: transform var(--transition); }
+        .toggle-switch.active::after { transform: translateX(22px); }
+
+        .settings-section { background: var(--card-bg); border-radius: var(--radius); padding: 24px; box-shadow: var(--shadow-sm); margin-bottom: 24px; }
+        .settings-section h3 { font-size: 1.1rem; margin-bottom: 16px; color: var(--text); }
+        .btn-danger { background: var(--danger-bg); color: var(--danger-text); border: 2px solid var(--danger-border); padding: 12px 20px; border-radius: var(--radius-sm); font-weight: 600; cursor: pointer; transition: all var(--transition); width: auto; }
+        .btn-danger:hover { opacity: 0.9; }
+    </style>
+</head>
+<body>
+
+    <!-- ===== AUTH AREA ===== -->
+    <div class="auth-wrapper" id="authWrapper">
+        <div class="card" id="authCard">
+            <div class="brand">
+                <div class="icon-wrapper">
+                    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.625 9.75a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375m-13.5 3.01c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.184-4.183a1.14 1.14 0 0 1 .778-.332 48.294 48.294 0 0 0 5.83-.498c1.585-.233 2.708-1.626 2.708-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z" />
+                    </svg>
+                </div>
+                <h1>TamTam</h1>
+                <p id="brandSubtitle">Connect &amp; chat with friends</p>
+            </div>
+
+            <div class="tabs" id="tabContainer">
+                <button id="tabLogin" class="active" data-step="login">Sign In</button>
+                <button id="tabSignup" data-step="signup">Create Account</button>
+            </div>
+
+            <div class="form-step active" id="stepLogin">
+                <div id="loginMessage" class="message"></div>
+                <div class="form-group"><label for="loginEmail">Email</label><input type="email" id="loginEmail" placeholder="you@example.com" autocomplete="email"></div>
+                <div class="form-group"><label for="loginPassword">Password</label><input type="password" id="loginPassword" placeholder="••••••••" autocomplete="current-password"></div>
+                <button class="btn btn-primary" id="loginBtn"><span id="loginBtnText">Sign In</span></button>
+            </div>
+
+            <div class="form-step" id="stepSignup">
+                <div id="signupMessage" class="message"></div>
+                <div class="form-group"><label for="signupEmail">Email</label><input type="email" id="signupEmail" placeholder="you@example.com" autocomplete="email"></div>
+                <div class="form-group"><label for="signupPassword">Password</label><input type="password" id="signupPassword" placeholder="Min. 6 characters" autocomplete="new-password"></div>
+                <div class="form-group"><label for="signupConfirm">Confirm Password</label><input type="password" id="signupConfirm" placeholder="Re-enter password" autocomplete="new-password"></div>
+                <button class="btn btn-primary" id="signupBtn">            --chat-own-bg: #4f46e5;
+            --chat-other-bg: #f3f4f6;
+            --danger-bg: #fee2e2;
+            --danger-text: #991b1b;
+            --danger-border: #fecaca;
+        }
 
         body.dark {
             --bg: #0f172a;
