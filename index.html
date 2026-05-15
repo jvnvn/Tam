@@ -553,6 +553,20 @@
       to { opacity: 1; transform: translateY(0); }
     }
   </style>
+  <script>
+    function switchTab(tabId) {
+      var signupPanel = document.getElementById('signup-panel');
+      var loginPanel  = document.getElementById('login-panel');
+      if (!signupPanel || !loginPanel) return;
+      signupPanel.style.display = (tabId === 'signup') ? 'block' : 'none';
+      loginPanel.style.display  = (tabId === 'login')  ? 'block' : 'none';
+      document.querySelectorAll('.tab').forEach(function(btn) {
+        var isActive = btn.getAttribute('data-tab') === tabId;
+        btn.style.background = isActive ? '#000' : '';
+        btn.style.color      = isActive ? '#fff' : '';
+      });
+    }
+  </script>
 </head>
 <body>
 
@@ -609,40 +623,6 @@
   </div>
 </div>
 <div id="toast" class="toast"></div>
-
-<script>
-  function switchTab(tabId) {
-    var signupPanel = document.getElementById('signup-panel');
-    var loginPanel  = document.getElementById('login-panel');
-    if (!signupPanel || !loginPanel) return;
-
-    if (tabId === 'signup') {
-      signupPanel.style.display = 'block';
-      loginPanel.style.display  = 'none';
-    } else {
-      signupPanel.style.display = 'none';
-      loginPanel.style.display  = 'block';
-    }
-
-    document.querySelectorAll('.tab').forEach(function(btn) {
-      if (btn.dataset.tab === tabId) {
-        btn.style.background = 'var(--primary)';
-        btn.style.color = 'white';
-      } else {
-        btn.style.background = '';
-        btn.style.color = '';
-      }
-    });
-  }
-
-  // Make sure the initial state is correct as soon as the DOM is ready
-  document.addEventListener('DOMContentLoaded', function() {
-    var signupPanel = document.getElementById('signup-panel');
-    var loginPanel  = document.getElementById('login-panel');
-    if (signupPanel) signupPanel.style.display = 'block';
-    if (loginPanel)  loginPanel.style.display  = 'none';
-  });
-</script>
 
 <div id="app" style="display: none;">
   <div class="header">
