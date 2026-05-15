@@ -23,6 +23,7 @@
             --input-focus: #4f46e5;
             --error-bg: #fef2f2;
             --error-text: #dc2626;
+            --error-border: #fecaca;
             --success-bg: #f0fdf4;
             --success-text: #16a34a;
             --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
@@ -62,7 +63,7 @@
             75% { background-position: 0% 100%; }
         }
 
-        /* ===== AUTH CARD CONTAINER ===== */
+        /* ===== AUTH CARD ===== */
         .auth-wrapper {
             width: 100%;
             max-width: 440px;
@@ -113,7 +114,6 @@
         .brand h1 { font-size: 1.6rem; font-weight: 700; letter-spacing: -0.5px; }
         .brand p { font-size: 0.9rem; color: var(--text-secondary); margin-top: 4px; }
 
-        /* Tabs */
         .tabs {
             display: flex;
             background: #f3f4f6;
@@ -137,7 +137,6 @@
         .tabs button.active { background: #ffffff; color: var(--primary); box-shadow: var(--shadow-sm); }
         .tabs button:disabled { opacity: 0.5; cursor: not-allowed; }
 
-        /* Form panels */
         .form-step {
             display: none;
             flex-direction: column;
@@ -312,16 +311,21 @@
             border-color: #fca5a5;
         }
 
-        .home-content {
+        .home-panel {
             flex: 1;
             padding: 32px 24px;
             max-width: 900px;
             margin: 0 auto;
             width: 100%;
+            display: none;
+            animation: fadeSlideIn 0.3s ease;
         }
+        .home-panel.active { display: block; }
+
         .home-header { margin-bottom: 28px; }
         .home-header h2 { font-size: 1.8rem; font-weight: 700; }
         .home-header p { color: var(--text-secondary); margin-top: 4px; }
+
         .home-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
@@ -349,16 +353,26 @@
         .home-card h3 { font-size: 1rem; font-weight: 600; margin-bottom: 6px; }
         .home-card p { font-size: 0.85rem; color: var(--text-secondary); }
 
+        .placeholder-panel {
+            background: white;
+            border-radius: var(--radius);
+            padding: 40px;
+            text-align: center;
+            color: var(--text-secondary);
+            box-shadow: var(--shadow-sm);
+        }
+        .placeholder-panel h3 { color: var(--text); margin-bottom: 12px; }
+
         @media (max-width: 640px) {
             .navbar { padding: 0 16px; }
-            .home-content { padding: 24px 16px; }
+            .home-panel { padding: 24px 16px; }
             .home-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
 
-    <!-- ===== AUTH AREA (login / signup / profile setup) ===== -->
+    <!-- ===== AUTH AREA ===== -->
     <div class="auth-wrapper" id="authWrapper">
         <div class="card" id="authCard">
             <div class="brand">
@@ -372,7 +386,6 @@
                 <p id="brandSubtitle">Connect &amp; chat with friends</p>
             </div>
 
-            <!-- Tab buttons -->
             <div class="tabs" id="tabContainer">
                 <button id="tabLogin" class="active" data-step="login">Sign In</button>
                 <button id="tabSignup" data-step="signup">Create Account</button>
@@ -414,7 +427,7 @@
                 </button>
             </div>
 
-            <!-- Step 3: Profile Setup (hidden until signup) -->
+            <!-- Step 3: Profile Setup -->
             <div class="form-step" id="stepProfile">
                 <div id="profileMessage" class="message"></div>
                 <div class="form-group">
@@ -443,10 +456,10 @@
                     </svg>
                 </div>
                 <span class="nav-title">TamTam</span>
-                <div class="nav-tabs">
-                    <button class="nav-tab active">Home</button>
-                    <button class="nav-tab">Messages</button>
-                    <button class="nav-tab">Settings</button>
+                <div class="nav-tabs" id="homeNavTabs">
+                    <button class="nav-tab active" data-panel="home">Home</button>
+                    <button class="nav-tab" data-panel="messages">Messages</button>
+                    <button class="nav-tab" data-panel="settings">Settings</button>
                 </div>
             </div>
             <div class="nav-right">
@@ -457,7 +470,9 @@
                 <button class="btn-signout" id="signoutBtn">Sign Out</button>
             </div>
         </nav>
-        <main class="home-content">
+
+        <!-- Home Panels -->
+        <div class="home-panel active" id="panelHome">
             <div class="home-header">
                 <h2>Welcome back! 👋</h2>
                 <p>Here's what's happening with your chats today.</p>
@@ -492,7 +507,21 @@
                     <p>Customize your chat theme and notifications.</p>
                 </div>
             </div>
-        </main>
+        </div>
+
+        <div class="home-panel" id="panelMessages">
+            <div class="placeholder-panel">
+                <h3>💬 Messages</h3>
+                <p>Your conversations will appear here. Start a new chat!</p>
+            </div>
+        </div>
+
+        <div class="home-panel" id="panelSettings">
+            <div class="placeholder-panel">
+                <h3>⚙️ Settings</h3>
+                <p>Update your profile, change password, or adjust notifications.</p>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -513,9 +542,7 @@
             const db = firebase.firestore();
 
             // ==================== DOM ELEMENTS ====================
-            // Auth wrapper & steps
             const authWrapper = document.getElementById('authWrapper');
-            const authCard = document.getElementById('authCard');
             const tabLogin = document.getElementById('tabLogin');
             const tabSignup = document.getElementById('tabSignup');
             const stepLogin = document.getElementById('stepLogin');
@@ -523,14 +550,12 @@
             const stepProfile = document.getElementById('stepProfile');
             const brandSubtitle = document.getElementById('brandSubtitle');
 
-            // Login fields
             const loginEmail = document.getElementById('loginEmail');
             const loginPassword = document.getElementById('loginPassword');
             const loginBtn = document.getElementById('loginBtn');
             const loginBtnText = document.getElementById('loginBtnText');
             const loginMessage = document.getElementById('loginMessage');
 
-            // Signup fields
             const signupEmail = document.getElementById('signupEmail');
             const signupPassword = document.getElementById('signupPassword');
             const signupConfirm = document.getElementById('signupConfirm');
@@ -538,26 +563,28 @@
             const signupBtnText = document.getElementById('signupBtnText');
             const signupMessage = document.getElementById('signupMessage');
 
-            // Profile fields
             const profileUsername = document.getElementById('profileUsername');
             const profileBio = document.getElementById('profileBio');
             const saveProfileBtn = document.getElementById('saveProfileBtn');
             const saveProfileBtnText = document.getElementById('saveProfileBtnText');
             const profileMessage = document.getElementById('profileMessage');
 
-            // Home screen
             const homeContainer = document.getElementById('homeContainer');
             const avatarCircle = document.getElementById('avatarCircle');
             const navbarEmail = document.getElementById('navbarEmail');
             const signoutBtn = document.getElementById('signoutBtn');
 
-            // ==================== HELPER FUNCTIONS ====================
+            // Home panels
+            const panelHome = document.getElementById('panelHome');
+            const panelMessages = document.getElementById('panelMessages');
+            const panelSettings = document.getElementById('panelSettings');
+            const homeNavTabs = document.querySelectorAll('#homeNavTabs .nav-tab');
+
+            // ==================== HELPERS ====================
             function showStep(stepId) {
                 [stepLogin, stepSignup, stepProfile].forEach(s => s.classList.remove('active'));
-                const target = document.getElementById(stepId);
-                if (target) target.classList.add('active');
+                document.getElementById(stepId).classList.add('active');
 
-                // Update tab buttons (only login/signup tabs are visible)
                 if (stepId === 'stepLogin') {
                     tabLogin.classList.add('active');
                     tabSignup.classList.remove('active');
@@ -569,7 +596,6 @@
                     tabLogin.disabled = false;
                     tabSignup.disabled = false;
                 } else if (stepId === 'stepProfile') {
-                    // Disable both tabs when profile is active
                     tabLogin.classList.remove('active');
                     tabSignup.classList.remove('active');
                     tabLogin.disabled = true;
@@ -577,15 +603,8 @@
                 }
             }
 
-            function clearMessage(el) {
-                el.textContent = '';
-                el.className = 'message';
-            }
-
-            function setMessage(el, text, type) {
-                el.textContent = text;
-                el.className = 'message ' + type;
-            }
+            function clearMessage(el) { el.textContent = ''; el.className = 'message'; }
+            function setMessage(el, text, type) { el.textContent = text; el.className = 'message ' + type; }
 
             function setLoading(btn, btnText, isLoading, originalText) {
                 if (isLoading) {
@@ -604,15 +623,25 @@
                 const email = user.email || 'User';
                 navbarEmail.textContent = email;
                 avatarCircle.textContent = email.charAt(0).toUpperCase();
+                // Activate Home tab by default
+                switchHomeTab('home');
+            }
+
+            function switchHomeTab(panelName) {
+                [panelHome, panelMessages, panelSettings].forEach(p => p.classList.remove('active'));
+                document.getElementById('panel' + panelName.charAt(0).toUpperCase() + panelName.slice(1)).classList.add('active');
+                homeNavTabs.forEach(tab => {
+                    tab.classList.remove('active');
+                    if (tab.dataset.panel === panelName) tab.classList.add('active');
+                });
             }
 
             function goToAuth() {
                 homeContainer.classList.remove('active');
                 document.body.classList.remove('home-view');
                 authWrapper.style.display = 'block';
-                // Reset to login step
                 showStep('stepLogin');
-                // Clear all inputs and messages
+                // Clear inputs
                 loginEmail.value = '';
                 loginPassword.value = '';
                 signupEmail.value = '';
@@ -633,35 +662,30 @@
                 saveProfileBtnText.textContent = 'Save & Continue';
             }
 
-            // ==================== TAB SWITCHING ====================
+            // ==================== AUTH TABS ====================
             tabLogin.addEventListener('click', () => showStep('stepLogin'));
             tabSignup.addEventListener('click', () => showStep('stepSignup'));
 
             // ==================== AUTH STATE OBSERVER ====================
             auth.onAuthStateChanged(async (user) => {
                 if (user) {
-                    // Check if profile exists in Firestore
                     try {
                         const doc = await db.collection('users').doc(user.uid).get();
                         if (doc.exists && doc.data().username) {
-                            // Profile already set -> go home
                             goToHome(user);
                         } else {
-                            // No profile yet -> show profile setup
                             authWrapper.style.display = 'block';
                             homeContainer.classList.remove('active');
                             document.body.classList.remove('home-view');
                             showStep('stepProfile');
                             brandSubtitle.textContent = 'Complete your profile';
-                            // Pre-fill email if needed? Not necessary.
-                            // Clear profile fields for fresh entry
                             profileUsername.value = '';
                             profileBio.value = '';
                             clearMessage(profileMessage);
                         }
                     } catch (err) {
                         console.error('Error checking profile:', err);
-                        goToHome(user); // fallback
+                        goToHome(user);
                     }
                 } else {
                     goToAuth();
@@ -672,7 +696,6 @@
             loginBtn.addEventListener('click', async () => {
                 const email = loginEmail.value.trim();
                 const password = loginPassword.value;
-
                 clearMessage(loginMessage);
                 if (!email) { setMessage(loginMessage, 'Please enter your email.', 'error'); loginEmail.focus(); return; }
                 if (!password) { setMessage(loginMessage, 'Please enter your password.', 'error'); loginPassword.focus(); return; }
@@ -705,7 +728,6 @@
                 const email = signupEmail.value.trim();
                 const password = signupPassword.value;
                 const confirm = signupConfirm.value;
-
                 clearMessage(signupMessage);
                 if (!email) { setMessage(signupMessage, 'Please enter your email.', 'error'); signupEmail.focus(); return; }
                 if (!password) { setMessage(signupMessage, 'Please create a password.', 'error'); signupPassword.focus(); return; }
@@ -715,7 +737,6 @@
                 setLoading(signupBtn, signupBtnText, true, 'Create Account');
                 try {
                     await auth.createUserWithEmailAndPassword(email, password);
-                    // The observer will detect no profile -> show stepProfile
                 } catch (error) {
                     let msg = 'An error occurred.';
                     switch (error.code) {
@@ -740,7 +761,6 @@
                 const username = profileUsername.value.trim();
                 const bio = profileBio.value.trim();
                 const user = auth.currentUser;
-
                 clearMessage(profileMessage);
                 if (!user) { setMessage(profileMessage, 'You must be logged in.', 'error'); return; }
                 if (!username) { setMessage(profileMessage, 'Please enter a username.', 'error'); profileUsername.focus(); return; }
@@ -754,13 +774,20 @@
                         email: user.email,
                         updatedAt: firebase.firestore.FieldValue.serverTimestamp()
                     }, { merge: true });
-                    // Observer will fire again, find the profile, and go to home
                 } catch (error) {
                     console.error('Profile save error:', error);
                     setMessage(profileMessage, 'Failed to save profile. Try again.', 'error');
                 } finally {
                     setLoading(saveProfileBtn, saveProfileBtnText, false, 'Save & Continue');
                 }
+            });
+
+            // ==================== HOME TABS ====================
+            homeNavTabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const panel = tab.dataset.panel;
+                    switchHomeTab(panel);
+                });
             });
 
             // ==================== SIGN OUT ====================
@@ -772,15 +799,6 @@
                     goToAuth();
                 }
             });
-
-            // ==================== HOME TABS (cosmetic) ====================
-            document.querySelectorAll('.nav-tab').forEach(tab => {
-                tab.addEventListener('click', () => {
-                    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
-                    tab.classList.add('active');
-                });
-            });
-
         })();
     </script>
 </body>
