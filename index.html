@@ -566,7 +566,7 @@
       <div class="tab" data-tab="login" onclick="switchTab('login')">Sign in</div>
     </div>
     <!-- SIGNUP -->
-    <div id="signup-panel" class="step-group active">
+    <div id="signup-panel" class="step-group active" style="display:block;">
       <div id="step-0" class="step-pane active">
         <div class="field"><input type="text" id="signup-name" placeholder="Your name"></div>
         <div class="field"><input type="email" id="signup-email" placeholder="Email"></div>
@@ -593,7 +593,7 @@
       </div>
     </div>
     <!-- LOGIN -->
-    <div id="login-panel" class="step-group">
+    <div id="login-panel" class="step-group" style="display:none;">
       <div class="field"><input type="text" id="login-email" placeholder="Email or LOVE-XXXX-XXXX"></div>
       <div class="field"><input type="password" id="login-password" placeholder="Password"></div>
       <button class="btn" id="do-login">Sign in</button>
@@ -611,21 +611,37 @@
 <div id="toast" class="toast"></div>
 
 <script>
-  // Tab switching — plain script so it works regardless of module load state
   function switchTab(tabId) {
     var signupPanel = document.getElementById('signup-panel');
     var loginPanel  = document.getElementById('login-panel');
-    signupPanel.classList.remove('active');
-    loginPanel.classList.remove('active');
+    if (!signupPanel || !loginPanel) return;
+
     if (tabId === 'signup') {
-      signupPanel.classList.add('active');
+      signupPanel.style.display = 'block';
+      loginPanel.style.display  = 'none';
     } else {
-      loginPanel.classList.add('active');
+      signupPanel.style.display = 'none';
+      loginPanel.style.display  = 'block';
     }
+
     document.querySelectorAll('.tab').forEach(function(btn) {
-      btn.classList.toggle('active', btn.dataset.tab === tabId);
+      if (btn.dataset.tab === tabId) {
+        btn.style.background = 'var(--primary)';
+        btn.style.color = 'white';
+      } else {
+        btn.style.background = '';
+        btn.style.color = '';
+      }
     });
   }
+
+  // Make sure the initial state is correct as soon as the DOM is ready
+  document.addEventListener('DOMContentLoaded', function() {
+    var signupPanel = document.getElementById('signup-panel');
+    var loginPanel  = document.getElementById('login-panel');
+    if (signupPanel) signupPanel.style.display = 'block';
+    if (loginPanel)  loginPanel.style.display  = 'none';
+  });
 </script>
 
 <div id="app" style="display: none;">
