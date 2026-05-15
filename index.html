@@ -541,6 +541,10 @@
             let currentPartnerId = null;
             let currentChatId = null;
 
+            // ===== Auth tab switching =====
+            tabLogin.addEventListener('click', () => showStep('stepLogin'));
+            tabSignup.addEventListener('click', () => showStep('stepSignup'));
+
             // ===== Dark mode =====
             function applyDarkMode(isDark) {
                 if (isDark) { document.body.classList.add('dark'); darkModeToggle.classList.add('active'); localStorage.setItem('darkMode', 'true'); }
@@ -922,6 +926,7 @@
                         partnerCode: code, partnerId: null,
                         updatedAt: firebase.firestore.FieldValue.serverTimestamp()
                     }, { merge: true });
+                    goToHome(user, username);
                 } catch (error) { setMessage(profileMessage, 'Save failed.', 'error'); }
                 finally { setLoading(saveProfileBtn, saveProfileBtnText, false, 'Save & Continue'); }
             });
