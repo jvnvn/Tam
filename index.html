@@ -534,7 +534,7 @@
             <div class="nav-right">
                 <div class="user-badge">
                     <div class="avatar-circle" id="avatarCircle">?</div>
-                    <span id="navbarEmail">user@example.com</span>
+                    <span id="navbarDisplayName">user</span>
                 </div>
                 <button class="btn-signout" id="signoutBtn">Sign Out</button>
             </div>
@@ -663,7 +663,7 @@
             // Home
             const homeContainer = document.getElementById('homeContainer');
             const avatarCircle = document.getElementById('avatarCircle');
-            const navbarEmail = document.getElementById('navbarEmail');
+            const navbarDisplayName = document.getElementById('navbarDisplayName');
             const signoutBtn = document.getElementById('signoutBtn');
             const homeNavTabs = document.querySelectorAll('#homeNavTabs .nav-tab');
             const panelHome = document.getElementById('panelHome');
@@ -687,7 +687,7 @@
             const settingsMessage = document.getElementById('settingsMessage');
 
             let currentUser = null;
-            let allUsers = []; // cache for people search
+            let allUsers = [];
             let unsubscribeMessages = null;
 
             // ==================== HELPERS ====================
@@ -719,6 +719,11 @@
                 }
             }
 
+            function updateNavbarDisplay(username) {
+                navbarDisplayName.textContent = username || 'User';
+                avatarCircle.textContent = (username || '?').charAt(0).toUpperCase();
+            }
+
             function switchHomeTab(panelName) {
                 [panelHome, panelMessages, panelPeople, panelSettings].forEach(p => p.classList.remove('active'));
                 document.getElementById('panel' + panelName.charAt(0).toUpperCase() + panelName.slice(1)).classList.add('active');
@@ -728,14 +733,12 @@
                 });
             }
 
-            function goToHome(user) {
+            function goToHome(user, username) {
                 authWrapper.style.display = 'none';
                 homeContainer.classList.add('active');
                 document.body.classList.add('home-view');
                 currentUser = user;
-                const email = user.email || 'User';
-                navbarEmail.textContent = email;
-                avatarCircle.textContent = email.charAt(0).toUpperCase();
+                updateNavbarDisplay(username || user.email);
                 switchHomeTab('home');
                 loadSettingsProfile();
                 loadPeople();
@@ -768,7 +771,7 @@
                     try {
                         const doc = await db.collection('users').doc(user.uid).get();
                         if (doc.exists && doc.data().username) {
-                            goToHome(user);
+                            goToHome(user, doc.data().username);
                         } else {
                             authWrapper.style.display = 'block';
                             homeContainer.classList.remove('active');
@@ -780,7 +783,7 @@
                         }
                     } catch (err) {
                         console.error('Profile check error:', err);
-                        goToHome(user);
+                        goToHome(user, user.email);
                     }
                 } else {
                     goToAuth();
@@ -952,9 +955,9 @@
                         username, bio,
                         updatedAt: firebase.firestore.FieldValue.serverTimestamp()
                     });
+                    // Update navbar with new username
+                    updateNavbarDisplay(username);
                     setMessage(settingsMessage, 'Profile updated!', 'success');
-                    // update navbar badge if needed
-                    navbarEmail.textContent = auth.currentUser.email;
                 } catch (error) {
                     setMessage(settingsMessage, 'Update failed.', 'error');
                 } finally {
