@@ -11,8 +11,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 
     <style>
-        /* … (keep all previous CSS unchanged) … */
-        /* I'll include the complete style block for copy-paste convenience */
+        /* ========== (All previous styles kept, plus modal additions) ========== */
         :root {
             --bg: #f3f4f6;
             --card-bg: #ffffff;
@@ -226,14 +225,34 @@
         .profile-card .profile-detail { margin-top: 12px; }
         .profile-card .username { font-size: 1.2rem; font-weight: 700; }
         .profile-card .bio { font-size: 0.85rem; color: var(--text-secondary); margin-top: 4px; }
-        .btn-outline {
-            background: transparent; border: 2px solid var(--primary); color: var(--primary);
-            padding: 8px 16px; border-radius: 20px; font-weight: 600; cursor: pointer;
-            transition: all var(--transition); margin-top: 12px; width: auto; display: inline-block;
-        }
-        .btn-outline:hover { background: var(--primary); color: white; }
+        .profile-card .edit-hint { font-size: 0.7rem; color: var(--primary); margin-top: 8px; opacity: 0.7; }
 
-        /* Chat, people, settings etc. unchanged */
+        /* ===== MODAL ===== */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.4); display: none; align-items: center;
+            justify-content: center; z-index: 100; backdrop-filter: blur(4px);
+        }
+        .modal-overlay.active { display: flex; }
+        .modal {
+            background: white; border-radius: var(--radius); padding: 32px;
+            width: 90%; max-width: 420px; box-shadow: var(--shadow-lg);
+            animation: cardIn 0.3s ease;
+        }
+        .modal h3 { font-size: 1.3rem; margin-bottom: 20px; }
+        .modal-actions { display: flex; gap: 12px; margin-top: 20px; }
+        .btn-cancel {
+            background: #f3f4f6; border: none; color: var(--text);
+            padding: 12px 20px; border-radius: var(--radius-sm); font-weight: 600;
+            cursor: pointer; flex: 1;
+        }
+        .btn-save {
+            background: var(--primary); color: white; border: none;
+            padding: 12px 20px; border-radius: var(--radius-sm); font-weight: 600;
+            cursor: pointer; flex: 1;
+        }
+
+        /* Chat / people etc. unchanged */
         .chat-container { background: white; border-radius: var(--radius); box-shadow: var(--shadow-sm); display: flex; flex-direction: column; height: calc(100vh - 150px); min-height: 400px; }
         .chat-messages { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 12px; }
         .chat-message { display: flex; gap: 10px; max-width: 80%; }
@@ -255,7 +274,7 @@
 </head>
 <body>
 
-    <!-- ===== AUTH AREA (unchanged) ===== -->
+    <!-- ===== AUTH AREA ===== -->
     <div class="auth-wrapper" id="authWrapper">
         <div class="card" id="authCard">
             <div class="brand">
@@ -352,14 +371,13 @@
             </div>
         </nav>
 
-        <!-- Panel: Home (now includes profile card) -->
+        <!-- Home Panel -->
         <div class="home-panel active" id="panelHome">
             <div class="home-header">
                 <h2>Welcome back! 👋</h2>
                 <p>Here's what's happening with your chats today.</p>
             </div>
             <div class="home-grid">
-                <!-- Global Chat card -->
                 <div class="home-card" onclick="document.querySelector('[data-panel=messages]').click()">
                     <div class="icon-bg">
                         <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
@@ -369,7 +387,6 @@
                     <h3>Global Chat</h3>
                     <p>Join the conversation with everyone.</p>
                 </div>
-                <!-- Find People card -->
                 <div class="home-card" onclick="document.querySelector('[data-panel=people]').click()">
                     <div class="icon-bg">
                         <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
@@ -379,7 +396,7 @@
                     <h3>Find People</h3>
                     <p>Discover and connect with others.</p>
                 </div>
-                <!-- Profile card (NEW) -->
+                <!-- Profile card – click to open edit modal -->
                 <div class="home-card profile-card" id="profileSummaryCard">
                     <div class="icon-bg">
                         <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -391,7 +408,7 @@
                         <div class="username" id="profileCardUsername">-</div>
                         <div class="bio" id="profileCardBio">No bio yet</div>
                     </div>
-                    <button class="btn-outline" id="editProfileFromHome">Edit Profile</button>
+                    <div class="edit-hint">Click to edit ✎</div>
                 </div>
             </div>
         </div>
@@ -433,9 +450,28 @@
         </div>
     </div>
 
+    <!-- Edit Profile Modal -->
+    <div class="modal-overlay" id="editProfileModal">
+        <div class="modal">
+            <h3>Edit Profile</h3>
+            <div id="modalMessage" class="message"></div>
+            <div class="form-group">
+                <label for="modalUsername">Username</label>
+                <input type="text" id="modalUsername" placeholder="Your username" autocomplete="off">
+            </div>
+            <div class="form-group">
+                <label for="modalBio">Bio</label>
+                <textarea id="modalBio" placeholder="Tell us about yourself"></textarea>
+            </div>
+            <div class="modal-actions">
+                <button class="btn-cancel" id="closeModalBtn">Cancel</button>
+                <button class="btn-save" id="saveModalBtn">Save</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         (function() {
-            // ==================== FIREBASE CONFIG ====================
             const firebaseConfig = {
                 apiKey: "AIzaSyBZvyyRS_NKLbXswsm_JTWVb45Eg6Mc_QA",
                 authDomain: "tam-tam-eef1f.firebaseapp.com",
@@ -450,8 +486,7 @@
             const auth = firebase.auth();
             const db = firebase.firestore();
 
-            // ==================== DOM REFERENCES ====================
-            // (All existing references kept, plus new ones)
+            // DOM elements
             const authWrapper = document.getElementById('authWrapper');
             const tabLogin = document.getElementById('tabLogin');
             const tabSignup = document.getElementById('tabSignup');
@@ -496,17 +531,24 @@
             const updateProfileBtn = document.getElementById('updateProfileBtn');
             const settingsMessage = document.getElementById('settingsMessage');
 
-            // New profile card elements
             const profileCardUsername = document.getElementById('profileCardUsername');
             const profileCardBio = document.getElementById('profileCardBio');
-            const editProfileFromHome = document.getElementById('editProfileFromHome');
+            const profileSummaryCard = document.getElementById('profileSummaryCard');
+
+            // Modal elements
+            const editProfileModal = document.getElementById('editProfileModal');
+            const modalUsername = document.getElementById('modalUsername');
+            const modalBio = document.getElementById('modalBio');
+            const saveModalBtn = document.getElementById('saveModalBtn');
+            const closeModalBtn = document.getElementById('closeModalBtn');
+            const modalMessage = document.getElementById('modalMessage');
 
             let currentUser = null;
             let allUsers = [];
             let unsubscribeMessages = null;
 
-            // ==================== HELPERS ====================
-            function showStep(stepId) { /* ... unchanged ... */
+            // Helpers
+            function showStep(stepId) {
                 [stepLogin, stepSignup, stepProfile].forEach(s => s.classList.remove('active'));
                 document.getElementById(stepId).classList.add('active');
                 if (stepId === 'stepLogin') {
@@ -556,7 +598,6 @@
                     tab.classList.remove('active');
                     if (tab.dataset.panel === panelName) tab.classList.add('active');
                 });
-                // Load profile card data when home tab is shown
                 if (panelName === 'home') loadProfileForHomeCard();
             }
 
@@ -572,7 +613,7 @@
                 attachChatListener();
             }
 
-            function goToAuth() { /* ... unchanged ... */
+            function goToAuth() {
                 homeContainer.classList.remove('active');
                 document.body.classList.remove('home-view');
                 authWrapper.style.display = 'block';
@@ -588,11 +629,62 @@
                 if (unsubscribeMessages) { unsubscribeMessages(); unsubscribeMessages = null; }
             }
 
-            // ==================== AUTH TABS ====================
+            // Modal functions
+            async function openEditModal() {
+                if (!auth.currentUser) return;
+                const doc = await db.collection('users').doc(auth.currentUser.uid).get();
+                if (doc.exists) {
+                    modalUsername.value = doc.data().username || '';
+                    modalBio.value = doc.data().bio || '';
+                }
+                clearMessage(modalMessage);
+                editProfileModal.classList.add('active');
+            }
+
+            function closeEditModal() {
+                editProfileModal.classList.remove('active');
+            }
+
+            // Modal save
+            saveModalBtn.addEventListener('click', async () => {
+                const username = modalUsername.value.trim();
+                const bio = modalBio.value.trim();
+                clearMessage(modalMessage);
+                if (!username || username.length < 3) {
+                    setMessage(modalMessage, 'Username min 3 characters.', 'error');
+                    return;
+                }
+                saveModalBtn.disabled = true;
+                saveModalBtn.textContent = 'Saving...';
+                try {
+                    await db.collection('users').doc(auth.currentUser.uid).update({
+                        username, bio,
+                        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                    updateNavbarDisplay(username);
+                    await loadProfileForHomeCard();
+                    closeEditModal();
+                } catch (error) {
+                    setMessage(modalMessage, 'Save failed.', 'error');
+                } finally {
+                    saveModalBtn.disabled = false;
+                    saveModalBtn.textContent = 'Save';
+                }
+            });
+
+            closeModalBtn.addEventListener('click', closeEditModal);
+            editProfileModal.addEventListener('click', (e) => {
+                if (e.target === editProfileModal) closeEditModal();
+            });
+
+            // Profile card click -> open modal
+            profileSummaryCard.addEventListener('click', openEditModal);
+
+            // Auth tabs
             tabLogin.addEventListener('click', () => showStep('stepLogin'));
             tabSignup.addEventListener('click', () => showStep('stepSignup'));
 
-            // ==================== AUTH STATE OBSERVER ====================
+            // Auth observer
             auth.onAuthStateChanged(async (user) => {
                 if (user) {
                     try {
@@ -617,9 +709,7 @@
                 }
             });
 
-            // ==================== LOGIN / SIGNUP / PROFILE SETUP (unchanged) ====================
-            // (Keeping the same logic as before)
-
+            // Login, signup, profile setup (unchanged)
             loginBtn.addEventListener('click', async () => {
                 const email = loginEmail.value.trim();
                 const password = loginPassword.value;
@@ -679,7 +769,7 @@
                 finally { setLoading(saveProfileBtn, saveProfileBtnText, false, 'Save & Continue'); }
             });
 
-            // ==================== HOME TABS ====================
+            // Home tabs
             homeNavTabs.forEach(tab => {
                 tab.addEventListener('click', () => {
                     switchHomeTab(tab.dataset.panel);
@@ -688,32 +778,18 @@
                 });
             });
 
-            // "Edit Profile" button on home card -> go to Settings tab
-            editProfileFromHome.addEventListener('click', () => {
-                switchHomeTab('settings');
-                // Also highlight the Settings nav tab
-                homeNavTabs.forEach(t => t.classList.remove('active'));
-                document.querySelector('.nav-tab[data-panel="settings"]').classList.add('active');
-                loadSettingsProfile();
-            });
-
-            // ==================== GLOBAL CHAT (unchanged) ====================
+            // Chat, people, settings (same as before)
             function attachChatListener() {
                 if (unsubscribeMessages) unsubscribeMessages();
                 unsubscribeMessages = db.collection('messages')
-                    .orderBy('timestamp', 'asc')
-                    .limit(100)
+                    .orderBy('timestamp', 'asc').limit(100)
                     .onSnapshot(snapshot => {
                         chatMessages.innerHTML = '';
                         snapshot.forEach(doc => {
                             const msg = doc.data();
                             const div = document.createElement('div');
                             div.className = 'chat-message' + (msg.userId === auth.currentUser.uid ? ' own' : '');
-                            div.innerHTML = `
-                                <div>
-                                    <div class="msg-user">${msg.username || 'Unknown'}</div>
-                                    <div class="msg-bubble">${msg.text}</div>
-                                </div>`;
+                            div.innerHTML = `<div><div class="msg-user">${msg.username || 'Unknown'}</div><div class="msg-bubble">${msg.text}</div></div>`;
                             chatMessages.appendChild(div);
                         });
                         chatMessages.scrollTop = chatMessages.scrollHeight;
@@ -733,7 +809,6 @@
             });
             chatInput.addEventListener('keydown', e => { if (e.key === 'Enter') sendChatBtn.click(); });
 
-            // ==================== PEOPLE ====================
             async function loadPeople() {
                 const snapshot = await db.collection('users').get();
                 allUsers = [];
@@ -753,7 +828,6 @@
                 renderPeople(filtered);
             });
 
-            // ==================== SETTINGS ====================
             async function loadSettingsProfile() {
                 if (!auth.currentUser) return;
                 const doc = await db.collection('users').doc(auth.currentUser.uid).get();
@@ -778,7 +852,6 @@
                     });
                     updateNavbarDisplay(username);
                     setMessage(settingsMessage, 'Profile updated!', 'success');
-                    // Also update home card if visible
                     if (panelHome.classList.contains('active')) loadProfileForHomeCard();
                 } catch (error) { setMessage(settingsMessage, 'Update failed.', 'error'); }
                 finally {
@@ -787,7 +860,6 @@
                 }
             });
 
-            // ==================== SIGN OUT ====================
             signoutBtn.addEventListener('click', async () => {
                 if (unsubscribeMessages) { unsubscribeMessages(); unsubscribeMessages = null; }
                 await auth.signOut();
