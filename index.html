@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TamTam - Login</title>
+    <title>TamTam - Home</title>
 
     <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js">
@@ -13,7 +13,7 @@
 
     <style>
         :root {
-            --bg: #f0f2f5;
+            --bg: #f3f4f6;
             --card-bg: #ffffff;
             --text: #1a1a2e;
             --text-secondary: #6b7280;
@@ -27,12 +27,13 @@
             --error-border: #fecaca;
             --success-bg: #f0fdf4;
             --success-text: #16a34a;
-            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
-            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07), 0 2px 4px rgba(0, 0, 0, 0.06);
-            --shadow-lg: 0 20px 25px rgba(0, 0, 0, 0.1), 0 10px 10px rgba(0, 0, 0, 0.04);
+            --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+            --shadow-md: 0 4px 6px rgba(0,0,0,0.07), 0 2px 4px rgba(0,0,0,0.06);
+            --shadow-lg: 0 20px 25px rgba(0,0,0,0.1), 0 10px 10px rgba(0,0,0,0.04);
             --radius: 16px;
             --radius-sm: 10px;
-            --transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition: 0.2s cubic-bezier(0.4,0,0.2,1);
+            --nav-height: 64px;
         }
 
         * {
@@ -52,32 +53,28 @@
             justify-content: center;
             padding: 20px;
             color: var(--text);
+            transition: background 0.3s;
+        }
+        body.logged-in {
+            background: var(--bg);
+            animation: none;
+            display: block;
+            padding: 0;
         }
 
         @keyframes gradientShift {
-            0%,
-            100% {
-                background-position: 0% 50%;
-            }
-            25% {
-                background-position: 100% 0%;
-            }
-            50% {
-                background-position: 100% 100%;
-            }
-            75% {
-                background-position: 0% 100%;
-            }
+            0%,100% { background-position: 0% 50%; }
+            25% { background-position: 100% 0%; }
+            50% { background-position: 100% 100%; }
+            75% { background-position: 0% 100%; }
         }
 
-        /* Main Container */
-        .container {
+        /* ========== AUTH CARD (centered) ========== */
+        .auth-container {
             width: 100%;
             max-width: 440px;
-            position: relative;
+            margin: auto;
         }
-
-        /* Card */
         .card {
             background: var(--card-bg);
             border-radius: var(--radius);
@@ -87,30 +84,20 @@
             position: relative;
             overflow: hidden;
         }
-
         .card::before {
             content: '';
             position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
+            top: 0; left: 0; right: 0;
             height: 4px;
             background: linear-gradient(90deg, #4f46e5, #7c3aed, #a855f7, #4f46e5);
             background-size: 200% 100%;
             animation: shimmer 3s ease infinite;
         }
-
         @keyframes shimmer {
-            0%,
-            100% {
-                background-position: 0% 50%;
-            }
-            50% {
-                background-position: 100% 50%;
-            }
+            0%,100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
         }
 
-        /* Logo / Brand */
         .brand {
             text-align: center;
             margin-bottom: 32px;
@@ -119,16 +106,14 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            width: 56px;
-            height: 56px;
+            width: 56px; height: 56px;
             border-radius: 16px;
             background: linear-gradient(135deg, #4f46e5, #7c3aed);
             margin-bottom: 14px;
-            box-shadow: 0 8px 24px rgba(79, 70, 229, 0.3);
+            box-shadow: 0 8px 24px rgba(79,70,229,0.3);
         }
         .brand .icon-wrapper svg {
-            width: 28px;
-            height: 28px;
+            width: 28px; height: 28px;
             color: white;
         }
         .brand h1 {
@@ -143,14 +128,12 @@
             margin-top: 4px;
         }
 
-        /* Tabs */
         .tabs {
             display: flex;
             background: #f3f4f6;
             border-radius: 30px;
             padding: 4px;
             margin-bottom: 28px;
-            position: relative;
         }
         .tabs button {
             flex: 1;
@@ -163,20 +146,13 @@
             font-size: 0.9rem;
             color: var(--text-secondary);
             transition: all var(--transition);
-            position: relative;
-            z-index: 1;
-            letter-spacing: 0.2px;
         }
         .tabs button.active {
             background: #ffffff;
             color: var(--primary);
             box-shadow: var(--shadow-sm);
         }
-        .tabs button:hover:not(.active) {
-            color: #374151;
-        }
 
-        /* Forms */
         .form-panel {
             display: none;
             flex-direction: column;
@@ -188,14 +164,8 @@
         }
 
         @keyframes fadeSlideIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .form-group {
@@ -207,7 +177,6 @@
             font-size: 0.85rem;
             font-weight: 600;
             color: #374151;
-            letter-spacing: 0.2px;
         }
         .form-group input {
             padding: 13px 16px;
@@ -218,18 +187,13 @@
             transition: all var(--transition);
             outline: none;
             color: var(--text);
-            letter-spacing: 0.3px;
         }
         .form-group input:focus {
             border-color: var(--input-focus);
-            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.08);
+            box-shadow: 0 0 0 4px rgba(79,70,229,0.08);
             background: #fff;
         }
-        .form-group input::placeholder {
-            color: #cbd5e1;
-        }
 
-        /* Buttons */
         .btn {
             width: 100%;
             padding: 14px;
@@ -240,23 +204,17 @@
             cursor: pointer;
             transition: all var(--transition);
             letter-spacing: 0.3px;
-            position: relative;
-            overflow: hidden;
         }
         .btn-primary {
             background: linear-gradient(135deg, #4f46e5, #7c3aed);
             color: #fff;
-            box-shadow: 0 4px 16px rgba(79, 70, 229, 0.3);
+            box-shadow: 0 4px 16px rgba(79,70,229,0.3);
             margin-top: 6px;
         }
         .btn-primary:hover {
             background: linear-gradient(135deg, #4338ca, #6d28d9);
-            box-shadow: 0 6px 22px rgba(79, 70, 229, 0.4);
+            box-shadow: 0 6px 22px rgba(79,70,229,0.4);
             transform: translateY(-1px);
-        }
-        .btn-primary:active {
-            transform: translateY(0);
-            box-shadow: 0 2px 8px rgba(79, 70, 229, 0.3);
         }
         .btn-primary:disabled {
             opacity: 0.6;
@@ -264,8 +222,21 @@
             transform: none;
             box-shadow: none;
         }
+        .btn-signout {
+            background: #fff;
+            color: #dc2626;
+            border: 2px solid #fecaca;
+            box-shadow: none;
+            margin-top: 8px;
+            font-weight: 600;
+        }
+        .btn-signout:hover {
+            background: #fef2f2;
+            border-color: #fca5a5;
+            box-shadow: 0 4px 14px rgba(220,38,38,0.12);
+            transform: translateY(-1px);
+        }
 
-        /* Messages */
         .message {
             padding: 12px 16px;
             border-radius: var(--radius-sm);
@@ -288,123 +259,194 @@
             border: 1px solid #bbf7d0;
         }
 
-        /* Divider */
-        .divider {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            color: #cbd5e1;
-            font-size: 0.8rem;
-            margin: 4px 0;
-        }
-        .divider::before,
-        .divider::after {
-            content: '';
-            flex: 1;
-            height: 1px;
-            background: #e5e7eb;
-        }
-
-        /* Footer text */
-        .footer-text {
-            text-align: center;
-            font-size: 0.8rem;
-            color: var(--text-secondary);
-            margin-top: 8px;
-        }
-
-        /* Dashboard (hidden by default) */
-        .dashboard {
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-            gap: 20px;
-            animation: fadeSlideIn 0.4s ease;
-        }
-        .dashboard.active {
-            display: flex;
-        }
-        .dashboard .welcome-avatar {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #4f46e5, #a855f7);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2rem;
-            color: white;
-            font-weight: 700;
-            box-shadow: 0 8px 28px rgba(79, 70, 229, 0.3);
-        }
-        .dashboard h2 {
-            font-size: 1.4rem;
-            font-weight: 700;
-            letter-spacing: -0.3px;
-        }
-        .dashboard .user-email {
-            color: var(--text-secondary);
-            font-size: 0.9rem;
-            background: #f3f4f6;
-            padding: 8px 18px;
-            border-radius: 20px;
-        }
-        .dashboard .btn-signout {
-            background: #fff;
-            color: #dc2626;
-            border: 2px solid #fecaca;
-            box-shadow: none;
-            margin-top: 8px;
-            font-weight: 600;
-        }
-        .dashboard .btn-signout:hover {
-            background: #fef2f2;
-            border-color: #fca5a5;
-            box-shadow: 0 4px 14px rgba(220, 38, 38, 0.12);
-            transform: translateY(-1px);
-        }
-
-        /* Spinner */
         .spinner {
             display: inline-block;
-            width: 18px;
-            height: 18px;
-            border: 2.5px solid rgba(255, 255, 255, 0.4);
+            width: 18px; height: 18px;
+            border: 2.5px solid rgba(255,255,255,0.4);
             border-top-color: #fff;
             border-radius: 50%;
             animation: spin 0.7s linear infinite;
             vertical-align: middle;
             margin-right: 6px;
         }
-        @keyframes spin {
-            to {
-                transform: rotate(360deg);
-            }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ========== HOME SCREEN (after login) ========== */
+        .home-container {
+            display: none;
+            width: 100%;
+            min-height: 100vh;
+            background: var(--bg);
+            flex-direction: column;
+        }
+        .home-container.active {
+            display: flex;
         }
 
-        /* Responsive */
-        @media (max-width: 480px) {
-            .card {
-                padding: 28px 20px;
-                border-radius: 20px;
+        /* Top navigation bar */
+        .navbar {
+            height: var(--nav-height);
+            background: white;
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 24px;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .nav-logo {
+            width: 36px; height: 36px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+        .nav-logo svg {
+            width: 20px; height: 20px;
+        }
+        .nav-title {
+            font-weight: 700;
+            font-size: 1.1rem;
+            letter-spacing: -0.3px;
+        }
+        .nav-tabs {
+            display: flex;
+            gap: 8px;
+        }
+        .nav-tab {
+            padding: 8px 16px;
+            border-radius: 20px;
+            background: transparent;
+            border: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all var(--transition);
+        }
+        .nav-tab.active {
+            background: #e0e7ff;
+            color: var(--primary);
+        }
+        .nav-tab:hover:not(.active) {
+            background: #f3f4f6;
+        }
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .user-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #f3f4f6;
+            padding: 6px 14px;
+            border-radius: 30px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text);
+        }
+        .avatar-circle {
+            width: 30px; height: 30px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+        }
+
+        /* Home content area */
+        .home-content {
+            flex: 1;
+            padding: 32px 24px;
+            max-width: 900px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        .home-header {
+            margin-bottom: 28px;
+        }
+        .home-header h2 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+        .home-header p {
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+        .home-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 20px;
+        }
+        .home-card {
+            background: white;
+            border-radius: var(--radius);
+            padding: 24px;
+            box-shadow: var(--shadow-sm);
+            transition: all var(--transition);
+            cursor: pointer;
+        }
+        .home-card:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+        .home-card .icon-bg {
+            width: 44px; height: 44px;
+            border-radius: 14px;
+            background: #e0e7ff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 14px;
+            color: var(--primary);
+        }
+        .home-card h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+        .home-card p {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            line-height: 1.4;
+        }
+
+        @media (max-width: 640px) {
+            .navbar {
+                padding: 0 16px;
             }
-            .brand h1 {
-                font-size: 1.4rem;
+            .nav-tab {
+                padding: 6px 12px;
+                font-size: 0.8rem;
             }
-            .tabs button {
-                font-size: 0.82rem;
-                padding: 10px 14px;
+            .home-content {
+                padding: 24px 16px;
+            }
+            .home-grid {
+                grid-template-columns: 1fr;
             }
         }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <!-- Card -->
+    <!-- ==================== AUTH CARD ==================== -->
+    <div class="auth-container" id="authContainer">
         <div class="card" id="authCard">
-            <!-- Brand -->
             <div class="brand">
                 <div class="icon-wrapper">
                     <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -416,7 +458,6 @@
                 <p>Connect &amp; chat with friends</p>
             </div>
 
-            <!-- Tabs -->
             <div class="tabs" id="tabContainer">
                 <button class="active" data-tab="login">Sign In</button>
                 <button data-tab="signup">Create Account</button>
@@ -436,7 +477,6 @@
                 <button class="btn btn-primary" id="loginBtn">
                     <span id="loginBtnText">Sign In</span>
                 </button>
-                <p class="footer-text">Welcome back! 👋</p>
             </div>
 
             <!-- Signup Form -->
@@ -457,20 +497,76 @@
                 <button class="btn btn-primary" id="signupBtn">
                     <span id="signupBtnText">Create Account</span>
                 </button>
-                <p class="footer-text">Join the community! 🎉</p>
             </div>
+        </div>
+    </div>
 
-            <!-- Dashboard (hidden initially) -->
-            <div class="dashboard" id="dashboardPanel">
-                <div class="welcome-avatar" id="avatarInitial">?</div>
-                <h2>Welcome!</h2>
-                <span class="user-email" id="userEmailDisplay">user@example.com</span>
-                <p style="color:#6b7280;font-size:0.9rem;">You are now signed in to TamTam.</p>
-                <button class="btn btn-primary btn-signout" id="signoutBtn">
+    <!-- ==================== HOME SCREEN (visible after login) ==================== -->
+    <div class="home-container" id="homeContainer">
+        <!-- Top navigation bar -->
+        <nav class="navbar">
+            <div class="nav-left">
+                <div class="nav-logo">
+                    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M8.625 9.75a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375m-13.5 3.01c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.184-4.183a1.14 1.14 0 0 1 .778-.332 48.294 48.294 0 0 0 5.83-.498c1.585-.233 2.708-1.626 2.708-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z" />
+                    </svg>
+                </div>
+                <span class="nav-title">TamTam</span>
+                <div class="nav-tabs">
+                    <button class="nav-tab active" data-home-tab="home">Home</button>
+                    <button class="nav-tab" data-home-tab="messages">Messages</button>
+                    <button class="nav-tab" data-home-tab="settings">Settings</button>
+                </div>
+            </div>
+            <div class="nav-right">
+                <div class="user-badge">
+                    <div class="avatar-circle" id="avatarCircle">?</div>
+                    <span id="navbarEmail">user@example.com</span>
+                </div>
+                <button class="btn btn-signout" id="signoutBtn" style="width:auto; padding:8px 20px; margin:0;">
                     Sign Out
                 </button>
             </div>
-        </div>
+        </nav>
+
+        <!-- Home tab content -->
+        <main class="home-content" id="homeTabContent">
+            <div class="home-header">
+                <h2>Welcome back! 👋</h2>
+                <p>Here's what's happening with your chats today.</p>
+            </div>
+            <div class="home-grid">
+                <div class="home-card">
+                    <div class="icon-bg">
+                        <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 0 1-.923 1.785A5.969 5.969 0 0 0 6 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337Z" />
+                        </svg>
+                    </div>
+                    <h3>New Messages</h3>
+                    <p>You have 3 unread conversations waiting.</p>
+                </div>
+                <div class="home-card">
+                    <div class="icon-bg">
+                        <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z" />
+                        </svg>
+                    </div>
+                    <h3>Friends Online</h3>
+                    <p>5 friends are active right now.</p>
+                </div>
+                <div class="home-card">
+                    <div class="icon-bg">
+                        <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28Z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                        </svg>
+                    </div>
+                    <h3>Preferences</h3>
+                    <p>Customize your chat theme and notifications.</p>
+                </div>
+            </div>
+        </main>
     </div>
 
     <script>
@@ -486,29 +582,20 @@
                 measurementId: "G-Z6T5XXBHF1"
             };
 
-            // Initialize Firebase
             firebase.initializeApp(firebaseConfig);
             const auth = firebase.auth();
 
             // ==================== DOM ELEMENTS ====================
-            const authCard = document.getElementById('authCard');
+            // Auth UI
+            const authContainer = document.getElementById('authContainer');
             const tabContainer = document.getElementById('tabContainer');
             const loginPanel = document.getElementById('loginPanel');
             const signupPanel = document.getElementById('signupPanel');
-            const dashboardPanel = document.getElementById('dashboardPanel');
-            const brandSection = authCard.querySelector('.brand');
-
-            // Tabs
-            const tabButtons = tabContainer.querySelectorAll('button');
-
-            // Login
             const loginEmail = document.getElementById('loginEmail');
             const loginPassword = document.getElementById('loginPassword');
             const loginBtn = document.getElementById('loginBtn');
             const loginBtnText = document.getElementById('loginBtnText');
             const loginMessage = document.getElementById('loginMessage');
-
-            // Signup
             const signupEmail = document.getElementById('signupEmail');
             const signupPassword = document.getElementById('signupPassword');
             const signupConfirm = document.getElementById('signupConfirm');
@@ -516,45 +603,38 @@
             const signupBtnText = document.getElementById('signupBtnText');
             const signupMessage = document.getElementById('signupMessage');
 
-            // Dashboard
-            const avatarInitial = document.getElementById('avatarInitial');
-            const userEmailDisplay = document.getElementById('userEmailDisplay');
+            // Home UI
+            const homeContainer = document.getElementById('homeContainer');
+            const avatarCircle = document.getElementById('avatarCircle');
+            const navbarEmail = document.getElementById('navbarEmail');
             const signoutBtn = document.getElementById('signoutBtn');
+            const navTabs = document.querySelectorAll('.nav-tab');
 
-            // ==================== TAB SWITCHING ====================
-            tabButtons.forEach(button => {
+            // ==================== TAB SWITCHING (Auth forms) ====================
+            tabContainer.querySelectorAll('button').forEach(button => {
                 button.addEventListener('click', () => {
                     const tab = button.getAttribute('data-tab');
-
-                    // Update active tab button
-                    tabButtons.forEach(b => b.classList.remove('active'));
+                    tabContainer.querySelectorAll('button').forEach(b => b.classList.remove('active'));
                     button.classList.add('active');
-
-                    // Show/hide panels
                     if (tab === 'login') {
                         loginPanel.classList.add('active');
                         signupPanel.classList.remove('active');
-                        dashboardPanel.classList.remove('active');
-                        brandSection.style.display = '';
-                        clearMessages();
-                    } else if (tab === 'signup') {
+                    } else {
                         signupPanel.classList.add('active');
                         loginPanel.classList.remove('active');
-                        dashboardPanel.classList.remove('active');
-                        brandSection.style.display = '';
-                        clearMessages();
                     }
+                    clearAuthMessages();
                 });
             });
 
-            function clearMessages() {
+            function clearAuthMessages() {
                 loginMessage.textContent = '';
                 loginMessage.className = 'message';
                 signupMessage.textContent = '';
                 signupMessage.className = 'message';
             }
 
-            function showMessage(element, text, type) {
+            function showAuthMessage(element, text, type) {
                 element.textContent = text;
                 element.className = 'message ' + type;
             }
@@ -573,48 +653,46 @@
             // ==================== AUTH STATE OBSERVER ====================
             auth.onAuthStateChanged((user) => {
                 if (user) {
-                    // User is signed in
-                    showDashboard(user);
+                    showHomeScreen(user);
                 } else {
-                    // User is signed out
-                    showAuthForms();
+                    showAuthScreen();
                 }
             });
 
-            function showDashboard(user) {
-                loginPanel.classList.remove('active');
-                signupPanel.classList.remove('active');
-                dashboardPanel.classList.add('active');
-                brandSection.style.display = '';
-                tabContainer.style.display = 'none';
+            function showHomeScreen(user) {
+                // Hide auth container, show home
+                authContainer.style.display = 'none';
+                homeContainer.classList.add('active');
+                document.body.classList.add('logged-in');
 
                 // Set user info
                 const email = user.email || 'User';
-                userEmailDisplay.textContent = email;
-                const initial = email.charAt(0).toUpperCase();
-                avatarInitial.textContent = initial;
+                navbarEmail.textContent = email;
+                avatarCircle.textContent = email.charAt(0).toUpperCase();
 
-                clearMessages();
+                // Activate Home tab by default
+                document.querySelector('.nav-tab[data-home-tab="home"]').classList.add('active');
+                // Ensure Home content is visible (it's the only content area)
             }
 
-            function showAuthForms() {
-                dashboardPanel.classList.remove('active');
-                brandSection.style.display = '';
-                tabContainer.style.display = 'flex';
+            function showAuthScreen() {
+                authContainer.style.display = 'flex';
+                homeContainer.classList.remove('active');
+                document.body.classList.remove('logged-in');
 
-                // Reset to login tab
-                tabButtons.forEach(b => b.classList.remove('active'));
-                tabButtons[0].classList.add('active');
+                // Reset auth forms to login tab
+                tabContainer.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+                tabContainer.querySelector('button[data-tab="login"]').classList.add('active');
                 loginPanel.classList.add('active');
                 signupPanel.classList.remove('active');
 
-                // Clear inputs
+                // Clear inputs and messages
                 loginEmail.value = '';
                 loginPassword.value = '';
                 signupEmail.value = '';
                 signupPassword.value = '';
                 signupConfirm.value = '';
-                clearMessages();
+                clearAuthMessages();
 
                 // Re-enable buttons
                 loginBtn.disabled = false;
@@ -628,63 +706,40 @@
                 const email = loginEmail.value.trim();
                 const password = loginPassword.value;
 
-                // Clear previous message
-                showMessage(loginMessage, '', '');
-
-                // Validation
+                showAuthMessage(loginMessage, '', '');
                 if (!email) {
-                    showMessage(loginMessage, 'Please enter your email address.', 'error');
+                    showAuthMessage(loginMessage, 'Please enter your email address.', 'error');
                     loginEmail.focus();
                     return;
                 }
                 if (!password) {
-                    showMessage(loginMessage, 'Please enter your password.', 'error');
+                    showAuthMessage(loginMessage, 'Please enter your password.', 'error');
                     loginPassword.focus();
                     return;
                 }
 
                 setLoading(loginBtn, loginBtnText, true);
-
                 try {
                     await auth.signInWithEmailAndPassword(email, password);
-                    // onAuthStateChanged will handle UI update
                 } catch (error) {
-                    let errorMsg = 'An error occurred. Please try again.';
+                    let msg = 'An error occurred.';
                     switch (error.code) {
-                        case 'auth/invalid-email':
-                            errorMsg = 'Invalid email format.';
-                            break;
-                        case 'auth/user-not-found':
-                            errorMsg = 'No account found with this email.';
-                            break;
-                        case 'auth/wrong-password':
-                            errorMsg = 'Incorrect password. Please try again.';
-                            break;
-                        case 'auth/invalid-credential':
-                            errorMsg = 'Invalid email or password. Please check your credentials.';
-                            break;
-                        case 'auth/too-many-requests':
-                            errorMsg = 'Too many attempts. Please wait a moment and try again.';
-                            break;
-                        case 'auth/user-disabled':
-                            errorMsg = 'This account has been disabled.';
-                            break;
-                        default:
-                            errorMsg = error.message || errorMsg;
+                        case 'auth/invalid-email': msg = 'Invalid email format.'; break;
+                        case 'auth/user-not-found': msg = 'No account found with this email.'; break;
+                        case 'auth/wrong-password': msg = 'Incorrect password.'; break;
+                        case 'auth/invalid-credential': msg = 'Invalid email or password.'; break;
+                        case 'auth/too-many-requests': msg = 'Too many attempts. Please wait.'; break;
+                        case 'auth/user-disabled': msg = 'This account has been disabled.'; break;
+                        default: msg = error.message || msg;
                     }
-                    showMessage(loginMessage, errorMsg, 'error');
+                    showAuthMessage(loginMessage, msg, 'error');
                 } finally {
                     setLoading(loginBtn, loginBtnText, false);
                 }
             });
 
-            // Login on Enter key
-            loginPassword.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter') loginBtn.click();
-            });
-            loginEmail.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter') loginPassword.focus();
-            });
+            loginPassword.addEventListener('keydown', (e) => { if (e.key === 'Enter') loginBtn.click(); });
+            loginEmail.addEventListener('keydown', (e) => { if (e.key === 'Enter') loginPassword.focus(); });
 
             // ==================== SIGNUP ====================
             signupBtn.addEventListener('click', async () => {
@@ -692,80 +747,66 @@
                 const password = signupPassword.value;
                 const confirm = signupConfirm.value;
 
-                // Clear previous message
-                showMessage(signupMessage, '', '');
-
-                // Validation
+                showAuthMessage(signupMessage, '', '');
                 if (!email) {
-                    showMessage(signupMessage, 'Please enter your email address.', 'error');
+                    showAuthMessage(signupMessage, 'Please enter your email.', 'error');
                     signupEmail.focus();
                     return;
                 }
                 if (!password) {
-                    showMessage(signupMessage, 'Please create a password.', 'error');
+                    showAuthMessage(signupMessage, 'Please create a password.', 'error');
                     signupPassword.focus();
                     return;
                 }
                 if (password.length < 6) {
-                    showMessage(signupMessage, 'Password must be at least 6 characters.', 'error');
+                    showAuthMessage(signupMessage, 'Password must be at least 6 characters.', 'error');
                     signupPassword.focus();
                     return;
                 }
                 if (password !== confirm) {
-                    showMessage(signupMessage, 'Passwords do not match.', 'error');
+                    showAuthMessage(signupMessage, 'Passwords do not match.', 'error');
                     signupConfirm.focus();
                     return;
                 }
 
                 setLoading(signupBtn, signupBtnText, true);
-
                 try {
                     await auth.createUserWithEmailAndPassword(email, password);
-                    // onAuthStateChanged will handle UI update
                 } catch (error) {
-                    let errorMsg = 'An error occurred. Please try again.';
+                    let msg = 'An error occurred.';
                     switch (error.code) {
-                        case 'auth/email-already-in-use':
-                            errorMsg = 'An account with this email already exists.';
-                            break;
-                        case 'auth/invalid-email':
-                            errorMsg = 'Invalid email format.';
-                            break;
-                        case 'auth/weak-password':
-                            errorMsg = 'Password is too weak. Use at least 6 characters.';
-                            break;
-                        case 'auth/operation-not-allowed':
-                            errorMsg = 'Email/password sign-up is not enabled.';
-                            break;
-                        default:
-                            errorMsg = error.message || errorMsg;
+                        case 'auth/email-already-in-use': msg = 'An account with this email already exists.'; break;
+                        case 'auth/invalid-email': msg = 'Invalid email format.'; break;
+                        case 'auth/weak-password': msg = 'Password is too weak. Use at least 6 characters.'; break;
+                        case 'auth/operation-not-allowed': msg = 'Email/password sign-up is not enabled.'; break;
+                        default: msg = error.message || msg;
                     }
-                    showMessage(signupMessage, errorMsg, 'error');
+                    showAuthMessage(signupMessage, msg, 'error');
                 } finally {
                     setLoading(signupBtn, signupBtnText, false);
                 }
             });
 
-            // Signup on Enter key
-            signupConfirm.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter') signupBtn.click();
-            });
-            signupEmail.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter') signupPassword.focus();
-            });
-            signupPassword.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter') signupConfirm.focus();
+            signupConfirm.addEventListener('keydown', (e) => { if (e.key === 'Enter') signupBtn.click(); });
+            signupEmail.addEventListener('keydown', (e) => { if (e.key === 'Enter') signupPassword.focus(); });
+            signupPassword.addEventListener('keydown', (e) => { if (e.key === 'Enter') signupConfirm.focus(); });
+
+            // ==================== HOME TAB NAVIGATION ====================
+            navTabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    navTabs.forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    // For now, all home tabs show the same content (you can expand later)
+                });
             });
 
-            // ==================== SIGNOUT ====================
+            // ==================== SIGN OUT ====================
             signoutBtn.addEventListener('click', async () => {
                 try {
                     await auth.signOut();
-                    // onAuthStateChanged will handle UI update
                 } catch (error) {
                     console.error('Sign out error:', error);
-                    // Force UI reset even if signOut fails
-                    showAuthForms();
+                    showAuthScreen(); // force reset if needed
                 }
             });
         })();
