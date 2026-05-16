@@ -1360,14 +1360,14 @@
             // Generate LiveKit JWT token in the browser using Web Crypto API
             async function generateLiveKitToken(roomName, participantName) {
                 const now = Math.floor(Date.now() / 1000);
-                // LiveKit requires grants nested under "video"
                 const payload = {
                     iss: LIVEKIT_API_KEY,
                     sub: participantName,
                     iat: now,
                     exp: now + 3600,
                     nbf: now,
-                    grants: {
+                    // LiveKit expects "video" at top level (not nested under "grants")
+                    video: {
                         roomJoin: true,
                         room: roomName,
                         canPublish: true,
@@ -1379,7 +1379,6 @@
 
                 function b64url(obj) {
                     const str = JSON.stringify(obj);
-                    // Safe UTF-8 base64url encode
                     const bytes = new TextEncoder().encode(str);
                     let binary = '';
                     bytes.forEach(b => binary += String.fromCharCode(b));
@@ -1493,8 +1492,18 @@
                         livekitRoom = null;
                     }
 
-                    const token = await generateLiveKitToken(roomName, participantName + '_' + currentUser.uid.slice(0, 6));
-                    console.log('[LiveKit] Connecting to room:', roomName, 'as:', participantName);
+                    // Sanitize: LiveKit identity must be alphanumeric + hyphens/underscores only
+                    const safeIdentity = (participantName + '_' + currentUser.uid.slice(0, 8))
+                        .replace(/[^a-zA-Z0-9_\-]/g, '_')
+                        .slice(0, 64);
+
+                    const token = await generateLiveKitToken(roomName, safeIdentity);
+                    console.log('[LiveKit] Token generated, identity:', safeIdentity, 'room:', roomName);
+                    // Log decoded payload for debugging
+                    try {
+                        const parts = token.split('.');
+                        console.log('[LiveKit] Token payload:', JSON.parse(atob(parts[1].replace(/-/g,'+').replace(/_/g,'/'))));
+                    } catch(e) {}
 
                     const room = new LivekitClient.Room({
                         adaptiveStream: true,
