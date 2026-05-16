@@ -1355,6 +1355,7 @@
             let micEnabled = true;
             let camEnabled = true;
             let callSignalUnsub = null;
+            let callStatusUnsub = null; // unsub for the caller's snapshot listener
             let incomingCallData = null;
 
             // Generate LiveKit JWT token in the browser using Web Crypto API
@@ -1434,6 +1435,9 @@
                     const partnerName = partnerDoc.exists ? partnerDoc.data().username : 'Partner';
                     const roomName = 'call_' + [currentUser.uid, currentPartnerId].sort().join('_');
 
+                    // Delete any stale call doc from a previous call before creating a fresh one
+                    try { await db.collection('calls').doc(roomName).delete(); } catch(e) {}
+
                     // Signal the partner via Firestore
                     await db.collection('calls').doc(roomName).set({
                         roomName,
@@ -1459,17 +1463,20 @@
 
                     // Listen for callee to answer or decline
                     const callRef = db.collection('calls').doc(roomName);
-                    const unsub = callRef.onSnapshot(snap => {
+                    if (callStatusUnsub) { callStatusUnsub(); callStatusUnsub = null; }
+                    callStatusUnsub = callRef.onSnapshot(snap => {
                         if (!snap.exists) return;
                         const data = snap.data();
+                        // Ignore stale doc that still has old status from a previous call
+                        if (data.callerId !== currentUser.uid) return;
                         if (data.status === 'accepted') {
-                            unsub();
+                            if (callStatusUnsub) { callStatusUnsub(); callStatusUnsub = null; }
                             document.getElementById('callingScreen').style.display = 'none';
                             document.getElementById('videoGrid').style.display = 'flex';
                             document.getElementById('callStatusDot').style.display = 'block';
                             startCallTimer();
                         } else if (data.status === 'declined' || data.status === 'ended') {
-                            unsub();
+                            if (callStatusUnsub) { callStatusUnsub(); callStatusUnsub = null; }
                             endCallCleanup();
                             document.getElementById('callingScreen').style.display = 'flex';
                             document.getElementById('callingStatus').textContent = data.status === 'declined' ? 'Call declined.' : 'Call ended.';
@@ -1626,27 +1633,63 @@
 
             function endCallCleanup() {
                 stopCallTimer();
-                if (livekitRoom) { livekitRoom.disconnect(); livekitRoom = null; }
-                // Detach all tracks
-                const remoteVideo = document.getElementById('remoteVideo');
-                remoteVideo.srcObject = null; remoteVideo.style.display = 'none';
-                const localVideo = document.getElementById('localVideo');
-                localVideo.srcObject = null; localVideo.style.display = 'none';
+
+                // Unsubscribe any active call status listener
+                if (callStatusUnsub) { callStatusUnsub(); callStatusUnsub = null; }
+
+                // Disconnect LiveKit room (stops all tracks + publishing)
+                if (livekitRoom) {
+                    try { livekitRoom.disconnect(); } catch(e) {}
+                    livekitRoom = null;
+                }
+
+                // Replace video elements with fresh ones to fully clear any attached tracks
+                function resetVideo(id, muted) {
+                    const old = document.getElementById(id);
+                    if (!old) return;
+                    const fresh = document.createElement('video');
+                    fresh.id = id;
+                    fresh.autoplay = true;
+                    fresh.playsInline = true;
+                    if (muted) fresh.muted = true;
+                    fresh.style.display = 'none';
+                    fresh.style.width = '100%';
+                    fresh.style.height = '100%';
+                    fresh.style.objectFit = 'cover';
+                    old.parentNode.replaceChild(fresh, old);
+                }
+                resetVideo('remoteVideo', false);
+                resetVideo('localVideo', true);
+
+                // Show avatars again
                 document.getElementById('remoteAvatar').style.display = 'flex';
                 document.getElementById('localAvatar').style.display = 'flex';
+
+                // Reset mic/cam button icons and state
                 micEnabled = true; camEnabled = true;
-                document.getElementById('toggleMicBtn').classList.remove('active');
-                document.getElementById('toggleCamBtn').classList.remove('active');
-                // Clean up audio elements added to body
-                document.querySelectorAll('audio').forEach(a => a.remove());
+                const micBtn = document.getElementById('toggleMicBtn');
+                const camBtn = document.getElementById('toggleCamBtn');
+                micBtn.textContent = '🎙️'; micBtn.classList.remove('active');
+                camBtn.textContent = '📷'; camBtn.classList.remove('active');
+
+                // Remove any injected audio elements
+                document.querySelectorAll('audio[id^="lk-audio-"]').forEach(a => a.remove());
             }
 
             function closeCallOverlay() {
                 endCallCleanup();
+                // Hide the entire overlay
                 document.getElementById('videoCallOverlay').classList.remove('active');
+                // Reset all sub-screens so next call starts clean
                 document.getElementById('callingScreen').style.display = 'none';
                 document.getElementById('videoGrid').style.display = 'none';
                 document.getElementById('callStatusDot').style.display = 'none';
+                document.getElementById('callTimer').textContent = '';
+                document.getElementById('callPartnerName').textContent = 'Video Call';
+                document.getElementById('callingStatus').textContent = 'Calling...';
+                document.getElementById('remoteLabel').textContent = 'Partner';
+                document.getElementById('remoteAvatar').textContent = '?';
+                document.getElementById('localAvatar').textContent = '?';
             }
 
             function hideIncomingBanner() {
@@ -1721,6 +1764,7 @@
             signoutBtn.addEventListener('click', async () => {
                 if (livekitRoom) { livekitRoom.disconnect(); livekitRoom = null; }
                 closeCallOverlay();
+                if (callStatusUnsub) { callStatusUnsub(); callStatusUnsub = null; }
                 if (callSignalUnsub) { callSignalUnsub(); callSignalUnsub = null; }
                 if (unsubscribeChat) { unsubscribeChat(); unsubscribeChat = null; }
                 if (unsubscribeUserDoc) { unsubscribeUserDoc(); unsubscribeUserDoc = null; }
