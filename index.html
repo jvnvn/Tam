@@ -18,6 +18,64 @@
     <!-- LiveKit Client SDK (pinned version, UMD global = LivekitClient) -->
     <script src="https://cdn.jsdelivr.net/npm/livekit-client@2.5.4/dist/livekit-client.umd.min.js"></script>
 
+
+    <!-- ===== CHAT HEAD ===== -->
+    <div id="chatHead" class="chat-head" style="display:none;" aria-label="Open chat">
+        <div class="chat-head-avatar" id="chatHeadAvatar">?</div>
+        <div class="chat-head-badge" id="chatHeadBadge" style="display:none;">0</div>
+        <div class="chat-head-pulse"></div>
+    </div>
+
+    <!-- ===== CHAT HEAD POPUP ===== -->
+    <div id="chatHeadPopup" class="chat-head-popup" style="display:none;">
+        <div class="chp-header">
+            <div class="chp-header-info">
+                <div class="chp-avatar" id="chpAvatar">?</div>
+                <div>
+                    <div class="chp-name" id="chpName">Partner</div>
+                    <div class="chp-status">● Online</div>
+                </div>
+            </div>
+            <div class="chp-header-btns">
+                <button class="chp-btn" id="chpVideoBtn" title="Video call">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m15.75 10.5 4.72-4.72a.75.75 0 0 1 1.28.53v11.38a.75.75 0 0 1-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 0 0 2.25-2.25v-9a2.25 2.25 0 0 0-2.25-2.25h-9A2.25 2.25 0 0 0 2.25 7.5v9a2.25 2.25 0 0 0 2.25 2.25Z"/></svg>
+                </button>
+                <button class="chp-btn" id="chpFullBtn" title="Open Messages tab">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15"/></svg>
+                </button>
+                <button class="chp-btn chp-close" id="chpCloseBtn" title="Close">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+        </div>
+        <div class="chp-messages" id="chpMessages"></div>
+        <div class="chp-input-row">
+            <input type="text" id="chpInput" placeholder="Message…" autocomplete="off">
+            <button id="chpSendBtn">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3.478 2.405a.75.75 0 0 0-.926.94l2.432 7.905H13.5a.75.75 0 0 1 0 1.5H4.984l-2.432 7.905a.75.75 0 0 0 .926.94 60.519 60.519 0 0 0 18.445-8.986.75.75 0 0 0 0-1.218A60.517 60.517 0 0 0 3.478 2.405Z"/></svg>
+            </button>
+        </div>
+    </div>
+
+    <!-- ===== PICTURE-IN-PICTURE CALL ===== -->
+    <div id="pipCall" class="pip-call" style="display:none;">
+        <video id="pipRemoteVideo" autoplay playsinline></video>
+        <video id="pipLocalVideo"  autoplay playsinline muted class="pip-local-vid"></video>
+        <div class="pip-overlay">
+            <div class="pip-name" id="pipPartnerName">Partner</div>
+            <div class="pip-timer" id="pipTimer">00:00</div>
+        </div>
+        <div class="pip-controls">
+            <button class="pip-ctrl-btn" id="pipExpandBtn" title="Expand call">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M5.25 5.25a3 3 0 0 0-3 3v10.5a3 3 0 0 0 3 3h13.5a3 3 0 0 0 3-3V8.25a3 3 0 0 0-3-3H5.25Z"/><path fill="white" d="M7 14H5v5h5v-2H7v-3zm0-4H5V5h5v2H7v3zm10 7h-3v2h5v-5h-2v3zm-3-10V5h5v5h-2V7h-3z"/></svg>
+            </button>
+            <button class="pip-ctrl-btn pip-end" id="pipEndBtn" title="End call">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M1.5 8.67v8.58a3 3 0 0 0 3 3h15a3 3 0 0 0 3-3V8.67l-8.928 5.493a3 3 0 0 1-3.144 0L1.5 8.67Z"/><path d="M22.5 6.908V6.75a3 3 0 0 0-3-3h-15a3 3 0 0 0-3 3v.158l9.714 5.978a1.5 1.5 0 0 0 1.572 0L22.5 6.908Z"/></svg>
+            </button>
+        </div>
+        <div class="pip-drag-handle" id="pipDragHandle"></div>
+    </div>
+
     <script>
         // ===== TamTam Sound Engine (Web Audio API – no external files needed) =====
         const TamTamSounds = (() => {
@@ -1258,6 +1316,317 @@
             outline-offset: 2px;
         }
 
+        /* ================================================================
+           CHAT HEAD
+        ================================================================ */
+        .chat-head {
+            position: fixed;
+            z-index: 900;
+            bottom: 90px;
+            right: 20px;
+            width: 58px;
+            height: 58px;
+            border-radius: 50%;
+            cursor: grab;
+            user-select: none;
+            touch-action: none;
+            filter: drop-shadow(0 6px 18px rgba(192,85,106,0.4));
+            transition: filter 0.2s;
+        }
+        .chat-head:hover { filter: drop-shadow(0 8px 24px rgba(192,85,106,0.55)); }
+        .chat-head:active { cursor: grabbing; }
+
+        .chat-head-avatar {
+            width: 58px;
+            height: 58px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: #fff;
+            font-weight: 700;
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 3px solid #fff;
+            box-shadow: 0 4px 16px rgba(192,85,106,0.4);
+            transition: transform 0.18s cubic-bezier(0.34,1.56,0.64,1);
+            position: relative;
+            z-index: 1;
+        }
+        .chat-head:hover .chat-head-avatar { transform: scale(1.08); }
+
+        .chat-head-badge {
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            min-width: 20px;
+            height: 20px;
+            border-radius: 10px;
+            background: #ef4444;
+            color: #fff;
+            font-size: 0.68rem;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 5px;
+            border: 2px solid var(--bg);
+            z-index: 2;
+            animation: badgePop 0.3s cubic-bezier(0.34,1.56,0.64,1);
+        }
+        @keyframes badgePop {
+            0% { transform: scale(0); }
+            100% { transform: scale(1); }
+        }
+
+        /* Pulse ring */
+        .chat-head-pulse {
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            background: transparent;
+            border: 2.5px solid var(--primary);
+            opacity: 0;
+            animation: pulseRing 2.4s ease-out infinite;
+        }
+        @keyframes pulseRing {
+            0%   { transform: scale(1);   opacity: 0.7; }
+            80%  { transform: scale(1.55); opacity: 0; }
+            100% { opacity: 0; }
+        }
+
+        /* ── Chat Head Popup ── */
+        .chat-head-popup {
+            position: fixed;
+            z-index: 901;
+            bottom: 160px;
+            right: 20px;
+            width: 320px;
+            max-width: calc(100vw - 28px);
+            background: var(--card-bg);
+            border-radius: 20px;
+            box-shadow: 0 16px 48px rgba(0,0,0,0.2), 0 2px 8px rgba(0,0,0,0.08);
+            border: 1px solid var(--border);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            animation: popupIn 0.28s cubic-bezier(0.22,1,0.36,1);
+            transform-origin: bottom right;
+        }
+        @keyframes popupIn {
+            from { opacity: 0; transform: scale(0.88) translateY(12px); }
+            to   { opacity: 1; transform: scale(1)    translateY(0); }
+        }
+
+        .chp-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 14px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: white;
+        }
+        .chp-header-info { display: flex; align-items: center; gap: 10px; }
+        .chp-avatar {
+            width: 36px; height: 36px; border-radius: 50%;
+            background: rgba(255,255,255,0.25);
+            border: 2px solid rgba(255,255,255,0.5);
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 700; font-size: 0.95rem; color: white;
+        }
+        .chp-name { font-weight: 700; font-size: 0.9rem; }
+        .chp-status { font-size: 0.7rem; opacity: 0.85; margin-top: 1px; }
+        .chp-header-btns { display: flex; gap: 4px; }
+        .chp-btn {
+            width: 30px; height: 30px; border-radius: 50%;
+            background: rgba(255,255,255,0.18);
+            border: none; cursor: pointer; color: white;
+            display: flex; align-items: center; justify-content: center;
+            transition: background 0.15s;
+        }
+        .chp-btn:hover { background: rgba(255,255,255,0.32); }
+        .chp-btn svg { width: 15px; height: 15px; }
+
+        .chp-messages {
+            flex: 1;
+            max-height: 260px;
+            overflow-y: auto;
+            padding: 12px 12px 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+            background: var(--bg);
+        }
+        .chp-messages::-webkit-scrollbar { width: 3px; }
+        .chp-messages::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+        .chp-msg {
+            max-width: 80%;
+            padding: 8px 12px;
+            border-radius: 16px;
+            font-size: 0.84rem;
+            line-height: 1.45;
+            word-break: break-word;
+            animation: fadeSlideIn 0.2s ease;
+        }
+        .chp-msg.own {
+            align-self: flex-end;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+        .chp-msg.other {
+            align-self: flex-start;
+            background: var(--card-bg);
+            color: var(--text);
+            border: 1px solid var(--border);
+            border-bottom-left-radius: 4px;
+        }
+        .chp-msg-time {
+            font-size: 0.62rem;
+            opacity: 0.6;
+            margin-top: 3px;
+            text-align: right;
+        }
+
+        .chp-input-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 10px 12px;
+            border-top: 1px solid var(--border);
+            background: var(--card-bg);
+        }
+        .chp-input-row input {
+            flex: 1;
+            border: 1.5px solid var(--input-border);
+            background: var(--input-bg);
+            border-radius: 20px;
+            padding: 8px 14px;
+            font-size: 0.86rem;
+            outline: none;
+            color: var(--text);
+            font-family: 'DM Sans', sans-serif;
+            transition: border-color 0.2s;
+        }
+        .chp-input-row input:focus { border-color: var(--primary); }
+        .chp-input-row button {
+            width: 34px; height: 34px; border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            border: none; cursor: pointer; color: white;
+            display: flex; align-items: center; justify-content: center;
+            transition: transform 0.15s, box-shadow 0.15s;
+            flex-shrink: 0;
+        }
+        .chp-input-row button:hover { transform: scale(1.1); box-shadow: 0 4px 12px rgba(192,85,106,0.3); }
+        .chp-input-row button svg { width: 16px; height: 16px; }
+
+        /* ================================================================
+           PICTURE-IN-PICTURE CALL
+        ================================================================ */
+        .pip-call {
+            position: fixed;
+            z-index: 950;
+            bottom: 90px;
+            left: 20px;
+            width: 220px;
+            aspect-ratio: 16/9;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.55);
+            border: 2px solid rgba(255,255,255,0.15);
+            cursor: grab;
+            touch-action: none;
+            user-select: none;
+            animation: pipIn 0.32s cubic-bezier(0.22,1,0.36,1);
+        }
+        @keyframes pipIn {
+            from { opacity: 0; transform: scale(0.8); }
+            to   { opacity: 1; transform: scale(1); }
+        }
+        .pip-call:active { cursor: grabbing; }
+        .pip-call:hover .pip-controls { opacity: 1; }
+
+        #pipRemoteVideo {
+            width: 100%; height: 100%;
+            object-fit: cover;
+            display: block;
+            background: #111;
+        }
+        .pip-local-vid {
+            position: absolute;
+            bottom: 6px; right: 6px;
+            width: 60px; height: 45px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 1.5px solid rgba(255,255,255,0.3);
+            background: #222;
+        }
+
+        .pip-overlay {
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            padding: 8px 10px;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.6), transparent);
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+        .pip-name {
+            color: #fff;
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-shadow: 0 1px 4px rgba(0,0,0,0.5);
+        }
+        .pip-timer {
+            color: rgba(255,255,255,0.8);
+            font-size: 0.66rem;
+            font-weight: 600;
+            letter-spacing: 0.04em;
+        }
+
+        .pip-controls {
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 8px 10px;
+            background: linear-gradient(to top, rgba(0,0,0,0.65), transparent);
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        .pip-ctrl-btn {
+            width: 32px; height: 32px; border-radius: 50%;
+            background: rgba(255,255,255,0.18);
+            border: 1.5px solid rgba(255,255,255,0.35);
+            color: white; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            transition: background 0.15s, transform 0.15s;
+            backdrop-filter: blur(4px);
+        }
+        .pip-ctrl-btn:hover { background: rgba(255,255,255,0.32); transform: scale(1.1); }
+        .pip-ctrl-btn.pip-end { background: rgba(220,38,38,0.75); border-color: rgba(220,38,38,0.5); }
+        .pip-ctrl-btn.pip-end:hover { background: rgba(185,28,28,0.9); }
+        .pip-ctrl-btn svg { width: 15px; height: 15px; pointer-events: none; }
+
+        /* ── Minimize button on the full call overlay ── */
+        .btn-minimize-call {
+            position: absolute;
+            top: 16px; right: 60px;
+            width: 36px; height: 36px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.14);
+            border: none; color: white; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            backdrop-filter: blur(6px);
+            transition: background 0.15s, transform 0.15s;
+            z-index: 20;
+        }
+        .btn-minimize-call:hover { background: rgba(255,255,255,0.26); transform: scale(1.08); }
+        .btn-minimize-call svg { width: 18px; height: 18px; pointer-events: none; }
+
         /* ===== PARTNER CONNECT SECTION ===== */
         .partner-connect { border-radius: var(--radius); }
         #partnerConnectArea h4 { font-weight: 600; font-size: 0.95rem; margin-bottom: 6px; }
@@ -1536,6 +1905,10 @@
             </div>
             <span class="call-timer" id="callTimer"></span>
         </div>
+        <!-- Minimize to PiP -->
+        <button class="btn-minimize-call" id="minimizeCallBtn" title="Picture-in-picture">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 9V4.5M9 9H4.5M9 9 3.75 3.75M9 15v4.5M9 15H4.5M9 15l-5.25 5.25M15 9h4.5M15 9V4.5M15 9l5.25-5.25M15 15h4.5M15 15v4.5m0-4.5 5.25 5.25"/></svg>
+        </button>
 
         <!-- Calling / waiting screen -->
         <div id="callingScreen" class="calling-screen" style="display:none;">
@@ -1872,12 +2245,19 @@
                     document.getElementById('videoCallBtn').disabled = false;
                     attachPrivateChatListener(chatId);
                     initFeed();
+                    // ── Chat Head ──
+                    window._currentChatId  = chatId;
+                    window._currentUid     = auth.currentUser.uid;
+                    window._myUsername     = navbarDisplayName.textContent || 'Me';
+                    if (window._chatHeadShow) window._chatHeadShow(username);
+                    if (window._chatHeadInit) window._chatHeadInit(chatId, auth.currentUser.uid);
                 } else {
                     partnerConnectArea.style.display = 'block';
                     chatArea.style.display = 'none';
                     if (unsubscribeChat) { unsubscribeChat(); unsubscribeChat = null; }
                     currentChatId = null;
                     currentPartnerId = null;
+                    if (window._chatHeadHide) window._chatHeadHide();
                 }
             }
 
@@ -3209,6 +3589,9 @@
                 closeCallOverlay();
             });
 
+            // Expose for chat head popup button + PiP patch
+            window.startVideoCall   = startVideoCall;
+            window.closeCallOverlay = closeCallOverlay;
             document.getElementById('videoCallBtn').addEventListener('click', () => { startVideoCall(); });
             document.getElementById('answerCallBtn').addEventListener('click', () => { answerCall(); });
             document.getElementById('declineCallBtn').addEventListener('click', () => { declineCall(); });
@@ -3230,6 +3613,257 @@
                 locationMap = null; myMarker = null; partnerMarker = null; isSharing = false;
                 await auth.signOut();
             });
+        // ================================================================
+        //  CHAT HEAD
+        // ================================================================
+        (function() {
+            const chatHead    = document.getElementById('chatHead');
+            const chatPopup   = document.getElementById('chatHeadPopup');
+            const chpMessages = document.getElementById('chpMessages');
+            const chpInput    = document.getElementById('chpInput');
+            const chpSendBtn  = document.getElementById('chpSendBtn');
+            const chpCloseBtn = document.getElementById('chpCloseBtn');
+            const chpFullBtn  = document.getElementById('chpFullBtn');
+            const chpVideoBtn = document.getElementById('chpVideoBtn');
+            const headBadge   = document.getElementById('chatHeadBadge');
+            const headAvatar  = document.getElementById('chatHeadAvatar');
+            const chpAvatar   = document.getElementById('chpAvatar');
+            const chpNameEl   = document.getElementById('chpName');
+
+            let popupOpen = false;
+            let unreadCount = 0;
+            let chatHeadChatUnsub = null;
+            let isUserScrolledUp = false;
+
+            // ── Show chat head when partner is connected ──
+            function showChatHead(partnerName) {
+                const initial = (partnerName || '?').charAt(0).toUpperCase();
+                headAvatar.textContent = initial;
+                chpAvatar.textContent  = initial;
+                chpNameEl.textContent  = partnerName || 'Partner';
+                chatHead.style.display = 'block';
+            }
+            function hideChatHead() {
+                chatHead.style.display = 'none';
+                chatPopup.style.display = 'none';
+                popupOpen = false;
+            }
+            window._chatHeadShow = showChatHead;
+            window._chatHeadHide = hideChatHead;
+
+            // ── Draggable chat head ──
+            makeDraggable(chatHead, null, () => {
+                // tap = toggle popup
+                popupOpen = !popupOpen;
+                chatPopup.style.display = popupOpen ? 'flex' : 'none';
+                if (popupOpen) {
+                    unreadCount = 0;
+                    headBadge.style.display = 'none';
+                    chpMessages.scrollTop = chpMessages.scrollHeight;
+                }
+            });
+
+            // ── Close / full / video buttons ──
+            chpCloseBtn.addEventListener('click', () => {
+                popupOpen = false;
+                chatPopup.style.display = 'none';
+            });
+            chpFullBtn.addEventListener('click', () => {
+                // Switch to Messages tab
+                document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.home-panel').forEach(p => p.classList.remove('active'));
+                const msgTab = document.querySelector('.nav-tab[data-panel="messages"]');
+                const msgPanel = document.getElementById('panelMessages');
+                if (msgTab) msgTab.classList.add('active');
+                if (msgPanel) msgPanel.classList.add('active');
+                popupOpen = false;
+                chatPopup.style.display = 'none';
+            });
+            chpVideoBtn.addEventListener('click', () => {
+                if (typeof startVideoCall === 'function') startVideoCall();
+            });
+
+            // ── Load & mirror messages from main chat ──
+            function loadChatHeadMessages(chatId, myUid) {
+                if (chatHeadChatUnsub) { chatHeadChatUnsub(); chatHeadChatUnsub = null; }
+                chatHeadChatUnsub = db.collection('chats').doc(chatId).collection('messages')
+                    .orderBy('timestamp').limitToLast(40)
+                    .onSnapshot(snapshot => {
+                        chpMessages.innerHTML = '';
+                        snapshot.forEach(doc => {
+                            const msg = doc.data();
+                            if (msg.type && msg.type !== 'text') return; // skip files in popup
+                            const isOwn = msg.userId === myUid;
+                            const el = document.createElement('div');
+                            el.className = 'chp-msg ' + (isOwn ? 'own' : 'other');
+                            el.innerHTML = `<div>${msg.text || ''}</div>`;
+                            chpMessages.appendChild(el);
+                        });
+                        // Badge for new messages when popup is closed
+                        if (!popupOpen) {
+                            unreadCount++;
+                            headBadge.textContent = unreadCount > 9 ? '9+' : unreadCount;
+                            headBadge.style.display = 'flex';
+                        } else {
+                            chpMessages.scrollTop = chpMessages.scrollHeight;
+                        }
+                    });
+            }
+            window._chatHeadInit = loadChatHeadMessages;
+
+            // ── Send from popup ──
+            async function sendFromPopup() {
+                const text = chpInput.value.trim();
+                if (!text) return;
+                const chatId = window._currentChatId;
+                const myUid  = window._currentUid;
+                const myName = window._myUsername;
+                if (!chatId || !myUid) return;
+                chpInput.value = '';
+                await db.collection('chats').doc(chatId).collection('messages').add({
+                    text, userId: myUid, username: myName,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                chpMessages.scrollTop = chpMessages.scrollHeight;
+            }
+            chpSendBtn.addEventListener('click', sendFromPopup);
+            chpInput.addEventListener('keydown', e => { if (e.key === 'Enter') sendFromPopup(); });
+
+            // ── Draggable utility (shared by chat head + PiP) ──
+            function makeDraggable(el, handleEl, onTap) {
+                let startX, startY, origX, origY, moved = false;
+                const handle = handleEl || el;
+                function getPos() {
+                    const r = el.getBoundingClientRect();
+                    return { x: r.left, y: r.top };
+                }
+                function onStart(cx, cy) {
+                    const pos = getPos();
+                    startX = cx; startY = cy;
+                    origX = pos.x; origY = pos.y;
+                    moved = false;
+                    el.style.transition = 'none';
+                    document.addEventListener('mousemove', onMove);
+                    document.addEventListener('mouseup',   onEnd);
+                    document.addEventListener('touchmove', onTouchMove, { passive: false });
+                    document.addEventListener('touchend',  onTouchEnd);
+                }
+                function onMove(e) {
+                    const dx = e.clientX - startX, dy = e.clientY - startY;
+                    if (Math.abs(dx) > 4 || Math.abs(dy) > 4) moved = true;
+                    if (!moved) return;
+                    const nx = Math.max(0, Math.min(origX + dx, window.innerWidth  - el.offsetWidth));
+                    const ny = Math.max(0, Math.min(origY + dy, window.innerHeight - el.offsetHeight));
+                    el.style.left = nx + 'px';
+                    el.style.top  = ny + 'px';
+                    el.style.right  = 'auto';
+                    el.style.bottom = 'auto';
+                }
+                function onTouchMove(e) { e.preventDefault(); onMove(e.touches[0]); }
+                function onEnd() {
+                    document.removeEventListener('mousemove', onMove);
+                    document.removeEventListener('mouseup',   onEnd);
+                    el.style.transition = '';
+                    if (!moved && onTap) onTap();
+                }
+                function onTouchEnd() {
+                    document.removeEventListener('touchmove', onTouchMove);
+                    document.removeEventListener('touchend',  onTouchEnd);
+                    el.style.transition = '';
+                    if (!moved && onTap) onTap();
+                }
+                handle.addEventListener('mousedown',  e => { e.preventDefault(); onStart(e.clientX, e.clientY); });
+                handle.addEventListener('touchstart', e => { onStart(e.touches[0].clientX, e.touches[0].clientY); }, { passive: true });
+            }
+            window._makeDraggable = makeDraggable;
+        })();
+
+        // ================================================================
+        //  PICTURE-IN-PICTURE VIDEO CALL
+        // ================================================================
+        (function() {
+            const pipEl        = document.getElementById('pipCall');
+            const pipRemote    = document.getElementById('pipRemoteVideo');
+            const pipLocal     = document.getElementById('pipLocalVideo');
+            const pipExpandBtn = document.getElementById('pipExpandBtn');
+            const pipEndBtn    = document.getElementById('pipEndBtn');
+            const pipTimerEl   = document.getElementById('pipTimer');
+            const pipNameEl    = document.getElementById('pipPartnerName');
+            const minimizeBtn  = document.getElementById('minimizeCallBtn');
+
+            let pipTimerInterval = null;
+
+            // ── Minimize full call → PiP ──
+            minimizeBtn.addEventListener('click', () => {
+                const overlay = document.getElementById('videoCallOverlay');
+                if (!overlay.classList.contains('active')) return;
+
+                // Mirror video streams into PiP elements
+                const remoteVid = document.getElementById('remoteVideo');
+                const localVid  = document.getElementById('localVideo');
+                if (remoteVid.srcObject) pipRemote.srcObject = remoteVid.srcObject;
+                if (localVid.srcObject)  pipLocal.srcObject  = localVid.srcObject;
+
+                // Copy partner name + timer
+                pipNameEl.textContent  = document.getElementById('callPartnerName').textContent || 'Partner';
+                pipTimerEl.textContent = document.getElementById('callTimer').textContent || '00:00';
+
+                // Start mirroring timer
+                if (pipTimerInterval) clearInterval(pipTimerInterval);
+                pipTimerInterval = setInterval(() => {
+                    pipTimerEl.textContent = document.getElementById('callTimer').textContent || '';
+                }, 1000);
+
+                // Hide overlay, show PiP
+                overlay.classList.remove('active');
+                pipEl.style.display = 'block';
+
+                // Make PiP draggable
+                if (window._makeDraggable) {
+                    window._makeDraggable(pipEl, document.getElementById('pipDragHandle'), null);
+                }
+            });
+
+            // ── Expand PiP → full overlay ──
+            pipExpandBtn.addEventListener('click', () => {
+                const overlay = document.getElementById('videoCallOverlay');
+                pipEl.style.display = 'none';
+                if (pipTimerInterval) { clearInterval(pipTimerInterval); pipTimerInterval = null; }
+                overlay.classList.add('active');
+                document.getElementById('videoGrid').style.display = 'flex';
+                document.getElementById('callingScreen').style.display = 'none';
+            });
+
+            // ── End call from PiP ──
+            pipEndBtn.addEventListener('click', async () => {
+                pipEl.style.display = 'none';
+                if (pipTimerInterval) { clearInterval(pipTimerInterval); pipTimerInterval = null; }
+                pipRemote.srcObject = null;
+                pipLocal.srcObject  = null;
+                // Reuse main end-call logic
+                const endBtn = document.getElementById('endCallBtn');
+                if (endBtn) endBtn.click();
+            });
+
+            // Clean up PiP when main call ends
+            const origClose = window.closeCallOverlay;
+            // Patch: wrap closeCallOverlay to also hide PiP
+            const patchInterval = setInterval(() => {
+                if (typeof closeCallOverlay === 'function' && closeCallOverlay !== window._pipPatched) {
+                    const _orig = closeCallOverlay;
+                    window.closeCallOverlay = function() {
+                        pipEl.style.display = 'none';
+                        if (pipTimerInterval) { clearInterval(pipTimerInterval); pipTimerInterval = null; }
+                        pipRemote.srcObject = null;
+                        pipLocal.srcObject  = null;
+                        _orig();
+                    };
+                    window._pipPatched = window.closeCallOverlay;
+                    clearInterval(patchInterval);
+                }
+            }, 300);
+        })();
+
         })();
     </script>
 </body>
