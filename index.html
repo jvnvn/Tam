@@ -332,9 +332,53 @@
         .msg-bubble { background: var(--chat-other-bg); padding: 10px 16px; border-radius: 18px; font-size: 0.9rem; color: var(--text); }
         .chat-message.own .msg-bubble { background: var(--chat-own-bg); color: white; }
         .msg-user { font-size: 0.75rem; font-weight: 600; color: var(--primary); margin-bottom: 4px; }
-        .chat-input-area { display: flex; padding: 16px; border-top: 1px solid var(--input-border); gap: 8px; }
+        .chat-input-area { display: flex; padding: 16px; border-top: 1px solid var(--input-border); gap: 8px; align-items: center; }
         .chat-input-area input { flex: 1; padding: 12px 16px; border: 2px solid var(--input-border); border-radius: 30px; font-size: 0.9rem; outline: none; background: var(--input-bg); color: var(--text); }
         .chat-input-area button { background: var(--primary); color: white; border: none; border-radius: 30px; padding: 0 24px; font-weight: 600; cursor: pointer; }
+
+        /* File attach button */
+        .btn-attach {
+            width: 42px; height: 42px; border-radius: 50%; background: var(--input-bg);
+            border: 2px solid var(--input-border); color: var(--text-secondary);
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; transition: all var(--transition); flex-shrink: 0;
+        }
+        .btn-attach:hover { background: #e0e7ff; border-color: var(--primary); color: var(--primary); }
+        .btn-attach svg { width: 18px; height: 18px; pointer-events: none; }
+
+        /* Upload progress bar */
+        .upload-progress-bar {
+            display: none; padding: 6px 16px 0;
+        }
+        .upload-progress-bar.active { display: block; }
+        .upload-progress-track {
+            height: 4px; background: var(--input-border); border-radius: 4px; overflow: hidden;
+        }
+        .upload-progress-fill {
+            height: 100%; background: var(--primary); border-radius: 4px;
+            width: 0%; transition: width 0.2s ease;
+        }
+        .upload-progress-label {
+            font-size: 0.75rem; color: var(--text-secondary); margin-top: 3px;
+        }
+
+        /* File message bubble */
+        .msg-file {
+            display: flex; align-items: center; gap: 10px;
+            background: var(--input-bg); border: 1.5px solid var(--input-border);
+            border-radius: 12px; padding: 10px 14px; text-decoration: none;
+            color: var(--text); transition: background var(--transition); max-width: 260px;
+        }
+        .msg-file:hover { background: #e0e7ff; }
+        .msg-file .file-icon { font-size: 1.5rem; flex-shrink: 0; }
+        .msg-file .file-info { overflow: hidden; }
+        .msg-file .file-name { font-size: 0.85rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .msg-file .file-size { font-size: 0.72rem; color: var(--text-secondary); margin-top: 2px; }
+        .chat-message.own .msg-file { border-color: rgba(255,255,255,0.3); }
+
+        /* Image message */
+        .msg-image { max-width: 240px; border-radius: 12px; cursor: pointer; display: block; }
+        .msg-image:hover { opacity: 0.9; }
 
         .toggle-container { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--input-border); }
         .toggle-label { color: var(--text); font-weight: 500; }
@@ -618,7 +662,15 @@
                 </div>
                 <div class="chat-container">
                     <div class="chat-messages" id="chatMessages"></div>
+                    <div class="upload-progress-bar" id="uploadProgressBar">
+                        <div class="upload-progress-track"><div class="upload-progress-fill" id="uploadProgressFill"></div></div>
+                        <div class="upload-progress-label" id="uploadProgressLabel">Uploading...</div>
+                    </div>
                     <div class="chat-input-area">
+                        <input type="file" id="fileInput" style="display:none" accept="image/*,video/*,audio/*,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.zip,.rar">
+                        <button class="btn-attach" id="attachBtn" title="Send file">
+                            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m18.375 12.739-7.693 7.693a4.5 4.5 0 0 1-6.364-6.364l10.94-10.94A3 3 0 1 1 19.5 7.372L8.552 18.32m.009-.01-.01.01m5.699-9.941-7.81 7.81a1.5 1.5 0 0 0 2.112 2.13"/></svg>
+                        </button>
                         <input type="text" id="chatInput" placeholder="Type a message..." autocomplete="off">
                         <button id="sendChatBtn">Send</button>
                     </div>
@@ -785,6 +837,10 @@
             firebase.initializeApp(firebaseConfig);
             const auth = firebase.auth();
             const db = firebase.firestore();
+
+            // ===== Cloudinary config =====
+            const CLOUDINARY_CLOUD = 'dmh6mgqxg';
+            const CLOUDINARY_PRESET = 'tamtam';
 
             function generateCode() {
                 const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
@@ -1105,9 +1161,28 @@
                         chatMessages.innerHTML = '';
                         snapshot.forEach(doc => {
                             const msg = doc.data();
+                            const isOwn = msg.userId === auth.currentUser.uid;
                             const div = document.createElement('div');
-                            div.className = 'chat-message' + (msg.userId === auth.currentUser.uid ? ' own' : '');
-                            div.innerHTML = `<div><div class="msg-user">${msg.username || 'User'}</div><div class="msg-bubble">${msg.text}</div></div>`;
+                            div.className = 'chat-message' + (isOwn ? ' own' : '');
+
+                            let contentHtml = '';
+                            if (msg.type === 'image') {
+                                contentHtml = `<img class="msg-image" src="${msg.fileUrl}" alt="${msg.fileName || 'image'}" onclick="window.open('${msg.fileUrl}','_blank')">`;
+                            } else if (msg.type === 'file') {
+                                const icon = getFileIcon(msg.fileName || '');
+                                const sizeStr = msg.fileSize ? formatFileSize(msg.fileSize) : '';
+                                contentHtml = `<a class="msg-file" href="${msg.fileUrl}" target="_blank" download="${msg.fileName || 'file'}">
+                                    <span class="file-icon">${icon}</span>
+                                    <div class="file-info">
+                                        <div class="file-name">${msg.fileName || 'File'}</div>
+                                        ${sizeStr ? `<div class="file-size">${sizeStr}</div>` : ''}
+                                    </div>
+                                </a>`;
+                            } else {
+                                contentHtml = `<div class="msg-bubble">${msg.text}</div>`;
+                            }
+
+                            div.innerHTML = `<div><div class="msg-user">${msg.username || 'User'}</div>${contentHtml}</div>`;
                             chatMessages.appendChild(div);
                         });
                         chatMessages.scrollTop = chatMessages.scrollHeight;
@@ -1140,6 +1215,112 @@
                 }
             });
             chatInput.addEventListener('keydown', e => { if (e.key === 'Enter') sendChatBtn.click(); });
+
+            // ===== File attachment helpers =====
+            function getFileIcon(name) {
+                const ext = name.split('.').pop().toLowerCase();
+                if (['jpg','jpeg','png','gif','webp','svg'].includes(ext)) return '🖼️';
+                if (['mp4','mov','avi','mkv','webm'].includes(ext)) return '🎬';
+                if (['mp3','wav','ogg','m4a'].includes(ext)) return '🎵';
+                if (['pdf'].includes(ext)) return '📄';
+                if (['doc','docx'].includes(ext)) return '📝';
+                if (['xls','xlsx'].includes(ext)) return '📊';
+                if (['ppt','pptx'].includes(ext)) return '📋';
+                if (['zip','rar','7z'].includes(ext)) return '🗜️';
+                return '📎';
+            }
+
+            function formatFileSize(bytes) {
+                if (bytes < 1024) return bytes + ' B';
+                if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+                return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+            }
+
+            // Attach button triggers file picker
+            document.getElementById('attachBtn').addEventListener('click', () => {
+                if (!currentChatId || !currentUser) {
+                    alert('Not connected to a partner yet.');
+                    return;
+                }
+                document.getElementById('fileInput').click();
+            });
+
+            document.getElementById('fileInput').addEventListener('change', async (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                e.target.value = '';
+
+                const MAX_SIZE = 20 * 1024 * 1024; // 20 MB
+                if (file.size > MAX_SIZE) {
+                    alert('File is too large. Maximum size is 20 MB.');
+                    return;
+                }
+
+                const myUsername = navbarDisplayName.textContent || 'User';
+                const isImage = file.type.startsWith('image/');
+                const progressBar = document.getElementById('uploadProgressBar');
+                const progressFill = document.getElementById('uploadProgressFill');
+                const progressLabel = document.getElementById('uploadProgressLabel');
+
+                progressBar.classList.add('active');
+                progressFill.style.width = '0%';
+                progressLabel.textContent = `Uploading ${file.name}…`;
+                document.getElementById('attachBtn').disabled = true;
+                sendChatBtn.disabled = true;
+
+                try {
+                    // Upload to Cloudinary via unsigned preset
+                    const formData = new FormData();
+                    formData.append('file', file);
+                    formData.append('upload_preset', CLOUDINARY_PRESET);
+                    formData.append('folder', 'tamtam_chats');
+
+                    const resourceType = isImage ? 'image' : 'raw';
+                    const uploadUrl = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD}/${resourceType}/upload`;
+
+                    const fileUrl = await new Promise((resolve, reject) => {
+                        const xhr = new XMLHttpRequest();
+                        xhr.open('POST', uploadUrl);
+                        xhr.upload.onprogress = (evt) => {
+                            if (evt.lengthComputable) {
+                                const pct = Math.round((evt.loaded / evt.total) * 100);
+                                progressFill.style.width = pct + '%';
+                                progressLabel.textContent = `Uploading ${file.name}… ${pct}%`;
+                            }
+                        };
+                        xhr.onload = () => {
+                            if (xhr.status === 200) {
+                                const res = JSON.parse(xhr.responseText);
+                                resolve(res.secure_url);
+                            } else {
+                                reject(new Error('Upload failed: ' + xhr.responseText));
+                            }
+                        };
+                        xhr.onerror = () => reject(new Error('Network error during upload'));
+                        xhr.send(formData);
+                    });
+
+                    await db.collection('chats').doc(currentChatId).collection('messages').add({
+                        type: isImage ? 'image' : 'file',
+                        fileUrl,
+                        fileName: file.name,
+                        fileSize: file.size,
+                        userId: currentUser.uid,
+                        username: myUsername,
+                        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+
+                } catch(err) {
+                    console.error('File upload failed:', err);
+                    alert('File upload failed: ' + err.message);
+                } finally {
+                    progressBar.classList.remove('active');
+                    progressFill.style.width = '0%';
+                    document.getElementById('attachBtn').disabled = false;
+                    sendChatBtn.disabled = false;
+                    chatInput.focus();
+                }
+            });
 
             // ===== Modal =====
             async function openEditModal() {
