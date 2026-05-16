@@ -380,6 +380,115 @@
         .msg-image { max-width: 240px; border-radius: 12px; cursor: pointer; display: block; }
         .msg-image:hover { opacity: 0.9; }
 
+        /* ===== FEED ===== */
+        #panelHome { max-width: 600px; padding: 24px 16px; }
+
+        /* Composer */
+        .feed-composer {
+            background: var(--card-bg); border-radius: var(--radius);
+            box-shadow: var(--shadow-sm); padding: 16px; margin-bottom: 20px;
+        }
+        .composer-top { display: flex; align-items: center; gap: 12px; }
+        .composer-avatar {
+            width: 42px; height: 42px; border-radius: 50%; background: var(--primary);
+            color: white; font-weight: 700; font-size: 1rem;
+            display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+        }
+        .composer-top input {
+            flex: 1; border: none; outline: none; background: var(--input-bg);
+            border-radius: 30px; padding: 11px 16px; font-size: 0.9rem;
+            color: var(--text); font-family: inherit;
+        }
+        .composer-actions {
+            display: flex; align-items: center; gap: 10px;
+            margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--input-border);
+        }
+        .composer-media-btn {
+            display: flex; align-items: center; gap: 6px; background: var(--input-bg);
+            border: 1.5px solid var(--input-border); color: var(--text-secondary);
+            border-radius: 20px; padding: 8px 14px; font-size: 0.82rem; font-weight: 600;
+            cursor: pointer; transition: all var(--transition);
+        }
+        .composer-media-btn:hover { border-color: var(--primary); color: var(--primary); background: #e0e7ff; }
+        .composer-post-btn {
+            margin-left: auto; background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            color: white; border: none; border-radius: 20px; padding: 9px 22px;
+            font-weight: 700; font-size: 0.88rem; cursor: pointer; transition: all var(--transition);
+        }
+        .composer-post-btn:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(79,70,229,0.35); }
+        .composer-post-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        /* Media preview inside composer */
+        .post-media-preview {
+            position: relative; margin-top: 12px; border-radius: 12px; overflow: hidden;
+            background: #000; max-height: 320px;
+        }
+        .media-preview-inner img, .media-preview-inner video {
+            width: 100%; max-height: 320px; object-fit: cover; display: block;
+        }
+        .remove-media-btn {
+            position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,0.55);
+            color: white; border: none; border-radius: 50%; width: 28px; height: 28px;
+            font-size: 0.8rem; cursor: pointer; display: flex; align-items: center; justify-content: center;
+        }
+        .post-upload-progress {
+            flex: 1; height: 4px; background: var(--input-border); border-radius: 4px; overflow: hidden;
+        }
+        .post-upload-fill { height: 100%; background: var(--primary); width: 0%; transition: width 0.2s; }
+
+        /* Feed posts */
+        .feed-empty { text-align: center; padding: 60px 20px; color: var(--text-secondary); }
+        .feed-empty p { margin-top: 12px; font-size: 0.95rem; }
+
+        .feed-post {
+            background: var(--card-bg); border-radius: var(--radius);
+            box-shadow: var(--shadow-sm); margin-bottom: 20px; overflow: hidden;
+            animation: fadeSlideIn 0.3s ease;
+        }
+        .post-header {
+            display: flex; align-items: center; gap: 10px;
+            padding: 14px 16px; justify-content: space-between;
+        }
+        .post-header-left { display: flex; align-items: center; gap: 10px; }
+        .post-avatar {
+            width: 38px; height: 38px; border-radius: 50%; background: var(--primary);
+            color: white; font-weight: 700; display: flex; align-items: center; justify-content: center;
+            font-size: 0.95rem; flex-shrink: 0;
+        }
+        .post-username { font-weight: 700; font-size: 0.9rem; color: var(--text); }
+        .post-time { font-size: 0.75rem; color: var(--text-secondary); margin-top: 1px; }
+        .post-delete-btn {
+            background: none; border: none; color: var(--text-secondary); cursor: pointer;
+            padding: 4px 8px; border-radius: 8px; font-size: 0.8rem; transition: all var(--transition);
+        }
+        .post-delete-btn:hover { background: var(--danger-bg); color: var(--danger-text); }
+
+        .post-media { width: 100%; display: block; max-height: 480px; object-fit: cover; cursor: pointer; }
+        .post-media:hover { opacity: 0.97; }
+
+        .post-caption {
+            padding: 12px 16px 4px; font-size: 0.92rem; color: var(--text); line-height: 1.5;
+        }
+        .post-caption strong { font-weight: 700; margin-right: 6px; }
+
+        .post-actions {
+            display: flex; align-items: center; gap: 4px; padding: 8px 12px 14px;
+        }
+        .like-btn {
+            display: flex; align-items: center; gap: 5px; background: none; border: none;
+            cursor: pointer; padding: 6px 10px; border-radius: 20px; color: var(--text-secondary);
+            font-size: 0.85rem; font-weight: 600; transition: all var(--transition);
+        }
+        .like-btn:hover { background: #fee2e2; color: #e11d48; }
+        .like-btn.liked { color: #e11d48; }
+        .like-btn .heart { font-size: 1.1rem; transition: transform 0.15s; }
+        .like-btn.liked .heart { animation: heartPop 0.25s ease; }
+        @keyframes heartPop {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.4); }
+            100% { transform: scale(1); }
+        }
+
         .toggle-container { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--input-border); }
         .toggle-label { color: var(--text); font-weight: 500; }
         .toggle-switch { position: relative; width: 50px; height: 28px; background: #cbd5e1; border-radius: 30px; cursor: pointer; transition: background var(--transition); }
@@ -618,26 +727,38 @@
             </div>
         </nav>
 
-        <!-- Home Panel -->
+        <!-- Home Panel — Instagram-style Feed -->
         <div class="home-panel active" id="panelHome">
-            <div class="home-header"><h2>Welcome back! 👋</h2><p style="color:var(--text-secondary)">Your private chat awaits.</p></div>
-            <div class="home-grid">
-                <div class="home-card" onclick="document.querySelector('[data-panel=messages]').click()">
-                    <div class="icon-bg"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.625 9.75a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375m-13.5 3.01c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.184-4.183a1.14 1.14 0 0 1 .778-.332 48.294 48.294 0 0 0 5.83-.498c1.585-.233 2.708-1.626 2.708-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z" /></svg></div>
-                    <h3>Partner Chat</h3><p>Chat privately with your partner.</p>
+            <!-- Post composer -->
+            <div class="feed-composer" id="feedComposer">
+                <div class="composer-top">
+                    <div class="composer-avatar" id="composerAvatar">?</div>
+                    <input type="text" id="postCaption" placeholder="Share a moment with your partner…" autocomplete="off">
                 </div>
-                <div class="home-card profile-card" id="profileSummaryCard">
-                    <div class="icon-bg"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" /></svg></div>
-                    <h3>Your Profile</h3>
-                    <div class="profile-detail">
-                        <div class="username" id="profileCardUsername">-</div>
-                        <div class="bio" id="profileCardBio">No bio yet</div>
-                    </div>
-                    <div class="partner-code">
-                        <span style="font-weight:600;">Your Code:</span>
-                        <div class="code-box" id="profileCodeDisplay" title="Click to copy">------</div>
-                    </div>
+                <div id="postMediaPreview" class="post-media-preview" style="display:none;">
+                    <div class="media-preview-inner" id="mediaPreviewInner"></div>
+                    <button class="remove-media-btn" id="removeMediaBtn" title="Remove">✕</button>
                 </div>
+                <div class="composer-actions">
+                    <input type="file" id="postFileInput" style="display:none" accept="image/*,video/*">
+                    <button class="composer-media-btn" id="postMediaBtn">
+                        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 0 0 1.5-1.5V6a1.5 1.5 0 0 0-1.5-1.5H3.75A1.5 1.5 0 0 0 2.25 6v12a1.5 1.5 0 0 0 1.5 1.5Zm10.5-11.25h.008v.008h-.008V8.25Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z"/></svg>
+                        Photo / Video
+                    </button>
+                    <div class="post-upload-progress" id="postUploadProgress" style="display:none;">
+                        <div class="post-upload-fill" id="postUploadFill"></div>
+                    </div>
+                    <button class="composer-post-btn" id="postSubmitBtn">Post</button>
+                </div>
+            </div>
+
+            <!-- Feed -->
+            <div id="feedContainer">
+                <div class="feed-empty" id="feedEmpty" style="display:none;">
+                    <div style="font-size:2.5rem;">📸</div>
+                    <p>No posts yet. Share your first moment!</p>
+                </div>
+                <div id="feedList"></div>
             </div>
         </div>
 
@@ -884,10 +1005,6 @@
             const panelSettings = document.getElementById('panelSettings');
             const panelLocation = document.getElementById('panelLocation');
 
-            const profileCardUsername = document.getElementById('profileCardUsername');
-            const profileCardBio = document.getElementById('profileCardBio');
-            const profileCodeDisplay = document.getElementById('profileCodeDisplay');
-            const profileSummaryCard = document.getElementById('profileSummaryCard');
             const userBadge = document.getElementById('userBadge');
 
             const editProfileModal = document.getElementById('editProfileModal');
@@ -994,21 +1111,11 @@
                 const doc = await db.collection('users').doc(auth.currentUser.uid).get();
                 if (doc.exists) {
                     const data = doc.data();
-                    profileCardUsername.textContent = data.username || 'No username';
-                    profileCardBio.textContent = data.bio || 'No bio yet';
-                    profileCodeDisplay.textContent = data.partnerCode || '------';
+                    const initial = (data.username || '?').charAt(0).toUpperCase();
+                    const composerAvatar = document.getElementById('composerAvatar');
+                    if (composerAvatar) composerAvatar.textContent = initial;
                 }
             }
-
-            // Copy code to clipboard
-            profileCodeDisplay.addEventListener('click', () => {
-                const code = profileCodeDisplay.textContent;
-                if (code && code !== '------') {
-                    navigator.clipboard.writeText(code).then(() => {
-                        alert('Code copied: ' + code);
-                    }).catch(() => alert('Failed to copy.'));
-                }
-            });
 
             function switchHomeTab(panelName) {
                 [panelHome, panelMessages, panelSettings, panelLocation].forEach(p => p.classList.remove('active'));
@@ -1017,7 +1124,7 @@
                     tab.classList.remove('active');
                     if (tab.dataset.panel === panelName) tab.classList.add('active');
                 });
-                if (panelName === 'home') loadProfileData();
+                if (panelName === 'home') { loadProfileData(); initFeed(); }
                 if (panelName === 'messages') setupMessagesUI();
                 if (panelName === 'location') setupLocationUI();
             }
@@ -1066,6 +1173,8 @@
                             if (panelMessages.classList.contains('active')) {
                                 setupMessagesUI();
                             }
+                            // Always refresh feed regardless of active tab
+                            initFeed();
                         } else if (!partnerId && currentPartnerId) {
                             // Partner disconnected
                             currentPartnerId = null;
@@ -1073,6 +1182,7 @@
                             if (panelMessages.classList.contains('active')) {
                                 setupMessagesUI();
                             }
+                            initFeed();
                         }
                     });
             }
@@ -1094,6 +1204,7 @@
                     document.getElementById('connectedPartnerText').innerHTML = `<span>Chatting with <strong>${username}</strong></span>`;
                     document.getElementById('videoCallBtn').disabled = false;
                     attachPrivateChatListener(chatId);
+                    initFeed();
                 } else {
                     partnerConnectArea.style.display = 'block';
                     chatArea.style.display = 'none';
@@ -1216,7 +1327,258 @@
             });
             chatInput.addEventListener('keydown', e => { if (e.key === 'Enter') sendChatBtn.click(); });
 
-            // ===== File attachment helpers =====
+            // ===== FEED =====
+            let feedUnsub = null;
+            let postMediaFile = null;
+
+            function initFeed() {
+                if (feedUnsub) { feedUnsub(); feedUnsub = null; }
+
+                const feedList = document.getElementById('feedList');
+                const feedEmpty = document.getElementById('feedEmpty');
+                const feedComposer = document.getElementById('feedComposer');
+
+                if (!currentUser || !currentPartnerId) {
+                    // No partner yet — show friendly prompt
+                    if (feedList) feedList.innerHTML = '';
+                    if (feedEmpty) {
+                        feedEmpty.style.display = 'block';
+                        feedEmpty.innerHTML = '<div style="font-size:2.5rem;">💑</div><p>Connect with your partner in <strong>Messages</strong> to share your feed!</p>';
+                    }
+                    if (feedComposer) feedComposer.style.display = 'none';
+                    return;
+                }
+
+                if (feedComposer) feedComposer.style.display = 'block';
+
+                // Build the chat-pair ID (same pattern as chat)
+                const feedId = [currentUser.uid, currentPartnerId].sort().join('_');
+
+                feedUnsub = db.collection('feeds').doc(feedId).collection('posts')
+                    .orderBy('createdAt', 'desc')
+                    .onSnapshot(snapshot => {
+                        if (!feedList) return;
+
+                        if (snapshot.empty) {
+                            feedEmpty.style.display = 'block';
+                            feedEmpty.innerHTML = '<div style="font-size:2.5rem;">📸</div><p>No posts yet. Share your first moment!</p>';
+                            feedList.innerHTML = '';
+                            return;
+                        }
+                        feedEmpty.style.display = 'none';
+                        feedList.innerHTML = '';
+                        snapshot.forEach(doc => {
+                            feedList.appendChild(buildPostCard(doc.id, doc.data(), feedId));
+                        });
+                    });
+            }
+
+            function timeAgo(ts) {
+                if (!ts) return '';
+                const now = Date.now();
+                const ms = ts.toDate ? (now - ts.toDate().getTime()) : (now - ts);
+                const s = Math.floor(ms / 1000);
+                if (s < 60) return 'just now';
+                const m = Math.floor(s / 60);
+                if (m < 60) return m + 'm ago';
+                const h = Math.floor(m / 60);
+                if (h < 24) return h + 'h ago';
+                return Math.floor(h / 24) + 'd ago';
+            }
+
+            function buildPostCard(postId, data, feedId) {
+                const isOwn = data.userId === currentUser.uid;
+                const liked = data.likes && data.likes[currentUser.uid];
+                const likeCount = data.likes ? Object.keys(data.likes).length : 0;
+                const initial = (data.username || '?').charAt(0).toUpperCase();
+
+                const card = document.createElement('div');
+                card.className = 'feed-post';
+                card.dataset.postId = postId;
+
+                let mediaHtml = '';
+                if (data.mediaUrl) {
+                    if (data.mediaType === 'video') {
+                        mediaHtml = `<video class="post-media" src="${data.mediaUrl}" controls playsinline preload="metadata"></video>`;
+                    } else {
+                        mediaHtml = `<img class="post-media" src="${data.mediaUrl}" alt="post" onclick="window.open('${data.mediaUrl}','_blank')">`;
+                    }
+                }
+
+                const captionHtml = data.caption
+                    ? `<div class="post-caption"><strong>${data.username || 'User'}</strong>${data.caption}</div>`
+                    : '';
+
+                const deleteHtml = isOwn
+                    ? `<button class="post-delete-btn" data-post="${postId}" data-feed="${feedId}" title="Delete post">🗑️</button>`
+                    : '';
+
+                card.innerHTML = `
+                    <div class="post-header">
+                        <div class="post-header-left">
+                            <div class="post-avatar">${initial}</div>
+                            <div>
+                                <div class="post-username">${data.username || 'User'}</div>
+                                <div class="post-time">${timeAgo(data.createdAt)}</div>
+                            </div>
+                        </div>
+                        ${deleteHtml}
+                    </div>
+                    ${mediaHtml}
+                    ${captionHtml}
+                    <div class="post-actions">
+                        <button class="like-btn${liked ? ' liked' : ''}" data-post="${postId}" data-feed="${feedId}">
+                            <span class="heart">${liked ? '❤️' : '🤍'}</span>
+                            <span class="like-count">${likeCount > 0 ? likeCount : ''}</span>
+                        </button>
+                    </div>`;
+
+                // Like button
+                card.querySelector('.like-btn').addEventListener('click', async (e) => {
+                    const btn = e.currentTarget;
+                    const fid = btn.dataset.feed;
+                    const pid = btn.dataset.post;
+                    const ref = db.collection('feeds').doc(fid).collection('posts').doc(pid);
+                    const snap = await ref.get();
+                    if (!snap.exists) return;
+                    const currentLikes = snap.data().likes || {};
+                    if (currentLikes[currentUser.uid]) {
+                        delete currentLikes[currentUser.uid];
+                    } else {
+                        currentLikes[currentUser.uid] = true;
+                    }
+                    await ref.update({ likes: currentLikes });
+                });
+
+                // Delete button
+                const delBtn = card.querySelector('.post-delete-btn');
+                if (delBtn) {
+                    delBtn.addEventListener('click', async () => {
+                        if (!confirm('Delete this post?')) return;
+                        await db.collection('feeds').doc(feedId).collection('posts').doc(postId).delete();
+                    });
+                }
+
+                return card;
+            }
+
+            // Composer: media pick
+            document.getElementById('postMediaBtn').addEventListener('click', () => {
+                document.getElementById('postFileInput').click();
+            });
+
+            document.getElementById('postFileInput').addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                e.target.value = '';
+                if (!file) return;
+                if (file.size > 50 * 1024 * 1024) { alert('Max file size is 50 MB.'); return; }
+                postMediaFile = file;
+                const preview = document.getElementById('postMediaPreview');
+                const inner = document.getElementById('mediaPreviewInner');
+                inner.innerHTML = '';
+                if (file.type.startsWith('video/')) {
+                    const v = document.createElement('video');
+                    v.src = URL.createObjectURL(file);
+                    v.controls = true; v.muted = true;
+                    inner.appendChild(v);
+                } else {
+                    const img = document.createElement('img');
+                    img.src = URL.createObjectURL(file);
+                    inner.appendChild(img);
+                }
+                preview.style.display = 'block';
+            });
+
+            document.getElementById('removeMediaBtn').addEventListener('click', () => {
+                postMediaFile = null;
+                document.getElementById('postMediaPreview').style.display = 'none';
+                document.getElementById('mediaPreviewInner').innerHTML = '';
+            });
+
+            // Composer: submit post
+            document.getElementById('postSubmitBtn').addEventListener('click', async () => {
+                if (!currentUser || !currentPartnerId) {
+                    alert('Connect with your partner first in Messages tab.');
+                    return;
+                }
+                const caption = document.getElementById('postCaption').value.trim();
+                if (!caption && !postMediaFile) {
+                    alert('Add a photo, video, or caption to post.');
+                    return;
+                }
+
+                const submitBtn = document.getElementById('postSubmitBtn');
+                const progressBar = document.getElementById('postUploadProgress');
+                const progressFill = document.getElementById('postUploadFill');
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Posting…';
+
+                try {
+                    let mediaUrl = null;
+                    let mediaType = null;
+
+                    if (postMediaFile) {
+                        progressBar.style.display = 'block';
+                        progressFill.style.width = '0%';
+
+                        const isVideo = postMediaFile.type.startsWith('video/');
+                        mediaType = isVideo ? 'video' : 'image';
+                        const resourceType = isVideo ? 'video' : 'image';
+                        const uploadUrl = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD}/${resourceType}/upload`;
+
+                        const formData = new FormData();
+                        formData.append('file', postMediaFile);
+                        formData.append('upload_preset', CLOUDINARY_PRESET);
+                        formData.append('folder', 'tamtam_feed');
+
+                        mediaUrl = await new Promise((resolve, reject) => {
+                            const xhr = new XMLHttpRequest();
+                            xhr.open('POST', uploadUrl);
+                            xhr.upload.onprogress = (evt) => {
+                                if (evt.lengthComputable) {
+                                    progressFill.style.width = Math.round((evt.loaded / evt.total) * 100) + '%';
+                                }
+                            };
+                            xhr.onload = () => {
+                                if (xhr.status === 200) resolve(JSON.parse(xhr.responseText).secure_url);
+                                else reject(new Error('Upload failed'));
+                            };
+                            xhr.onerror = () => reject(new Error('Network error'));
+                            xhr.send(formData);
+                        });
+                    }
+
+                    const feedId = [currentUser.uid, currentPartnerId].sort().join('_');
+                    const myUsername = navbarDisplayName.textContent || 'User';
+
+                    await db.collection('feeds').doc(feedId).collection('posts').add({
+                        userId: currentUser.uid,
+                        username: myUsername,
+                        caption: caption || '',
+                        mediaUrl: mediaUrl || null,
+                        mediaType: mediaType || null,
+                        likes: {},
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+
+                    // Reset composer
+                    document.getElementById('postCaption').value = '';
+                    postMediaFile = null;
+                    document.getElementById('postMediaPreview').style.display = 'none';
+                    document.getElementById('mediaPreviewInner').innerHTML = '';
+
+                } catch(err) {
+                    console.error('Post failed:', err);
+                    alert('Could not post: ' + err.message);
+                } finally {
+                    progressBar.style.display = 'none';
+                    progressFill.style.width = '0%';
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Post';
+                }
+            });
+
+
             function getFileIcon(name) {
                 const ext = name.split('.').pop().toLowerCase();
                 if (['jpg','jpeg','png','gif','webp','svg'].includes(ext)) return '🖼️';
@@ -2046,6 +2408,7 @@
                 if (callStatusUnsub) { callStatusUnsub(); callStatusUnsub = null; }
                 if (callSignalUnsub) { callSignalUnsub(); callSignalUnsub = null; }
                 if (unsubscribeChat) { unsubscribeChat(); unsubscribeChat = null; }
+                if (feedUnsub) { feedUnsub(); feedUnsub = null; }
                 if (unsubscribeUserDoc) { unsubscribeUserDoc(); unsubscribeUserDoc = null; }
                 if (unsubscribePartnerLocation) { unsubscribePartnerLocation(); unsubscribePartnerLocation = null; }
                 if (watchId !== null) { navigator.geolocation.clearWatch(watchId); watchId = null; }
