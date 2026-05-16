@@ -14,6 +14,11 @@
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 
+    <!-- LiveKit Client SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/livekit-client/dist/livekit-client.umd.min.js"></script>
+    <!-- jose for JWT token generation -->
+    <script src="https://cdn.jsdelivr.net/npm/jose@5/dist/browser/index.js"></script>
+
     <style>
         /* ========== Light & Dark variables ========== */
         :root {
@@ -327,6 +332,105 @@
             background: var(--error-bg); color: var(--error-text); border-radius: var(--radius-sm);
             padding: 12px 16px; font-size: 0.85rem; margin-bottom: 12px; display: none;
         }
+        /* ===== VIDEO CALL ===== */
+        .video-call-overlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: #0a0a0f; z-index: 1000;
+            display: none; flex-direction: column;
+            align-items: center; justify-content: center;
+        }
+        .video-call-overlay.active { display: flex; }
+        .video-call-header {
+            position: absolute; top: 0; left: 0; right: 0;
+            padding: 16px 24px; display: flex; align-items: center;
+            justify-content: space-between;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.7) 0%, transparent 100%);
+            z-index: 10;
+        }
+        .video-call-title { color: white; font-weight: 700; font-size: 1.1rem; display: flex; align-items: center; gap: 10px; }
+        .call-status-dot { width: 10px; height: 10px; border-radius: 50%; background: #22c55e; animation: pulse-dot 2s ease infinite; flex-shrink: 0; }
+        .call-timer { color: #94a3b8; font-size: 0.9rem; font-weight: 500; }
+        .video-grid {
+            width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;
+            gap: 12px; padding: 80px 20px; flex-wrap: wrap;
+        }
+        .video-tile {
+            position: relative; background: #1e293b; border-radius: 16px;
+            overflow: hidden; flex: 1; min-width: 200px; max-width: 50%;
+            aspect-ratio: 16/9; display: flex; align-items: center; justify-content: center;
+        }
+        .video-tile video { width: 100%; height: 100%; object-fit: cover; }
+        .video-tile-label {
+            position: absolute; bottom: 10px; left: 12px;
+            background: rgba(0,0,0,0.55); color: white;
+            padding: 3px 10px; border-radius: 20px; font-size: 0.78rem; font-weight: 600;
+        }
+        .video-tile-avatar {
+            width: 70px; height: 70px; border-radius: 50%;
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 2rem; font-weight: 700; color: white;
+        }
+        .video-tile.local { max-width: 240px; min-width: 160px; position: absolute; bottom: 100px; right: 20px; z-index: 5; flex: none; border: 2px solid rgba(255,255,255,0.15); box-shadow: 0 8px 32px rgba(0,0,0,0.5); }
+        .video-controls {
+            position: absolute; bottom: 0; left: 0; right: 0;
+            display: flex; align-items: center; justify-content: center; gap: 14px;
+            padding: 24px 20px 32px;
+            background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 100%);
+        }
+        .ctrl-btn {
+            width: 54px; height: 54px; border-radius: 50%; border: none;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; font-size: 1.3rem; transition: all 0.2s;
+            background: rgba(255,255,255,0.15); color: white;
+        }
+        .ctrl-btn:hover { background: rgba(255,255,255,0.25); transform: scale(1.05); }
+        .ctrl-btn.active { background: rgba(255,255,255,0.9); color: #0a0a0f; }
+        .ctrl-btn.danger { background: #dc2626; }
+        .ctrl-btn.danger:hover { background: #b91c1c; }
+        .calling-screen {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            gap: 20px; color: white; text-align: center;
+        }
+        .calling-avatar {
+            width: 100px; height: 100px; border-radius: 50%;
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 2.8rem; font-weight: 700; color: white;
+            box-shadow: 0 0 0 20px rgba(79,70,229,0.1), 0 0 0 40px rgba(79,70,229,0.05);
+            animation: calling-pulse 2s ease infinite;
+        }
+        @keyframes calling-pulse {
+            0%,100% { box-shadow: 0 0 0 20px rgba(79,70,229,0.1), 0 0 0 40px rgba(79,70,229,0.05); }
+            50% { box-shadow: 0 0 0 25px rgba(79,70,229,0.15), 0 0 0 50px rgba(79,70,229,0.07); }
+        }
+        .calling-name { font-size: 1.5rem; font-weight: 700; }
+        .calling-status { color: #94a3b8; font-size: 0.95rem; }
+        .incoming-call-banner {
+            position: fixed; top: 80px; left: 50%; transform: translateX(-50%);
+            background: var(--card-bg); border-radius: 20px; padding: 18px 24px;
+            box-shadow: var(--shadow-lg); z-index: 500; display: none;
+            flex-direction: column; align-items: center; gap: 12px; min-width: 280px;
+            border: 2px solid var(--primary); animation: cardIn 0.3s ease;
+        }
+        .incoming-call-banner.active { display: flex; }
+        .incoming-call-info { display: flex; align-items: center; gap: 12px; }
+        .incoming-avatar { width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg, #4f46e5, #7c3aed); display: flex; align-items: center; justify-content: center; font-weight: 700; color: white; font-size: 1.2rem; animation: calling-pulse 2s ease infinite; }
+        .incoming-call-text { flex: 1; }
+        .incoming-name { font-weight: 700; color: var(--text); }
+        .incoming-label { font-size: 0.8rem; color: var(--text-secondary); }
+        .incoming-actions { display: flex; gap: 10px; }
+        .btn-answer { background: #22c55e; color: white; border: none; padding: 10px 22px; border-radius: 30px; font-weight: 600; cursor: pointer; }
+        .btn-decline { background: #dc2626; color: white; border: none; padding: 10px 22px; border-radius: 30px; font-weight: 600; cursor: pointer; }
+        /* Video call button in chat header */
+        .btn-video-call {
+            background: linear-gradient(135deg, #4f46e5, #7c3aed); color: white;
+            border: none; border-radius: 20px; padding: 7px 16px; font-size: 0.82rem;
+            font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px;
+            transition: all 0.2s; white-space: nowrap;
+        }
+        .btn-video-call:hover { opacity: 0.9; transform: translateY(-1px); }
+        .btn-video-call:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
     </style>
 </head>
 <body>
@@ -436,7 +540,13 @@
                 <div id="partnerConnectMsg" class="message" style="margin-top:12px;"></div>
             </div>
             <div id="chatArea" style="display:none;">
-                <div class="partner-info" id="connectedPartnerInfo"></div>
+                <div class="partner-info" id="connectedPartnerInfo" style="justify-content: space-between;">
+                    <span id="connectedPartnerText"></span>
+                    <button class="btn-video-call" id="videoCallBtn" title="Start video call">
+                        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m15.75 10.5 4.72-4.72a.75.75 0 0 1 1.28.53v11.38a.75.75 0 0 1-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 0 0 2.25-2.25v-9a2.25 2.25 0 0 0-2.25-2.25h-9A2.25 2.25 0 0 0 2.25 7.5v9a2.25 2.25 0 0 0 2.25 2.25Z"/></svg>
+                        Video Call
+                    </button>
+                </div>
                 <div class="chat-container">
                     <div class="chat-messages" id="chatMessages"></div>
                     <div class="chat-input-area">
@@ -472,7 +582,7 @@
                     <div class="location-user-card">
                         <div class="loc-avatar" id="locMyAvatar">?</div>
                         <div class="loc-info">
-                            <div class="loc-name" id="locMyName">You</div>
+                            <div class="loc-name" id="locMyName">You <span style="font-size:0.7rem;font-weight:400;color:var(--text-secondary);">(visible to partner)</span></div>
                             <div class="loc-coords" id="locMyCoords">Not sharing yet</div>
                         </div>
                         <div class="loc-dot" id="locMyDot"></div>
@@ -480,7 +590,7 @@
                     <div class="location-user-card">
                         <div class="loc-avatar partner" id="locPartnerAvatar">?</div>
                         <div class="loc-info">
-                            <div class="loc-name" id="locPartnerName">Partner</div>
+                            <div class="loc-name" id="locPartnerName">Partner <span style="font-size:0.7rem;font-weight:400;color:var(--text-secondary);">(shown on map)</span></div>
                             <div class="loc-coords" id="locPartnerCoords">Location not shared</div>
                         </div>
                         <div class="loc-dot" id="locPartnerDot"></div>
@@ -518,6 +628,62 @@
                 <button class="btn-danger" id="clearChatBtn">Clear Chat History</button>
                 <p style="font-size:0.8rem; color:var(--text-secondary); margin-top:8px;">⚠️ Deletes your private chat with partner.</p>
             </div>
+        </div>
+    </div>
+
+    <!-- ===== VIDEO CALL OVERLAY ===== -->
+    <div id="videoCallOverlay" class="video-call-overlay">
+        <div class="video-call-header">
+            <div class="video-call-title">
+                <div class="call-status-dot" id="callStatusDot" style="display:none;"></div>
+                <span id="callPartnerName">Video Call</span>
+            </div>
+            <span class="call-timer" id="callTimer"></span>
+        </div>
+
+        <!-- Calling / waiting screen -->
+        <div id="callingScreen" class="calling-screen" style="display:none;">
+            <div class="calling-avatar" id="callingAvatar">?</div>
+            <div class="calling-name" id="callingName">Calling...</div>
+            <div class="calling-status" id="callingStatus">Waiting for answer...</div>
+        </div>
+
+        <!-- Video grid -->
+        <div class="video-grid" id="videoGrid" style="display:none;">
+            <!-- Remote video -->
+            <div class="video-tile" id="remoteVideoTile">
+                <div class="video-tile-avatar" id="remoteAvatar">?</div>
+                <video id="remoteVideo" autoplay playsinline style="display:none;"></video>
+                <div class="video-tile-label" id="remoteLabel">Partner</div>
+            </div>
+            <!-- Local video (picture-in-picture) -->
+            <div class="video-tile local" id="localVideoTile">
+                <div class="video-tile-avatar" id="localAvatar" style="width:36px;height:36px;font-size:1rem;">?</div>
+                <video id="localVideo" autoplay playsinline muted style="display:none;"></video>
+                <div class="video-tile-label">You</div>
+            </div>
+        </div>
+
+        <!-- Controls -->
+        <div class="video-controls">
+            <button class="ctrl-btn" id="toggleMicBtn" title="Mute/Unmute">🎙️</button>
+            <button class="ctrl-btn" id="toggleCamBtn" title="Camera On/Off">📷</button>
+            <button class="ctrl-btn danger" id="endCallBtn" title="End Call">📵</button>
+        </div>
+    </div>
+
+    <!-- ===== INCOMING CALL BANNER ===== -->
+    <div id="incomingCallBanner" class="incoming-call-banner">
+        <div class="incoming-call-info">
+            <div class="incoming-avatar" id="incomingAvatar">?</div>
+            <div class="incoming-call-text">
+                <div class="incoming-name" id="incomingCallerName">Someone</div>
+                <div class="incoming-label">📹 Incoming video call...</div>
+            </div>
+        </div>
+        <div class="incoming-actions">
+            <button class="btn-decline" id="declineCallBtn">✕ Decline</button>
+            <button class="btn-answer" id="answerCallBtn">✓ Answer</button>
         </div>
     </div>
 
@@ -800,7 +966,8 @@
                     // Show partner info
                     const partnerDoc = await db.collection('users').doc(partnerId).get();
                     const username = partnerDoc.exists ? partnerDoc.data().username : 'Partner';
-                    connectedPartnerInfo.innerHTML = `<span>Chatting with <strong>${username}</strong></span>`;
+                    document.getElementById('connectedPartnerText').innerHTML = `<span>Chatting with <strong>${username}</strong></span>`;
+                    document.getElementById('videoCallBtn').disabled = false;
                     attachPrivateChatListener(chatId);
                 } else {
                     partnerConnectArea.style.display = 'block';
@@ -913,6 +1080,7 @@
                     const doc = await db.collection('users').doc(user.uid).get();
                     if (doc.exists && doc.data().username) {
                         goToHome(user, doc.data().username);
+                        listenForIncomingCalls(user.uid);
                     } else {
                         authWrapper.style.display = 'block';
                         homeContainer.classList.remove('active');
@@ -923,6 +1091,7 @@
                         clearMessage(profileMessage);
                     }
                 } else {
+                    if (callSignalUnsub) { callSignalUnsub(); callSignalUnsub = null; }
                     goToAuth();
                 }
             });
@@ -986,6 +1155,7 @@
                         updatedAt: firebase.firestore.FieldValue.serverTimestamp()
                     }, { merge: true });
                     goToHome(user, username);
+                    listenForIncomingCalls(user.uid);
                 } catch (error) { setMessage(profileMessage, 'Save failed.', 'error'); }
                 finally { setLoading(saveProfileBtn, saveProfileBtnText, false, 'Save & Continue'); }
             });
@@ -1034,12 +1204,9 @@
                 return `${Math.floor(diff / 3600)}h ago`;
             }
 
-            function updateMyMarker(lat, lng, name) {
-                const label = name ? name.charAt(0).toUpperCase() : '?';
-                const html = `<div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#4f46e5,#7c3aed);display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:14px;border:3px solid white;box-shadow:0 2px 8px rgba(0,0,0,0.3);">${label}</div>`;
-                const icon = L.divIcon({ className: '', html, iconSize: [36, 36], iconAnchor: [18, 18] });
-                if (myMarker) { myMarker.setLatLng([lat, lng]); myMarker.setIcon(icon); }
-                else { myMarker = L.marker([lat, lng], { icon }).addTo(locationMap).bindPopup(`<strong>You</strong><br>${formatCoords(lat, lng)}`); }
+            function updateMyStatus(lat, lng) {
+                // Only update the status card — do NOT put your own marker on the map.
+                // Your partner sees your marker on THEIR map via Firestore.
                 document.getElementById('locMyCoords').textContent = formatCoords(lat, lng);
                 document.getElementById('locMyDot').className = 'loc-dot live';
             }
@@ -1056,13 +1223,9 @@
             }
 
             function fitBothMarkers() {
-                if (myMarker && partnerMarker) {
-                    const group = L.featureGroup([myMarker, partnerMarker]);
-                    locationMap.fitBounds(group.getBounds().pad(0.3));
-                } else if (myMarker) {
-                    locationMap.setView(myMarker.getLatLng(), 14);
-                } else if (partnerMarker) {
-                    locationMap.setView(partnerMarker.getLatLng(), 14);
+                // Only the partner's marker exists on the map; center on it.
+                if (partnerMarker) {
+                    locationMap.setView(partnerMarker.getLatLng(), 16);
                 }
             }
 
@@ -1079,9 +1242,9 @@
                 watchId = navigator.geolocation.watchPosition(
                     async (pos) => {
                         const { latitude: lat, longitude: lng } = pos.coords;
-                        updateMyMarker(lat, lng, myName);
+                        updateMyStatus(lat, lng);
                         document.getElementById('locPermissionMsg').style.display = 'none';
-                        // Save to Firestore
+                        // Save to Firestore so partner can see our location on their map
                         try {
                             await db.collection('users').doc(auth.currentUser.uid).update({
                                 location: { lat, lng, updatedAt: Date.now() }
@@ -1104,11 +1267,11 @@
                 document.getElementById('stopSharingBtn').style.display = 'none';
                 document.getElementById('locMyDot').className = 'loc-dot';
                 document.getElementById('locMyCoords').textContent = 'Not sharing';
-                // Clear location from Firestore
+                // Clear location from Firestore so partner's map removes our marker
                 if (auth.currentUser) {
                     db.collection('users').doc(auth.currentUser.uid).update({ location: null }).catch(() => {});
                 }
-                if (myMarker) { locationMap.removeLayer(myMarker); myMarker = null; }
+                // myMarker is never on the map (we only show partner's location here)
             }
 
             function listenToPartnerLocation(partnerId, partnerName) {
@@ -1170,8 +1333,313 @@
                 centerBtn.onclick = fitBothMarkers;
             }
 
-            // ===== Sign out =====
+            // ===== VIDEO CALL (LiveKit) =====
+            const LIVEKIT_URL = 'wss://tamtam-i5y3jxbi.livekit.cloud';
+            const LIVEKIT_API_KEY = 'APIYq3pjgp8jW5V';
+            const LIVEKIT_API_SECRET = '1Q2SfKHexkQg7tH18RBnAKOtptlNUEPGV1Osajpjpsw';
+
+            let livekitRoom = null;
+            let callTimerInterval = null;
+            let callSeconds = 0;
+            let micEnabled = true;
+            let camEnabled = true;
+            let callSignalUnsub = null;
+            let incomingCallData = null;
+
+            // Generate LiveKit JWT token in the browser
+            async function generateLiveKitToken(roomName, participantName) {
+                const now = Math.floor(Date.now() / 1000);
+                const payload = {
+                    iss: LIVEKIT_API_KEY,
+                    sub: participantName,
+                    iat: now,
+                    exp: now + 3600,
+                    video: { roomJoin: true, room: roomName, canPublish: true, canSubscribe: true }
+                };
+                const header = { alg: 'HS256', typ: 'JWT' };
+                function b64url(obj) {
+                    return btoa(JSON.stringify(obj)).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+                }
+                const unsigned = b64url(header) + '.' + b64url(payload);
+                const key = await crypto.subtle.importKey(
+                    'raw', new TextEncoder().encode(LIVEKIT_API_SECRET),
+                    { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']
+                );
+                const sig = await crypto.subtle.sign('HMAC', key, new TextEncoder().encode(unsigned));
+                const sigB64 = btoa(String.fromCharCode(...new Uint8Array(sig))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+                return unsigned + '.' + sigB64;
+            }
+
+            function formatCallTime(s) {
+                const m = Math.floor(s / 60).toString().padStart(2, '0');
+                const sec = (s % 60).toString().padStart(2, '0');
+                return `${m}:${sec}`;
+            }
+
+            function startCallTimer() {
+                callSeconds = 0;
+                document.getElementById('callTimer').textContent = '00:00';
+                callTimerInterval = setInterval(() => {
+                    callSeconds++;
+                    document.getElementById('callTimer').textContent = formatCallTime(callSeconds);
+                }, 1000);
+            }
+
+            function stopCallTimer() {
+                if (callTimerInterval) { clearInterval(callTimerInterval); callTimerInterval = null; }
+                document.getElementById('callTimer').textContent = '';
+            }
+
+            async function startVideoCall() {
+                if (!currentUser || !currentPartnerId) return;
+                const myDoc = await db.collection('users').doc(currentUser.uid).get();
+                const myName = myDoc.data().username || 'You';
+                const partnerDoc = await db.collection('users').doc(currentPartnerId).get();
+                const partnerName = partnerDoc.exists ? partnerDoc.data().username : 'Partner';
+
+                const roomName = 'call_' + [currentUser.uid, currentPartnerId].sort().join('_');
+
+                // Signal the partner via Firestore
+                await db.collection('calls').doc(roomName).set({
+                    roomName,
+                    callerId: currentUser.uid,
+                    callerName: myName,
+                    calleeId: currentPartnerId,
+                    status: 'ringing',
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+
+                // Show calling screen
+                const overlay = document.getElementById('videoCallOverlay');
+                overlay.classList.add('active');
+                document.getElementById('callingScreen').style.display = 'flex';
+                document.getElementById('videoGrid').style.display = 'none';
+                document.getElementById('callStatusDot').style.display = 'none';
+                document.getElementById('callPartnerName').textContent = partnerName;
+                document.getElementById('callingAvatar').textContent = partnerName.charAt(0).toUpperCase();
+                document.getElementById('callingName').textContent = partnerName;
+                document.getElementById('callingStatus').textContent = 'Calling...';
+
+                // Connect to LiveKit room immediately
+                await joinLiveKitRoom(roomName, myName, false);
+
+                // Listen for callee to answer or decline
+                const callRef = db.collection('calls').doc(roomName);
+                const unsub = callRef.onSnapshot(snap => {
+                    if (!snap.exists) return;
+                    const data = snap.data();
+                    if (data.status === 'accepted') {
+                        unsub();
+                        document.getElementById('callingScreen').style.display = 'none';
+                        document.getElementById('videoGrid').style.display = 'flex';
+                        document.getElementById('callStatusDot').style.display = 'block';
+                        startCallTimer();
+                    } else if (data.status === 'declined' || data.status === 'ended') {
+                        unsub();
+                        endCallCleanup();
+                        document.getElementById('callingStatus').textContent = data.status === 'declined' ? 'Call declined.' : 'Call ended.';
+                        setTimeout(() => closeCallOverlay(), 1500);
+                    }
+                });
+            }
+
+            async function joinLiveKitRoom(roomName, participantName, isCallee) {
+                if (livekitRoom) { await livekitRoom.disconnect(); livekitRoom = null; }
+                const token = await generateLiveKitToken(roomName, participantName + '_' + currentUser.uid.slice(0,6));
+                const room = new LivekitClient.Room({
+                    adaptiveStream: true,
+                    dynacast: true,
+                });
+                livekitRoom = room;
+
+                room.on(LivekitClient.RoomEvent.TrackSubscribed, (track, publication, participant) => {
+                    if (track.kind === LivekitClient.Track.Kind.Video) {
+                        const remoteVideo = document.getElementById('remoteVideo');
+                        track.attach(remoteVideo);
+                        document.getElementById('remoteAvatar').style.display = 'none';
+                        remoteVideo.style.display = 'block';
+                    } else if (track.kind === LivekitClient.Track.Kind.Audio) {
+                        const audioEl = track.attach();
+                        document.body.appendChild(audioEl);
+                    }
+                    const rName = participant.identity.replace(/_[^_]+$/, '');
+                    document.getElementById('remoteLabel').textContent = rName;
+                });
+
+                room.on(LivekitClient.RoomEvent.TrackUnsubscribed, (track) => {
+                    track.detach();
+                    if (track.kind === LivekitClient.Track.Kind.Video) {
+                        document.getElementById('remoteAvatar').style.display = 'flex';
+                        document.getElementById('remoteVideo').style.display = 'none';
+                    }
+                });
+
+                room.on(LivekitClient.RoomEvent.ParticipantDisconnected, () => {
+                    endCallCleanup();
+                    closeCallOverlay();
+                });
+
+                room.on(LivekitClient.RoomEvent.Disconnected, () => {
+                    endCallCleanup();
+                });
+
+                await room.connect(LIVEKIT_URL, token);
+
+                // Publish local camera + mic
+                try {
+                    await room.localParticipant.enableCameraAndMicrophone();
+                    const localVideo = document.getElementById('localVideo');
+                    const camPub = room.localParticipant.getTrackPublication(LivekitClient.Track.Source.Camera);
+                    if (camPub && camPub.track) {
+                        camPub.track.attach(localVideo);
+                        document.getElementById('localAvatar').style.display = 'none';
+                        localVideo.style.display = 'block';
+                    }
+                    // Set my avatar
+                    const myDoc = await db.collection('users').doc(currentUser.uid).get();
+                    const myName = myDoc.data().username || 'You';
+                    document.getElementById('localAvatar').textContent = myName.charAt(0).toUpperCase();
+                } catch(e) {
+                    console.warn('Camera/mic error:', e);
+                }
+
+                if (isCallee) {
+                    document.getElementById('videoGrid').style.display = 'flex';
+                    document.getElementById('callStatusDot').style.display = 'block';
+                    startCallTimer();
+                }
+            }
+
+            async function answerCall() {
+                if (!incomingCallData) return;
+                const { roomName, callerName, callerId } = incomingCallData;
+                hideIncomingBanner();
+
+                const myDoc = await db.collection('users').doc(currentUser.uid).get();
+                const myName = myDoc.data().username || 'Me';
+
+                // Show overlay
+                const overlay = document.getElementById('videoCallOverlay');
+                overlay.classList.add('active');
+                document.getElementById('callingScreen').style.display = 'none';
+                document.getElementById('callPartnerName').textContent = callerName;
+                document.getElementById('remoteLabel').textContent = callerName;
+                document.getElementById('remoteAvatar').textContent = callerName.charAt(0).toUpperCase();
+
+                // Update call status in Firestore
+                await db.collection('calls').doc(roomName).update({ status: 'accepted' });
+
+                // Join room
+                await joinLiveKitRoom(roomName, myName, true);
+                incomingCallData = null;
+            }
+
+            async function declineCall() {
+                if (!incomingCallData) return;
+                const { roomName } = incomingCallData;
+                hideIncomingBanner();
+                await db.collection('calls').doc(roomName).update({ status: 'declined' });
+                incomingCallData = null;
+            }
+
+            function endCallCleanup() {
+                stopCallTimer();
+                if (livekitRoom) { livekitRoom.disconnect(); livekitRoom = null; }
+                // Detach all tracks
+                const remoteVideo = document.getElementById('remoteVideo');
+                remoteVideo.srcObject = null; remoteVideo.style.display = 'none';
+                const localVideo = document.getElementById('localVideo');
+                localVideo.srcObject = null; localVideo.style.display = 'none';
+                document.getElementById('remoteAvatar').style.display = 'flex';
+                document.getElementById('localAvatar').style.display = 'flex';
+                micEnabled = true; camEnabled = true;
+                document.getElementById('toggleMicBtn').classList.remove('active');
+                document.getElementById('toggleCamBtn').classList.remove('active');
+                // Clean up audio elements added to body
+                document.querySelectorAll('audio').forEach(a => a.remove());
+            }
+
+            function closeCallOverlay() {
+                endCallCleanup();
+                document.getElementById('videoCallOverlay').classList.remove('active');
+                document.getElementById('callingScreen').style.display = 'none';
+                document.getElementById('videoGrid').style.display = 'none';
+                document.getElementById('callStatusDot').style.display = 'none';
+            }
+
+            function hideIncomingBanner() {
+                document.getElementById('incomingCallBanner').classList.remove('active');
+                if (callSignalUnsub) { callSignalUnsub(); callSignalUnsub = null; }
+            }
+
+            // Listen for incoming calls
+            function listenForIncomingCalls(myUid) {
+                if (callSignalUnsub) { callSignalUnsub(); callSignalUnsub = null; }
+                callSignalUnsub = db.collection('calls')
+                    .where('calleeId', '==', myUid)
+                    .where('status', '==', 'ringing')
+                    .onSnapshot(snap => {
+                        snap.docChanges().forEach(change => {
+                            if (change.type === 'added') {
+                                const data = change.doc.data();
+                                // Don't show if we're already in a call
+                                if (livekitRoom) return;
+                                incomingCallData = data;
+                                document.getElementById('incomingCallerName').textContent = data.callerName || 'Someone';
+                                document.getElementById('incomingAvatar').textContent = (data.callerName || '?').charAt(0).toUpperCase();
+                                document.getElementById('incomingCallBanner').classList.add('active');
+                                // Auto-decline after 30s
+                                setTimeout(() => {
+                                    if (incomingCallData && incomingCallData.roomName === data.roomName) {
+                                        declineCall();
+                                    }
+                                }, 30000);
+                            }
+                        });
+                    });
+            }
+
+            // Control buttons
+            document.getElementById('toggleMicBtn').addEventListener('click', async () => {
+                if (!livekitRoom) return;
+                micEnabled = !micEnabled;
+                await livekitRoom.localParticipant.setMicrophoneEnabled(micEnabled);
+                const btn = document.getElementById('toggleMicBtn');
+                btn.textContent = micEnabled ? '🎙️' : '🔇';
+                btn.classList.toggle('active', !micEnabled);
+            });
+
+            document.getElementById('toggleCamBtn').addEventListener('click', async () => {
+                if (!livekitRoom) return;
+                camEnabled = !camEnabled;
+                await livekitRoom.localParticipant.setCameraEnabled(camEnabled);
+                const btn = document.getElementById('toggleCamBtn');
+                btn.textContent = camEnabled ? '📷' : '🚫';
+                btn.classList.toggle('active', !camEnabled);
+                const localVideo = document.getElementById('localVideo');
+                localVideo.style.display = camEnabled ? 'block' : 'none';
+                document.getElementById('localAvatar').style.display = camEnabled ? 'none' : 'flex';
+            });
+
+            document.getElementById('endCallBtn').addEventListener('click', async () => {
+                if (currentPartnerId && currentUser) {
+                    const roomName = 'call_' + [currentUser.uid, currentPartnerId].sort().join('_');
+                    try { await db.collection('calls').doc(roomName).update({ status: 'ended' }); } catch(e) {}
+                }
+                closeCallOverlay();
+            });
+
+            document.getElementById('videoCallBtn').addEventListener('click', () => { startVideoCall(); });
+            document.getElementById('answerCallBtn').addEventListener('click', () => { answerCall(); });
+            document.getElementById('declineCallBtn').addEventListener('click', () => { declineCall(); });
+
+            // Start listening when user is logged in (hook into goToHome)
+            // (listenForIncomingCalls is called from auth.onAuthStateChanged above)
+
             signoutBtn.addEventListener('click', async () => {
+                if (livekitRoom) { livekitRoom.disconnect(); livekitRoom = null; }
+                closeCallOverlay();
+                if (callSignalUnsub) { callSignalUnsub(); callSignalUnsub = null; }
                 if (unsubscribeChat) { unsubscribeChat(); unsubscribeChat = null; }
                 if (unsubscribeUserDoc) { unsubscribeUserDoc(); unsubscribeUserDoc = null; }
                 if (unsubscribePartnerLocation) { unsubscribePartnerLocation(); unsubscribePartnerLocation = null; }
