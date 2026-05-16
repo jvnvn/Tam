@@ -14,10 +14,8 @@
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 
-    <!-- LiveKit Client SDK -->
-    <script src="https://cdn.jsdelivr.net/npm/livekit-client/dist/livekit-client.umd.min.js"></script>
-    <!-- jose for JWT token generation -->
-    <script src="https://cdn.jsdelivr.net/npm/jose@5/dist/browser/index.js"></script>
+    <!-- LiveKit Client SDK (pinned version, UMD global = LivekitClient) -->
+    <script src="https://cdn.jsdelivr.net/npm/livekit-client@2.5.4/dist/livekit-client.umd.min.js"></script>
 
     <style>
         /* ========== Light & Dark variables ========== */
@@ -1032,15 +1030,28 @@
 
             sendChatBtn.addEventListener('click', async () => {
                 const text = chatInput.value.trim();
-                if (!text || !currentChatId || !currentUser) return;
-                const myUsername = navbarDisplayName.textContent;
-                await db.collection('chats').doc(currentChatId).collection('messages').add({
-                    text,
-                    userId: currentUser.uid,
-                    username: myUsername,
-                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
-                });
-                chatInput.value = '';
+                if (!text) return;
+                if (!currentChatId || !currentUser) {
+                    alert('Not connected to a partner yet.');
+                    return;
+                }
+                sendChatBtn.disabled = true;
+                try {
+                    const myUsername = navbarDisplayName.textContent || 'User';
+                    await db.collection('chats').doc(currentChatId).collection('messages').add({
+                        text,
+                        userId: currentUser.uid,
+                        username: myUsername,
+                        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                    chatInput.value = '';
+                } catch(e) {
+                    console.error('Send failed:', e);
+                    alert('Message failed to send: ' + e.message);
+                } finally {
+                    sendChatBtn.disabled = false;
+                    chatInput.focus();
+                }
             });
             chatInput.addEventListener('keydown', e => { if (e.key === 'Enter') sendChatBtn.click(); });
 
@@ -1346,27 +1357,47 @@
             let callSignalUnsub = null;
             let incomingCallData = null;
 
-            // Generate LiveKit JWT token in the browser
+            // Generate LiveKit JWT token in the browser using Web Crypto API
             async function generateLiveKitToken(roomName, participantName) {
                 const now = Math.floor(Date.now() / 1000);
+                // LiveKit requires grants nested under "video"
                 const payload = {
                     iss: LIVEKIT_API_KEY,
                     sub: participantName,
                     iat: now,
                     exp: now + 3600,
-                    video: { roomJoin: true, room: roomName, canPublish: true, canSubscribe: true }
+                    nbf: now,
+                    grants: {
+                        roomJoin: true,
+                        room: roomName,
+                        canPublish: true,
+                        canSubscribe: true,
+                        canPublishData: true
+                    }
                 };
                 const header = { alg: 'HS256', typ: 'JWT' };
+
                 function b64url(obj) {
-                    return btoa(JSON.stringify(obj)).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+                    const str = JSON.stringify(obj);
+                    // Safe UTF-8 base64url encode
+                    const bytes = new TextEncoder().encode(str);
+                    let binary = '';
+                    bytes.forEach(b => binary += String.fromCharCode(b));
+                    return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
                 }
+
                 const unsigned = b64url(header) + '.' + b64url(payload);
                 const key = await crypto.subtle.importKey(
-                    'raw', new TextEncoder().encode(LIVEKIT_API_SECRET),
-                    { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']
+                    'raw',
+                    new TextEncoder().encode(LIVEKIT_API_SECRET),
+                    { name: 'HMAC', hash: 'SHA-256' },
+                    false,
+                    ['sign']
                 );
-                const sig = await crypto.subtle.sign('HMAC', key, new TextEncoder().encode(unsigned));
-                const sigB64 = btoa(String.fromCharCode(...new Uint8Array(sig))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+                const sigBytes = await crypto.subtle.sign('HMAC', key, new TextEncoder().encode(unsigned));
+                let binary = '';
+                new Uint8Array(sigBytes).forEach(b => binary += String.fromCharCode(b));
+                const sigB64 = btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
                 return unsigned + '.' + sigB64;
             }
 
@@ -1391,122 +1422,164 @@
             }
 
             async function startVideoCall() {
-                if (!currentUser || !currentPartnerId) return;
-                const myDoc = await db.collection('users').doc(currentUser.uid).get();
-                const myName = myDoc.data().username || 'You';
-                const partnerDoc = await db.collection('users').doc(currentPartnerId).get();
-                const partnerName = partnerDoc.exists ? partnerDoc.data().username : 'Partner';
+                if (!currentUser || !currentPartnerId) {
+                    alert('You must be connected to a partner first.');
+                    return;
+                }
+                const vcBtn = document.getElementById('videoCallBtn');
+                vcBtn.disabled = true;
+                try {
+                    const myDoc = await db.collection('users').doc(currentUser.uid).get();
+                    const myName = myDoc.data().username || 'You';
+                    const partnerDoc = await db.collection('users').doc(currentPartnerId).get();
+                    const partnerName = partnerDoc.exists ? partnerDoc.data().username : 'Partner';
+                    const roomName = 'call_' + [currentUser.uid, currentPartnerId].sort().join('_');
 
-                const roomName = 'call_' + [currentUser.uid, currentPartnerId].sort().join('_');
+                    // Signal the partner via Firestore
+                    await db.collection('calls').doc(roomName).set({
+                        roomName,
+                        callerId: currentUser.uid,
+                        callerName: myName,
+                        calleeId: currentPartnerId,
+                        status: 'ringing',
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
 
-                // Signal the partner via Firestore
-                await db.collection('calls').doc(roomName).set({
-                    roomName,
-                    callerId: currentUser.uid,
-                    callerName: myName,
-                    calleeId: currentPartnerId,
-                    status: 'ringing',
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                });
+                    // Show calling screen
+                    document.getElementById('videoCallOverlay').classList.add('active');
+                    document.getElementById('callingScreen').style.display = 'flex';
+                    document.getElementById('videoGrid').style.display = 'none';
+                    document.getElementById('callStatusDot').style.display = 'none';
+                    document.getElementById('callPartnerName').textContent = partnerName;
+                    document.getElementById('callingAvatar').textContent = partnerName.charAt(0).toUpperCase();
+                    document.getElementById('callingName').textContent = partnerName;
+                    document.getElementById('callingStatus').textContent = 'Calling...';
 
-                // Show calling screen
-                const overlay = document.getElementById('videoCallOverlay');
-                overlay.classList.add('active');
-                document.getElementById('callingScreen').style.display = 'flex';
-                document.getElementById('videoGrid').style.display = 'none';
-                document.getElementById('callStatusDot').style.display = 'none';
-                document.getElementById('callPartnerName').textContent = partnerName;
-                document.getElementById('callingAvatar').textContent = partnerName.charAt(0).toUpperCase();
-                document.getElementById('callingName').textContent = partnerName;
-                document.getElementById('callingStatus').textContent = 'Calling...';
+                    // Connect to LiveKit room
+                    await joinLiveKitRoom(roomName, myName, false);
 
-                // Connect to LiveKit room immediately
-                await joinLiveKitRoom(roomName, myName, false);
-
-                // Listen for callee to answer or decline
-                const callRef = db.collection('calls').doc(roomName);
-                const unsub = callRef.onSnapshot(snap => {
-                    if (!snap.exists) return;
-                    const data = snap.data();
-                    if (data.status === 'accepted') {
-                        unsub();
-                        document.getElementById('callingScreen').style.display = 'none';
-                        document.getElementById('videoGrid').style.display = 'flex';
-                        document.getElementById('callStatusDot').style.display = 'block';
-                        startCallTimer();
-                    } else if (data.status === 'declined' || data.status === 'ended') {
-                        unsub();
-                        endCallCleanup();
-                        document.getElementById('callingStatus').textContent = data.status === 'declined' ? 'Call declined.' : 'Call ended.';
-                        setTimeout(() => closeCallOverlay(), 1500);
-                    }
-                });
+                    // Listen for callee to answer or decline
+                    const callRef = db.collection('calls').doc(roomName);
+                    const unsub = callRef.onSnapshot(snap => {
+                        if (!snap.exists) return;
+                        const data = snap.data();
+                        if (data.status === 'accepted') {
+                            unsub();
+                            document.getElementById('callingScreen').style.display = 'none';
+                            document.getElementById('videoGrid').style.display = 'flex';
+                            document.getElementById('callStatusDot').style.display = 'block';
+                            startCallTimer();
+                        } else if (data.status === 'declined' || data.status === 'ended') {
+                            unsub();
+                            endCallCleanup();
+                            document.getElementById('callingScreen').style.display = 'flex';
+                            document.getElementById('callingStatus').textContent = data.status === 'declined' ? 'Call declined.' : 'Call ended.';
+                            setTimeout(() => closeCallOverlay(), 1500);
+                        }
+                    });
+                } catch(err) {
+                    console.error('startVideoCall error:', err);
+                    alert('Could not start call: ' + err.message);
+                    closeCallOverlay();
+                } finally {
+                    vcBtn.disabled = false;
+                }
             }
 
             async function joinLiveKitRoom(roomName, participantName, isCallee) {
-                if (livekitRoom) { await livekitRoom.disconnect(); livekitRoom = null; }
-                const token = await generateLiveKitToken(roomName, participantName + '_' + currentUser.uid.slice(0,6));
-                const room = new LivekitClient.Room({
-                    adaptiveStream: true,
-                    dynacast: true,
-                });
-                livekitRoom = room;
-
-                room.on(LivekitClient.RoomEvent.TrackSubscribed, (track, publication, participant) => {
-                    if (track.kind === LivekitClient.Track.Kind.Video) {
-                        const remoteVideo = document.getElementById('remoteVideo');
-                        track.attach(remoteVideo);
-                        document.getElementById('remoteAvatar').style.display = 'none';
-                        remoteVideo.style.display = 'block';
-                    } else if (track.kind === LivekitClient.Track.Kind.Audio) {
-                        const audioEl = track.attach();
-                        document.body.appendChild(audioEl);
-                    }
-                    const rName = participant.identity.replace(/_[^_]+$/, '');
-                    document.getElementById('remoteLabel').textContent = rName;
-                });
-
-                room.on(LivekitClient.RoomEvent.TrackUnsubscribed, (track) => {
-                    track.detach();
-                    if (track.kind === LivekitClient.Track.Kind.Video) {
-                        document.getElementById('remoteAvatar').style.display = 'flex';
-                        document.getElementById('remoteVideo').style.display = 'none';
-                    }
-                });
-
-                room.on(LivekitClient.RoomEvent.ParticipantDisconnected, () => {
-                    endCallCleanup();
-                    closeCallOverlay();
-                });
-
-                room.on(LivekitClient.RoomEvent.Disconnected, () => {
-                    endCallCleanup();
-                });
-
-                await room.connect(LIVEKIT_URL, token);
-
-                // Publish local camera + mic
                 try {
-                    await room.localParticipant.enableCameraAndMicrophone();
-                    const localVideo = document.getElementById('localVideo');
-                    const camPub = room.localParticipant.getTrackPublication(LivekitClient.Track.Source.Camera);
-                    if (camPub && camPub.track) {
-                        camPub.track.attach(localVideo);
-                        document.getElementById('localAvatar').style.display = 'none';
-                        localVideo.style.display = 'block';
+                    if (livekitRoom) {
+                        await livekitRoom.disconnect();
+                        livekitRoom = null;
                     }
-                    // Set my avatar
-                    const myDoc = await db.collection('users').doc(currentUser.uid).get();
-                    const myName = myDoc.data().username || 'You';
-                    document.getElementById('localAvatar').textContent = myName.charAt(0).toUpperCase();
-                } catch(e) {
-                    console.warn('Camera/mic error:', e);
-                }
 
-                if (isCallee) {
-                    document.getElementById('videoGrid').style.display = 'flex';
-                    document.getElementById('callStatusDot').style.display = 'block';
-                    startCallTimer();
+                    const token = await generateLiveKitToken(roomName, participantName + '_' + currentUser.uid.slice(0, 6));
+                    console.log('[LiveKit] Connecting to room:', roomName, 'as:', participantName);
+
+                    const room = new LivekitClient.Room({
+                        adaptiveStream: true,
+                        dynacast: true,
+                        videoCaptureDefaults: { resolution: LivekitClient.VideoPresets.h540.resolution }
+                    });
+                    livekitRoom = room;
+
+                    room.on(LivekitClient.RoomEvent.TrackSubscribed, (track, publication, participant) => {
+                        console.log('[LiveKit] Track subscribed:', track.kind, 'from', participant.identity);
+                        if (track.kind === LivekitClient.Track.Kind.Video) {
+                            const remoteVideo = document.getElementById('remoteVideo');
+                            track.attach(remoteVideo);
+                            document.getElementById('remoteAvatar').style.display = 'none';
+                            remoteVideo.style.display = 'block';
+                        } else if (track.kind === LivekitClient.Track.Kind.Audio) {
+                            const audioEl = track.attach();
+                            audioEl.id = 'lk-audio-' + participant.identity;
+                            document.body.appendChild(audioEl);
+                        }
+                        const rName = participant.identity.replace(/_[^_]+$/, '');
+                        document.getElementById('remoteLabel').textContent = rName;
+                    });
+
+                    room.on(LivekitClient.RoomEvent.TrackUnsubscribed, (track, publication, participant) => {
+                        track.detach();
+                        const el = document.getElementById('lk-audio-' + participant.identity);
+                        if (el) el.remove();
+                        if (track.kind === LivekitClient.Track.Kind.Video) {
+                            document.getElementById('remoteAvatar').style.display = 'flex';
+                            document.getElementById('remoteVideo').style.display = 'none';
+                        }
+                    });
+
+                    room.on(LivekitClient.RoomEvent.ParticipantDisconnected, (participant) => {
+                        console.log('[LiveKit] Participant disconnected:', participant.identity);
+                        setTimeout(() => { endCallCleanup(); closeCallOverlay(); }, 1000);
+                    });
+
+                    room.on(LivekitClient.RoomEvent.Disconnected, (reason) => {
+                        console.log('[LiveKit] Room disconnected, reason:', reason);
+                        endCallCleanup();
+                    });
+
+                    room.on(LivekitClient.RoomEvent.ConnectionStateChanged, (state) => {
+                        console.log('[LiveKit] Connection state:', state);
+                    });
+
+                    await room.connect(LIVEKIT_URL, token);
+                    console.log('[LiveKit] Connected! Room state:', room.state);
+
+                    // Publish camera + mic
+                    try {
+                        await room.localParticipant.enableCameraAndMicrophone();
+                        console.log('[LiveKit] Camera and mic enabled');
+
+                        // Attach local video preview
+                        const localVideo = document.getElementById('localVideo');
+                        const camPub = room.localParticipant.getTrackPublication(LivekitClient.Track.Source.Camera);
+                        if (camPub && camPub.track) {
+                            camPub.track.attach(localVideo);
+                            document.getElementById('localAvatar').style.display = 'none';
+                            localVideo.style.display = 'block';
+                        }
+                    } catch (mediaErr) {
+                        console.warn('[LiveKit] Camera/mic error (call continues audio-only):', mediaErr);
+                    }
+
+                    // Set local avatar letter
+                    try {
+                        const myDoc = await db.collection('users').doc(currentUser.uid).get();
+                        const myName = myDoc.data().username || 'You';
+                        document.getElementById('localAvatar').textContent = myName.charAt(0).toUpperCase();
+                    } catch(e) {}
+
+                    if (isCallee) {
+                        document.getElementById('videoGrid').style.display = 'flex';
+                        document.getElementById('callStatusDot').style.display = 'block';
+                        startCallTimer();
+                    }
+
+                } catch (err) {
+                    console.error('[LiveKit] joinLiveKitRoom failed:', err);
+                    alert('Video call connection failed: ' + err.message);
+                    closeCallOverlay();
                 }
             }
 
