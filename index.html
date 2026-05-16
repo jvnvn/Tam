@@ -1690,11 +1690,16 @@
                 document.getElementById('remoteLabel').textContent = 'Partner';
                 document.getElementById('remoteAvatar').textContent = '?';
                 document.getElementById('localAvatar').textContent = '?';
+                // Ensure incoming-call listener is active for the next call attempt
+                if (currentUser && !callSignalUnsub) { listenForIncomingCalls(currentUser.uid); }
             }
 
             function hideIncomingBanner() {
                 document.getElementById('incomingCallBanner').classList.remove('active');
+                // Re-subscribe so future calls (same roomName) are detected again.
+                // Only tear down & restart; don't null-out permanently.
                 if (callSignalUnsub) { callSignalUnsub(); callSignalUnsub = null; }
+                if (currentUser) { listenForIncomingCalls(currentUser.uid); }
             }
 
             // Listen for incoming calls
@@ -1705,10 +1710,14 @@
                     .where('status', '==', 'ringing')
                     .onSnapshot(snap => {
                         snap.docChanges().forEach(change => {
-                            if (change.type === 'added') {
+                            // Accept both 'added' and 'modified' so a re-created call doc
+                            // (same roomName after a previous call) is always detected.
+                            if (change.type === 'added' || change.type === 'modified') {
                                 const data = change.doc.data();
                                 // Don't show if we're already in a call
                                 if (livekitRoom) return;
+                                // Avoid re-showing a banner for a call we already handled
+                                if (incomingCallData && incomingCallData.roomName === data.roomName) return;
                                 incomingCallData = data;
                                 document.getElementById('incomingCallerName').textContent = data.callerName || 'Someone';
                                 document.getElementById('incomingAvatar').textContent = (data.callerName || '?').charAt(0).toUpperCase();
