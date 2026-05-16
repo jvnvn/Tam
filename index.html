@@ -17,6 +17,77 @@
     <!-- LiveKit Client SDK (pinned version, UMD global = LivekitClient) -->
     <script src="https://cdn.jsdelivr.net/npm/livekit-client@2.5.4/dist/livekit-client.umd.min.js"></script>
 
+    <script>
+        // ===== TamTam Sound Engine (Web Audio API – no external files needed) =====
+        const TamTamSounds = (() => {
+            let ctx = null;
+            let ringtoneInterval = null;
+
+            function getCtx() {
+                if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)();
+                if (ctx.state === 'suspended') ctx.resume();
+                return ctx;
+            }
+
+            // Soft two-tone message chime (C6 -> E6)
+            function playMessage() {
+                try {
+                    const c = getCtx();
+                    [1046.5, 1318.5].forEach((freq, i) => {
+                        const osc = c.createOscillator();
+                        const gain = c.createGain();
+                        osc.connect(gain);
+                        gain.connect(c.destination);
+                        osc.type = 'sine';
+                        osc.frequency.value = freq;
+                        const t = c.currentTime + i * 0.13;
+                        gain.gain.setValueAtTime(0, t);
+                        gain.gain.linearRampToValueAtTime(0.18, t + 0.02);
+                        gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.38);
+                        osc.start(t);
+                        osc.stop(t + 0.4);
+                    });
+                } catch(e) {}
+            }
+
+            // Single classic dual-tone phone ring burst (440 Hz + 480 Hz)
+            function _ringBurst() {
+                try {
+                    const c = getCtx();
+                    [440, 480].forEach(freq => {
+                        const osc = c.createOscillator();
+                        const gain = c.createGain();
+                        osc.connect(gain);
+                        gain.connect(c.destination);
+                        osc.type = 'sine';
+                        osc.frequency.value = freq;
+                        const t = c.currentTime;
+                        gain.gain.setValueAtTime(0, t);
+                        gain.gain.linearRampToValueAtTime(0.22, t + 0.03);
+                        gain.gain.setValueAtTime(0.22, t + 0.38);
+                        gain.gain.linearRampToValueAtTime(0, t + 0.42);
+                        osc.start(t);
+                        osc.stop(t + 0.45);
+                    });
+                } catch(e) {}
+            }
+
+            function startRingtone() {
+                if (ringtoneInterval) return;
+                _ringBurst();
+                ringtoneInterval = setInterval(_ringBurst, 1800);
+            }
+
+            function stopRingtone() {
+                if (!ringtoneInterval) return;
+                clearInterval(ringtoneInterval);
+                ringtoneInterval = null;
+            }
+
+            return { playMessage, startRingtone, stopRingtone };
+        })();
+    </script>
+
     <style>
         /* ========== Light & Dark variables ========== */
         :root {
@@ -1013,9 +1084,24 @@
 
             function attachPrivateChatListener(chatId) {
                 if (unsubscribeChat) unsubscribeChat();
+                let chatInitialLoad = true;
                 unsubscribeChat = db.collection('chats').doc(chatId).collection('messages')
                     .orderBy('timestamp', 'asc')
                     .onSnapshot(snapshot => {
+                        // Detect new incoming messages (not on initial page load)
+                        if (!chatInitialLoad) {
+                            snapshot.docChanges().forEach(change => {
+                                if (change.type === 'added') {
+                                    const msg = change.doc.data();
+                                    // Only chime for the partner's messages, not our own
+                                    if (msg.userId !== auth.currentUser.uid) {
+                                        TamTamSounds.playMessage();
+                                    }
+                                }
+                            });
+                        }
+                        chatInitialLoad = false;
+
                         chatMessages.innerHTML = '';
                         snapshot.forEach(doc => {
                             const msg = doc.data();
@@ -1633,6 +1719,7 @@
 
             function endCallCleanup() {
                 stopCallTimer();
+                TamTamSounds.stopRingtone();
 
                 // Unsubscribe any active call status listener
                 if (callStatusUnsub) { callStatusUnsub(); callStatusUnsub = null; }
@@ -1696,6 +1783,7 @@
 
             function hideIncomingBanner() {
                 document.getElementById('incomingCallBanner').classList.remove('active');
+                TamTamSounds.stopRingtone();
                 // Re-subscribe so future calls (same roomName) are detected again.
                 // Only tear down & restart; don't null-out permanently.
                 if (callSignalUnsub) { callSignalUnsub(); callSignalUnsub = null; }
@@ -1722,6 +1810,7 @@
                                 document.getElementById('incomingCallerName').textContent = data.callerName || 'Someone';
                                 document.getElementById('incomingAvatar').textContent = (data.callerName || '?').charAt(0).toUpperCase();
                                 document.getElementById('incomingCallBanner').classList.add('active');
+                                TamTamSounds.startRingtone();
                                 // Auto-decline after 30s
                                 setTimeout(() => {
                                     if (incomingCallData && incomingCallData.roomName === data.roomName) {
