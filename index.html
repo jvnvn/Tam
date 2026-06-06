@@ -554,24 +554,58 @@
         .feed-empty { text-align:center; padding:60px 20px; color:var(--text-secondary); }
         .feed-empty p { margin-top:10px; font-size:0.93rem; }
 
-        .feed-post { background:var(--card-bg); border-radius:var(--radius); box-shadow:var(--shadow-sm); margin-bottom:14px; overflow:hidden; animation:fadeSlideIn 0.25s ease; border:1px solid var(--border); }
-        .post-header { display:flex; align-items:center; gap:10px; padding:12px 14px; justify-content:space-between; }
-        .post-header-left { display:flex; align-items:center; gap:10px; }
-        .post-avatar { width:36px; height:36px; border-radius:50%; background:linear-gradient(135deg,var(--primary),var(--accent)); color:white; font-weight:700; display:flex; align-items:center; justify-content:center; font-size:0.9rem; flex-shrink:0; }
-        .post-username { font-weight:700; font-size:0.88rem; color:var(--text); }
-        .post-time { font-size:0.7rem; color:var(--text-secondary); margin-top:1px; }
-        .post-delete-btn { background:none; border:none; color:var(--text-secondary); cursor:pointer; padding:4px 8px; border-radius:var(--radius-xs); font-size:0.8rem; transition:all var(--transition); }
+        /* ===== FEED POSTS ===== */
+        .feed-post {
+            background: var(--card-bg);
+            border-radius: 20px;
+            margin-bottom: 16px;
+            overflow: hidden;
+            animation: fadeSlideIn 0.28s ease;
+            border: 1px solid var(--border);
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+        }
+        .post-header { display:flex; align-items:center; gap:10px; padding:14px 16px 10px; justify-content:space-between; }
+        .post-header-left { display:flex; align-items:center; gap:10px; flex:1; min-width:0; }
+        .post-avatar {
+            width:40px; height:40px; border-radius:50%;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color:white; font-weight:700; display:flex; align-items:center; justify-content:center;
+            font-size:1rem; flex-shrink:0;
+            box-shadow: 0 2px 8px rgba(212,84,106,0.3);
+        }
+        .post-username { font-weight:700; font-size:0.92rem; color:var(--text); letter-spacing:-0.1px; }
+        .post-time { font-size:0.71rem; color:var(--text-secondary); margin-top:1px; }
+        .post-delete-btn {
+            background:none; border:none; cursor:pointer; padding:6px; border-radius:50%;
+            color:var(--text-secondary); transition:all var(--transition); display:flex; align-items:center; justify-content:center; flex-shrink:0;
+        }
         .post-delete-btn:hover { background:var(--danger-bg); color:var(--danger-text); }
-        .post-media { width:100%; display:block; max-height:420px; object-fit:cover; cursor:pointer; }
-        .post-caption { padding:10px 14px 4px; font-size:0.91rem; color:var(--text); line-height:1.5; }
-        .post-caption strong { font-weight:700; margin-right:5px; }
-        .post-actions { display:flex; align-items:center; gap:4px; padding:6px 10px 12px; }
-        .like-btn { display:flex; align-items:center; gap:5px; background:none; border:none; cursor:pointer; padding:6px 10px; border-radius:20px; color:var(--text-secondary); font-size:0.83rem; font-weight:600; transition:all var(--transition); font-family:inherit; }
+        .post-delete-btn svg { width:16px; height:16px; pointer-events:none; }
+
+        .post-media-wrap { position: relative; background: #000; }
+        .post-media { width:100%; display:block; max-height:440px; object-fit:cover; cursor:pointer; }
+        .post-media:hover { opacity: 0.96; }
+
+        .post-footer { padding: 4px 6px 6px; }
+        .post-actions { display:flex; align-items:center; gap:2px; padding: 2px 4px; }
+        .like-btn {
+            display:flex; align-items:center; gap:6px; background:none; border:none; cursor:pointer;
+            padding:8px 10px; border-radius:12px; color:var(--text-secondary);
+            font-size:0.85rem; font-weight:600; transition:all var(--transition); font-family:inherit;
+        }
         .like-btn:hover { background:var(--primary-light); color:var(--primary); }
         .like-btn.liked { color:var(--primary); }
-        .like-btn .heart { font-size:1.05rem; transition:transform 0.15s; }
-        .like-btn.liked .heart { animation:heartPop 0.25s ease; }
-        @keyframes heartPop { 0%{transform:scale(1)} 50%{transform:scale(1.5)} 100%{transform:scale(1)} }
+        .like-btn svg { width:20px; height:20px; transition:transform 0.2s; }
+        .like-btn.liked svg { fill:var(--primary); stroke:var(--primary); animation:heartPop 0.3s ease; }
+        @keyframes heartPop { 0%{transform:scale(1)} 40%{transform:scale(1.4)} 100%{transform:scale(1)} }
+        .like-count { font-size:0.84rem; }
+
+        .post-caption {
+            padding: 6px 16px 10px;
+            font-size: 0.91rem; color: var(--text); line-height: 1.5;
+        }
+        .post-caption .caption-user { font-weight:700; margin-right:5px; color:var(--text); }
+        .post-caption .caption-text { color: var(--text-secondary); }
 
         /* ===== SETTINGS ===== */
         .settings-section { background:var(--card-bg); border-radius:var(--radius); padding:20px; box-shadow:var(--shadow-sm); margin-bottom:14px; border:1px solid var(--border); }
@@ -773,7 +807,7 @@
         <!-- Home Panel — Instagram-style Feed -->
         <div class="home-panel active" id="panelHome">
             <!-- Profile & code card -->
-            <div id="homeProfileCard" class="home-card profile-card" style="margin-bottom:20px; display:none;">
+            <div id="homeProfileCard" class="home-card profile-card" style="margin-bottom:16px;">
                 <div style="display:flex; align-items:center; gap:14px; justify-content:space-between; flex-wrap:wrap;">
                     <div style="display:flex; align-items:center; gap:14px;">
                         <div class="icon-bg" id="homeProfileAvatar" style="width:48px;height:48px;border-radius:50%;font-size:1.2rem;font-weight:700;color:white;background:linear-gradient(135deg,var(--primary),var(--accent));margin-bottom:0;">?</div>
@@ -1241,6 +1275,8 @@
                 currentUser = user;
                 updateNavbarDisplay(username || user.email);
                 switchHomeTab('home');
+                // Load profile card immediately (don't wait for tab switch)
+                loadProfileData();
                 // Start listening to own user document for partnerId changes
                 listenToOwnUser();
             }
@@ -1278,7 +1314,8 @@
                             if (panelMessages.classList.contains('active')) {
                                 setupMessagesUI();
                             }
-                            // Always refresh feed regardless of active tab
+                            // Always refresh feed and profile card
+                            loadProfileData();
                             initFeed();
                         } else if (!partnerId && currentPartnerId) {
                             // Partner disconnected
@@ -1287,7 +1324,11 @@
                             if (panelMessages.classList.contains('active')) {
                                 setupMessagesUI();
                             }
+                            loadProfileData();
                             initFeed();
+                        } else if (partnerId && partnerId === currentPartnerId) {
+                            // Same partner — still ensure card is shown (e.g. on page load)
+                            loadProfileData();
                         }
                     });
             }
@@ -1502,15 +1543,21 @@
 
             function timeAgo(ts) {
                 if (!ts) return '';
+                let date;
+                if (ts.toDate) date = ts.toDate();
+                else if (ts instanceof Date) date = ts;
+                else date = new Date(ts);
                 const now = Date.now();
-                const ms = ts.toDate ? (now - ts.toDate().getTime()) : (now - ts);
-                const s = Math.floor(ms / 1000);
-                if (s < 60) return 'just now';
+                const s = Math.floor((now - date.getTime()) / 1000);
+                if (s < 5) return 'just now';
+                if (s < 60) return s + 's';
                 const m = Math.floor(s / 60);
-                if (m < 60) return m + 'm ago';
+                if (m < 60) return m + 'm';
                 const h = Math.floor(m / 60);
-                if (h < 24) return h + 'h ago';
-                return Math.floor(h / 24) + 'd ago';
+                if (h < 24) return h + 'h';
+                const d = Math.floor(h / 24);
+                if (d < 7) return d + 'd';
+                return date.toLocaleDateString(undefined, {month:'short', day:'numeric'});
             }
 
             function buildPostCard(postId, data, feedId) {
@@ -1532,13 +1579,12 @@
                     }
                 }
 
-                const captionHtml = data.caption
-                    ? `<div class="post-caption"><strong>${data.username || 'User'}</strong>${data.caption}</div>`
-                    : '';
+                // caption now inlined in card.innerHTML below
 
-                const deleteHtml = isOwn
-                    ? `<button class="post-delete-btn" data-post="${postId}" data-feed="${feedId}" title="Delete post">🗑️</button>`
-                    : '';
+                // delete button now inlined in card.innerHTML below
+
+                const heartSvg = `<svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"/></svg>`;
+                const trashSvg = `<svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"/></svg>`;
 
                 card.innerHTML = `
                     <div class="post-header">
@@ -1549,15 +1595,17 @@
                                 <div class="post-time">${timeAgo(data.createdAt)}</div>
                             </div>
                         </div>
-                        ${deleteHtml}
+                        ${isOwn ? `<button class="post-delete-btn" data-post="${postId}" data-feed="${feedId}" title="Delete">${trashSvg}</button>` : ''}
                     </div>
-                    ${mediaHtml}
-                    ${captionHtml}
-                    <div class="post-actions">
-                        <button class="like-btn${liked ? ' liked' : ''}" data-post="${postId}" data-feed="${feedId}">
-                            <span class="heart">${liked ? '❤️' : '🤍'}</span>
-                            <span class="like-count">${likeCount > 0 ? likeCount : ''}</span>
-                        </button>
+                    ${mediaHtml ? `<div class="post-media-wrap">${mediaHtml}</div>` : ''}
+                    <div class="post-footer">
+                        <div class="post-actions">
+                            <button class="like-btn${liked ? ' liked' : ''}" data-post="${postId}" data-feed="${feedId}">
+                                ${heartSvg}
+                                <span class="like-count">${likeCount > 0 ? likeCount : ''}</span>
+                            </button>
+                        </div>
+                        ${data.caption ? `<div class="post-caption"><span class="caption-user">${data.username || 'User'}</span><span class="caption-text">${data.caption}</span></div>` : ''}
                     </div>`;
 
                 // Like button
