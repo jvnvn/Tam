@@ -2,6 +2,9 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TamTam – Private Chat</title>
     <meta name="theme-color" content="#c0556a">
@@ -1649,16 +1652,21 @@
 
             function timeAgo(ts) {
                 if (!ts) return 'just now';
-                let date;
+                let ms;
                 try {
-                    if (typeof ts.toDate === 'function') date = ts.toDate();
-                    else if (ts instanceof Date) date = ts;
-                    else if (ts.seconds != null) date = new Date(ts.seconds * 1000);
-                    else date = new Date(ts);
+                    if (typeof ts.toDate === 'function') ms = ts.toDate().getTime();
+                    else if (ts instanceof Date) ms = ts.getTime();
+                    else if (ts.seconds != null) ms = ts.seconds * 1000;
+                    else ms = new Date(ts).getTime();
                 } catch(e) { return 'just now'; }
-                if (!date || isNaN(date.getTime()) || date.getFullYear() < 2000) return 'just now';
+                if (!ms || isNaN(ms)) return 'just now';
                 const now = Date.now();
-                const s = Math.floor((now - date.getTime()) / 1000);
+                // If date is in the future or more than 2 years ago, something is wrong
+                if (ms > now + 60000) return 'just now';
+                if (ms < now - 1000 * 60 * 60 * 24 * 730) return new Date(ms).getFullYear() > 2000
+                    ? new Date(ms).toLocaleDateString(undefined, {month:'short', day:'numeric', year:'numeric'})
+                    : 'just now';
+                const s = Math.floor((now - ms) / 1000);
                 if (s < 5) return 'just now';
                 if (s < 60) return s + 's ago';
                 const m = Math.floor(s / 60);
@@ -1667,7 +1675,7 @@
                 if (h < 24) return h + 'h ago';
                 const d = Math.floor(h / 24);
                 if (d < 7) return d + 'd ago';
-                return date.toLocaleDateString(undefined, {month:'short', day:'numeric'});
+                return new Date(ms).toLocaleDateString(undefined, {month:'short', day:'numeric'});
             }
 
             function buildPostCard(postId, data, feedId) {
@@ -1725,7 +1733,7 @@
                             <div class="post-avatar">${initial}</div>
                             <div>
                                 <div class="post-username">${data.username || 'User'}</div>
-                                <div class="post-time">${timeAgo(data.createdAt)}</div>
+                                <div class="post-time">${data.createdAt ? timeAgo(data.createdAt) : 'just now'}</div>
                             </div>
                         </div>
                         ${isOwn ? `<button class="post-delete-btn" data-post="${postId}" data-feed="${feedId}" title="Delete">${trashSvg}</button>` : ''}
