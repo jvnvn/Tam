@@ -759,6 +759,150 @@
         .btn-decline { flex:1; background:#dc2626; color:white; border:none; padding:10px; border-radius:24px; font-weight:600; cursor:pointer; font-family:inherit; transition:all var(--transition); }
         .btn-decline:hover { background:#b91c1c; }
 
+        /* ===== REACTIONS ===== */
+        .reactions-bar { display:flex; gap:4px; padding:2px 6px 0; flex-wrap:wrap; align-items:center; }
+        .reaction-btn {
+            background:none; border:1.5px solid transparent; border-radius:20px; padding:4px 9px;
+            font-size:1.05rem; cursor:pointer; transition:all var(--transition); display:flex; align-items:center; gap:4px;
+            color:var(--text-secondary); font-family:inherit; line-height:1;
+        }
+        .reaction-btn:hover { background:var(--primary-light); border-color:rgba(212,84,106,0.25); transform:scale(1.12); }
+        .reaction-btn.reacted { background:var(--primary-light); border-color:rgba(212,84,106,0.4); }
+        .reaction-count { font-size:0.72rem; font-weight:700; color:var(--primary); }
+        .reaction-picker { display:none; gap:6px; padding:8px 12px; background:var(--card-bg); border:1px solid var(--border); border-radius:28px; box-shadow:var(--shadow-md); position:absolute; z-index:20; animation:fadeSlideIn 0.15s ease; }
+        .reaction-picker.open { display:flex; }
+        .reaction-pick-btn { background:none; border:none; font-size:1.4rem; cursor:pointer; padding:4px; border-radius:12px; transition:transform 0.15s; line-height:1; }
+        .reaction-pick-btn:hover { transform:scale(1.3); }
+        .post-actions-wrap { position:relative; display:flex; align-items:center; gap:2px; flex-wrap:wrap; }
+
+        /* ===== COMMENTS ===== */
+        .comment-toggle-btn {
+            display:flex; align-items:center; gap:6px; background:none; border:none; cursor:pointer;
+            padding:8px 10px; border-radius:12px; color:var(--text-secondary);
+            font-size:0.85rem; font-weight:600; transition:all var(--transition); font-family:inherit;
+        }
+        .comment-toggle-btn:hover { background:var(--primary-light); color:var(--primary); }
+        .comment-toggle-btn svg { width:20px; height:20px; }
+        .comments-section { border-top:1px solid var(--border); padding:10px 16px; display:none; }
+        .comments-section.open { display:block; }
+        .comment-item { display:flex; gap:8px; margin-bottom:8px; animation:fadeSlideIn 0.15s ease; }
+        .comment-avatar { width:28px; height:28px; border-radius:50%; background:linear-gradient(135deg,var(--primary),var(--accent)); color:white; font-weight:700; font-size:0.7rem; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+        .comment-bubble { flex:1; background:var(--bg); border-radius:14px; padding:8px 12px; }
+        .comment-user { font-size:0.73rem; font-weight:700; color:var(--primary); }
+        .comment-text { font-size:0.87rem; color:var(--text); margin-top:2px; line-height:1.4; }
+        .comment-time { font-size:0.65rem; color:var(--text-secondary); margin-top:3px; }
+        .comment-input-row { display:flex; gap:8px; align-items:center; margin-top:8px; }
+        .comment-input-row input { flex:1; border:1.5px solid var(--input-border); outline:none; background:var(--bg); border-radius:20px; padding:8px 14px; font-size:0.87rem; color:var(--text); font-family:inherit; transition:border-color var(--transition); }
+        .comment-input-row input:focus { border-color:var(--primary); background:var(--card-bg); }
+        .comment-send-btn { width:34px; height:34px; border-radius:50%; border:none; background:linear-gradient(135deg,var(--primary),var(--accent)); color:white; cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0; transition:all var(--transition); }
+        .comment-send-btn:hover { transform:scale(1.08); }
+        .comment-send-btn svg { width:15px; height:15px; }
+
+        /* ===== STORIES ===== */
+        .stories-row { display:flex; gap:12px; overflow-x:auto; padding:0 0 12px; scrollbar-width:none; margin-bottom:12px; }
+        .stories-row::-webkit-scrollbar { display:none; }
+        .story-item { display:flex; flex-direction:column; align-items:center; gap:5px; cursor:pointer; flex-shrink:0; }
+        .story-ring {
+            width:58px; height:58px; border-radius:50%; padding:2.5px;
+            background:linear-gradient(135deg,var(--primary),var(--accent),#f43f5e);
+            box-shadow:0 2px 10px rgba(212,84,106,0.3);
+        }
+        .story-ring.viewed { background:var(--border); }
+        .story-inner { width:100%; height:100%; border-radius:50%; background:var(--card-bg); display:flex; align-items:center; justify-content:center; font-weight:700; color:white; font-size:1.1rem; overflow:hidden; border:2px solid var(--card-bg); }
+        .story-inner img { width:100%; height:100%; object-fit:cover; border-radius:50%; }
+        .story-label { font-size:0.68rem; font-weight:600; color:var(--text-secondary); max-width:64px; text-align:center; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+        .story-add-btn { width:58px; height:58px; border-radius:50%; background:var(--primary-light); border:2px dashed rgba(212,84,106,0.4); display:flex; align-items:center; justify-content:center; cursor:pointer; transition:all var(--transition); flex-shrink:0; }
+        .story-add-btn:hover { background:var(--primary-light); border-color:var(--primary); }
+        .story-add-btn svg { width:22px; height:22px; color:var(--primary); }
+        /* Story viewer overlay */
+        .story-viewer { position:fixed; top:0; left:0; right:0; bottom:0; background:#000; z-index:900; display:none; flex-direction:column; }
+        .story-viewer.active { display:flex; }
+        .story-viewer-progress { height:3px; background:rgba(255,255,255,0.25); flex-shrink:0; margin:10px 12px 0; border-radius:3px; overflow:hidden; }
+        .story-viewer-bar { height:100%; background:#fff; width:0%; transition:width linear; }
+        .story-viewer-header { display:flex; align-items:center; gap:10px; padding:12px 16px; position:absolute; top:0; left:0; right:0; z-index:10; background:linear-gradient(to bottom,rgba(0,0,0,0.7) 0%,transparent 100%); }
+        .story-viewer-avatar { width:36px; height:36px; border-radius:50%; background:linear-gradient(135deg,var(--primary),var(--accent)); display:flex; align-items:center; justify-content:center; font-weight:700; color:white; font-size:0.9rem; }
+        .story-viewer-name { color:white; font-weight:700; font-size:0.95rem; }
+        .story-viewer-time { color:rgba(255,255,255,0.6); font-size:0.72rem; margin-top:1px; }
+        .story-viewer-close { margin-left:auto; background:none; border:none; color:white; font-size:1.5rem; cursor:pointer; padding:4px 8px; }
+        .story-viewer-media { flex:1; display:flex; align-items:center; justify-content:center; overflow:hidden; position:relative; }
+        .story-viewer-media img, .story-viewer-media video { max-width:100%; max-height:100%; object-fit:contain; }
+        .story-viewer-caption { position:absolute; bottom:0; left:0; right:0; padding:40px 20px 20px; background:linear-gradient(to top,rgba(0,0,0,0.7) 0%,transparent 100%); color:white; font-size:0.95rem; text-align:center; }
+        .story-text-only { display:flex; align-items:center; justify-content:center; width:100%; height:100%; min-height:200px; background:linear-gradient(135deg,var(--primary),var(--accent)); padding:32px; }
+        .story-text-only p { color:white; font-size:1.15rem; text-align:center; font-weight:500; line-height:1.5; }
+
+        /* ===== NOTES / LOVE LETTERS ===== */
+        #panelNotes { max-width:600px; }
+        .notes-header-row { display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; }
+        .btn-new-note { background:linear-gradient(135deg,var(--primary),var(--accent)); color:white; border:none; border-radius:20px; padding:8px 18px; font-weight:600; font-size:0.85rem; cursor:pointer; font-family:inherit; transition:all var(--transition); }
+        .btn-new-note:hover { transform:translateY(-1px); box-shadow:0 4px 14px rgba(212,84,106,0.3); }
+        .note-card { background:var(--card-bg); border-radius:var(--radius); padding:18px 20px; margin-bottom:12px; border:1px solid var(--border); box-shadow:var(--shadow-sm); animation:fadeSlideIn 0.2s ease; }
+        .note-card-header { display:flex; align-items:flex-start; justify-content:space-between; gap:10px; margin-bottom:8px; }
+        .note-from { font-size:0.72rem; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; color:var(--primary); }
+        .note-date { font-size:0.7rem; color:var(--text-secondary); }
+        .note-subject { font-weight:700; font-size:1rem; color:var(--text); margin-bottom:6px; letter-spacing:-0.1px; }
+        .note-body { font-size:0.88rem; color:var(--text-secondary); line-height:1.55; white-space:pre-wrap; }
+        .note-delete-btn { background:none; border:none; cursor:pointer; color:var(--text-secondary); padding:4px; border-radius:8px; transition:all var(--transition); flex-shrink:0; }
+        .note-delete-btn:hover { background:var(--danger-bg); color:var(--danger-text); }
+        .note-delete-btn svg { width:15px; height:15px; pointer-events:none; }
+        .note-own-badge { font-size:0.68rem; background:var(--primary-light); color:var(--primary); padding:2px 8px; border-radius:10px; font-weight:600; }
+        /* Note compose modal */
+        .note-compose { background:var(--card-bg); border-radius:var(--radius); padding:20px; margin-bottom:16px; border:1px solid var(--border); box-shadow:var(--shadow-sm); display:none; animation:fadeSlideIn 0.2s ease; }
+        .note-compose.open { display:block; }
+        .note-compose input, .note-compose textarea { width:100%; border:1.5px solid var(--input-border); border-radius:var(--radius-xs); padding:10px 14px; font-size:0.9rem; background:var(--input-bg); color:var(--text); font-family:inherit; outline:none; transition:border-color var(--transition); margin-bottom:10px; display:block; }
+        .note-compose input:focus, .note-compose textarea:focus { border-color:var(--primary); }
+        .note-compose textarea { min-height:110px; resize:vertical; }
+        .note-compose-actions { display:flex; gap:8px; justify-content:flex-end; }
+
+        /* ===== PHOTO ALBUM ===== */
+        #panelAlbum { max-width:680px; }
+        .album-upload-row { display:flex; gap:10px; align-items:center; margin-bottom:16px; }
+        .btn-upload-photo {
+            display:flex; align-items:center; gap:6px; background:linear-gradient(135deg,var(--primary),var(--accent));
+            color:white; border:none; border-radius:20px; padding:9px 18px;
+            font-weight:600; font-size:0.85rem; cursor:pointer; font-family:inherit; transition:all var(--transition);
+        }
+        .btn-upload-photo:hover { transform:translateY(-1px); box-shadow:0 4px 14px rgba(212,84,106,0.3); }
+        .btn-upload-photo svg { width:17px; height:17px; }
+        .album-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:3px; border-radius:16px; overflow:hidden; }
+        .album-thumb { aspect-ratio:1; background:var(--border); overflow:hidden; cursor:pointer; position:relative; }
+        .album-thumb img, .album-thumb video { width:100%; height:100%; object-fit:cover; transition:transform 0.25s; }
+        .album-thumb:hover img, .album-thumb:hover video { transform:scale(1.06); }
+        .album-thumb .del-overlay { position:absolute; top:4px; right:4px; background:rgba(0,0,0,0.55); color:white; border:none; border-radius:50%; width:24px; height:24px; font-size:0.7rem; cursor:pointer; display:none; align-items:center; justify-content:center; }
+        .album-thumb:hover .del-overlay { display:flex; }
+        .album-empty { text-align:center; padding:60px 20px; color:var(--text-secondary); }
+        .album-lightbox { position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.92); z-index:900; display:none; align-items:center; justify-content:center; }
+        .album-lightbox.active { display:flex; }
+        .album-lightbox img, .album-lightbox video { max-width:96vw; max-height:92vh; border-radius:12px; object-fit:contain; }
+        .album-lightbox-close { position:absolute; top:16px; right:20px; background:none; border:none; color:white; font-size:2rem; cursor:pointer; z-index:10; }
+
+        /* ===== COUNTDOWNS ===== */
+        .countdown-section { margin-bottom:16px; }
+        .countdown-card {
+            background:var(--card-bg); border-radius:var(--radius); padding:20px;
+            border:1px solid var(--border); box-shadow:var(--shadow-sm); margin-bottom:10px;
+            animation:fadeSlideIn 0.2s ease;
+        }
+        .countdown-card-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
+        .countdown-card-title { font-weight:700; font-size:0.98rem; color:var(--text); }
+        .countdown-card-del { background:none; border:none; cursor:pointer; color:var(--text-secondary); padding:4px; border-radius:8px; transition:all var(--transition); }
+        .countdown-card-del:hover { color:var(--danger-text); background:var(--danger-bg); }
+        .countdown-card-del svg { width:15px; height:15px; pointer-events:none; }
+        .countdown-units { display:flex; gap:10px; }
+        .countdown-unit { flex:1; text-align:center; background:var(--bg); border-radius:12px; padding:10px 6px; }
+        .countdown-num { font-size:1.5rem; font-weight:800; color:var(--primary); letter-spacing:-0.5px; line-height:1; }
+        .countdown-label { font-size:0.65rem; font-weight:600; text-transform:uppercase; letter-spacing:0.07em; color:var(--text-secondary); margin-top:3px; }
+        .countdown-past { font-size:0.82rem; color:var(--success-text); font-weight:600; margin-top:4px; }
+        .countdown-add-row { display:flex; gap:8px; align-items:flex-end; flex-wrap:wrap; }
+        .countdown-add-row input, .countdown-add-row select { border:1.5px solid var(--input-border); border-radius:var(--radius-xs); padding:9px 12px; font-size:0.88rem; background:var(--input-bg); color:var(--text); font-family:inherit; outline:none; transition:border-color var(--transition); }
+        .countdown-add-row input[type="text"] { flex:1; min-width:120px; }
+        .countdown-add-row input[type="date"] { flex:1; min-width:130px; }
+        .countdown-add-row input:focus, .countdown-add-row select:focus { border-color:var(--primary); }
+        .btn-add-countdown { background:linear-gradient(135deg,var(--primary),var(--accent)); color:white; border:none; border-radius:var(--radius-xs); padding:10px 16px; font-weight:600; font-size:0.85rem; cursor:pointer; font-family:inherit; white-space:nowrap; transition:all var(--transition); }
+        .btn-add-countdown:hover { transform:translateY(-1px); box-shadow:0 4px 14px rgba(212,84,106,0.3); }
+        .countdown-anniv-banner { background:linear-gradient(135deg,var(--primary),var(--accent)); border-radius:var(--radius); padding:18px 20px; margin-bottom:12px; color:white; text-align:center; animation:fadeSlideIn 0.3s ease; }
+        .countdown-anniv-banner .anniv-emoji { font-size:2rem; display:block; margin-bottom:6px; }
+        .countdown-anniv-banner p { font-weight:600; font-size:0.95rem; }
+
         /* ===== RESPONSIVE — desktop shows top tabs, hides bottom nav ===== */
         @media (min-width: 768px) {
             .bottom-nav { display: none; }
@@ -850,6 +994,8 @@
                     <button class="nav-tab active" data-panel="home">Home</button>
                     <button class="nav-tab" data-panel="messages">Messages</button>
                     <button class="nav-tab" data-panel="location">Location</button>
+                    <button class="nav-tab" data-panel="notes">Notes</button>
+                    <button class="nav-tab" data-panel="album">Album</button>
                     <button class="nav-tab" data-panel="settings">Settings</button>
                 </div>
             </div>
@@ -875,6 +1021,14 @@
             <button class="bottom-nav-btn" data-panel="location">
                 <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z"/></svg>
                 Location
+            </button>
+            <button class="bottom-nav-btn" data-panel="notes">
+                <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 9v.906a2.25 2.25 0 0 1-1.183 1.981l-6.478 3.488M2.25 9v.906a2.25 2.25 0 0 0 1.183 1.981l6.478 3.488m8.839 2.51-4.66-2.51m0 0-1.023-.55a2.25 2.25 0 0 0-2.134 0l-1.022.55m0 0-4.661 2.51m16.5 1.615a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V8.844a2.25 2.25 0 0 1 1.183-1.98l7.5-4.04a2.25 2.25 0 0 1 2.134 0l7.5 4.04a2.25 2.25 0 0 1 1.183 1.98V19.5Z"/></svg>
+                Notes
+            </button>
+            <button class="bottom-nav-btn" data-panel="album">
+                <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 0 0 1.5-1.5V6a1.5 1.5 0 0 0-1.5-1.5H3.75A1.5 1.5 0 0 0 2.25 6v12a1.5 1.5 0 0 0 1.5 1.5Zm10.5-11.25h.008v.008h-.008V8.25Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z"/></svg>
+                Album
             </button>
             <button class="bottom-nav-btn" data-panel="settings">
                 <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></svg>
@@ -913,6 +1067,23 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Stories row -->
+            <div id="storiesRowWrap" style="display:none;">
+                <div class="stories-row" id="storiesRow">
+                    <!-- Add story button -->
+                    <div style="display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer;flex-shrink:0;" id="addStoryBtn">
+                        <div class="story-add-btn">
+                            <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+                        </div>
+                        <span style="font-size:0.68rem;font-weight:600;color:var(--text-secondary);">Your Story</span>
+                    </div>
+                </div>
+                <input type="file" id="storyFileInput" style="display:none" accept="image/*,video/*">
+            </div>
+
+            <!-- Anniversary & Countdown section -->
+            <div id="countdownSection" class="countdown-section" style="display:none;"></div>
 
             <!-- Post composer -->
             <div class="feed-composer" id="feedComposer">
@@ -1063,6 +1234,62 @@
                 <p style="font-size:0.8rem; color:var(--text-secondary); margin-top:8px;">⚠️ Deletes your private chat with partner.</p>
             </div>
         </div>
+        </div>
+    </div>
+
+        <!-- Notes / Love Letters Panel -->
+        <div class="home-panel" id="panelNotes">
+            <div class="notes-header-row">
+                <div class="home-header" style="margin-bottom:0;"><h2>Love Letters</h2><p>Private notes just for the two of you.</p></div>
+                <button class="btn-new-note" id="newNoteBtn">✉️ Write</button>
+            </div>
+            <!-- Compose -->
+            <div class="note-compose" id="noteCompose">
+                <input type="text" id="noteSubject" placeholder="Subject… (e.g. Good morning ☀️)" maxlength="80">
+                <textarea id="noteBody" placeholder="Write your letter here…" rows="5"></textarea>
+                <div class="note-compose-actions">
+                    <button class="btn-cancel" id="cancelNoteBtn">Cancel</button>
+                    <button class="btn-save" id="sendNoteBtn">Send 💌</button>
+                </div>
+            </div>
+            <div id="notesList"></div>
+            <div id="notesEmpty" style="display:none;" class="feed-empty"><div style="font-size:2.5rem;">💌</div><p>No letters yet. Write your partner something special!</p></div>
+        </div>
+
+        <!-- Shared Photo Album Panel -->
+        <div class="home-panel" id="panelAlbum">
+            <div class="home-header" style="margin-bottom:12px;"><h2>Our Album</h2><p>Shared photos & memories.</p></div>
+            <div id="albumUploadRow" class="album-upload-row" style="display:none;">
+                <button class="btn-upload-photo" id="albumUploadBtn">
+                    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5"/></svg>
+                    Add Photo
+                </button>
+                <input type="file" id="albumFileInput" style="display:none" accept="image/*,video/*" multiple>
+                <span id="albumUploadStatus" style="font-size:0.8rem;color:var(--text-secondary);"></span>
+            </div>
+            <div id="albumGrid" class="album-grid"></div>
+            <div id="albumEmpty" class="album-empty" style="display:none;"><div style="font-size:2.5rem;">🖼️</div><p>No photos yet. Add your first memory!</p></div>
+            <div id="albumNoPartner" class="album-empty" style="display:none;"><div style="font-size:2.5rem;">💑</div><p>Connect with your partner to share an album.</p></div>
+        </div>
+
+    <!-- ===== STORY VIEWER OVERLAY ===== -->
+    <div class="story-viewer" id="storyViewer">
+        <div class="story-viewer-header">
+            <div class="story-viewer-avatar" id="storyViewerAvatar">?</div>
+            <div>
+                <div class="story-viewer-name" id="storyViewerName">—</div>
+                <div class="story-viewer-time" id="storyViewerTime"></div>
+            </div>
+            <button class="story-viewer-close" id="storyViewerClose">✕</button>
+        </div>
+        <div class="story-viewer-progress"><div class="story-viewer-bar" id="storyViewerBar"></div></div>
+        <div class="story-viewer-media" id="storyViewerMedia"></div>
+    </div>
+
+    <!-- ===== ALBUM LIGHTBOX ===== -->
+    <div class="album-lightbox" id="albumLightbox">
+        <button class="album-lightbox-close" id="albumLightboxClose">✕</button>
+        <div id="albumLightboxContent"></div>
     </div>
 
     <!-- ===== VIDEO CALL OVERLAY ===== -->
@@ -1357,8 +1584,12 @@
             }
 
             function switchHomeTab(panelName) {
-                [panelHome, panelMessages, panelSettings, panelLocation].forEach(p => p.classList.remove('active'));
-                document.getElementById('panel' + panelName.charAt(0).toUpperCase() + panelName.slice(1)).classList.add('active');
+                [panelHome, panelMessages, panelSettings, panelLocation,
+                 document.getElementById('panelNotes'), document.getElementById('panelAlbum')]
+                    .forEach(p => p && p.classList.remove('active'));
+                const targetId = 'panel' + panelName.charAt(0).toUpperCase() + panelName.slice(1);
+                const target = document.getElementById(targetId);
+                if (target) target.classList.add('active');
                 // Bottom nav + top nav both call switchHomeTab
             document.querySelectorAll('.bottom-nav-btn').forEach(btn => {
                 btn.addEventListener('click', () => {
@@ -1372,9 +1603,11 @@
                     tab.classList.remove('active');
                     if (tab.dataset.panel === panelName) tab.classList.add('active');
                 });
-                if (panelName === 'home') { loadProfileData(); initFeed(); }
+                if (panelName === 'home') { loadProfileData(); initFeed(); initStories(); initCountdowns(); }
                 if (panelName === 'messages') setupMessagesUI();
                 if (panelName === 'location') setupLocationUI();
+                if (panelName === 'notes') initNotes();
+                if (panelName === 'album') initAlbum();
             }
 
             function goToHome(user, username) {
@@ -1426,6 +1659,8 @@
                             // Always refresh feed and profile card
                             loadProfileData();
                             initFeed();
+                            initStories();
+                            initCountdowns();
                         } else if (!partnerId && currentPartnerId) {
                             // Partner disconnected
                             currentPartnerId = null;
@@ -1435,6 +1670,8 @@
                             }
                             loadProfileData();
                             initFeed();
+                            initStories();
+                            initCountdowns();
                         } else if (partnerId && partnerId === currentPartnerId) {
                             // Same partner — still ensure card is shown (e.g. on page load)
                             loadProfileData();
@@ -1734,38 +1971,104 @@
                             <div class="post-avatar">${initial}</div>
                             <div>
                                 <div class="post-username">${data.username || 'User'}</div>
-
+                                <div class="post-time">${timeAgo(data.createdAt)}</div>
                             </div>
                         </div>
                         ${isOwn ? `<button class="post-delete-btn" data-post="${postId}" data-feed="${feedId}" title="Delete">${trashSvg}</button>` : ''}
                     </div>
                     ${mediaHtml ? (data.mediaType === 'video' ? mediaHtml : `<div class="post-media-wrap">${mediaHtml}</div>`) : ''}
                     <div class="post-footer">
-                        <div class="post-actions">
-                            <button class="like-btn${liked ? ' liked' : ''}" data-post="${postId}" data-feed="${feedId}">
-                                ${heartSvg}
-                                <span class="like-count">${likeCount > 0 ? likeCount : ''}</span>
+                        <div class="post-actions-wrap">
+                            <div class="reactions-bar" id="reactBar-${postId}"></div>
+                            <div style="display:flex;align-items:center;gap:2px;padding:2px 6px 4px;">
+                                <button class="reaction-btn" id="reactAddBtn-${postId}" title="React">😊 React</button>
+                                <button class="comment-toggle-btn" id="commentToggleBtn-${postId}">
+                                    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.76c0 1.6 1.123 2.995 2.707 3.228 1.087.16 2.185.283 3.293.369V21l4.076-4.076a1.526 1.526 0 0 1 1.037-.443 48.282 48.282 0 0 0 5.68-.494c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z"/></svg>
+                                    <span id="commentCount-${postId}">${data.commentCount > 0 ? data.commentCount : ''}</span>
+                                </button>
+                            </div>
+                            <div class="reaction-picker" id="reactPicker-${postId}">
+                                ${['❤️','😂','😍','😢','🔥','🥰','😮'].map(e => `<button class="reaction-pick-btn" data-emoji="${e}" data-post="${postId}" data-feed="${feedId}">${e}</button>`).join('')}
+                            </div>
+                        </div>
+                        ${data.caption ? `<div class="post-caption"><span class="caption-user">${data.username || 'User'}</span><span class="caption-text"> ${data.caption}</span></div>` : ''}
+                    </div>
+                    <div class="comments-section" id="comments-${postId}">
+                        <div id="commentList-${postId}"></div>
+                        <div class="comment-input-row">
+                            <input type="text" id="commentInput-${postId}" placeholder="Write a comment…" maxlength="300" autocomplete="off">
+                            <button class="comment-send-btn" id="commentSendBtn-${postId}">
+                                <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Zm0 0h7.5"/></svg>
                             </button>
                         </div>
-                        ${data.caption ? `<div class="post-caption"><span class="caption-user">${data.username || 'User'}</span><span class="caption-text">${data.caption}</span></div>` : ''}
                     </div>`;
 
-                // Like button
-                card.querySelector('.like-btn').addEventListener('click', async (e) => {
-                    const btn = e.currentTarget;
-                    const fid = btn.dataset.feed;
-                    const pid = btn.dataset.post;
-                    const ref = db.collection('feeds').doc(fid).collection('posts').doc(pid);
-                    const snap = await ref.get();
-                    if (!snap.exists) return;
-                    const currentLikes = snap.data().likes || {};
-                    if (currentLikes[currentUser.uid]) {
-                        delete currentLikes[currentUser.uid];
-                    } else {
-                        currentLikes[currentUser.uid] = true;
-                    }
-                    await ref.update({ likes: currentLikes });
+                // Reaction picker toggle
+                const reactAddBtn = card.querySelector(`#reactAddBtn-${postId}`);
+                const reactPicker = card.querySelector(`#reactPicker-${postId}`);
+                reactAddBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    reactPicker.classList.toggle('open');
                 });
+                document.addEventListener('click', () => reactPicker.classList.remove('open'), { once: false });
+
+                // Reaction pick
+                reactPicker.querySelectorAll('.reaction-pick-btn').forEach(btn => {
+                    btn.addEventListener('click', async (e) => {
+                        e.stopPropagation();
+                        const emoji = btn.dataset.emoji;
+                        const ref = db.collection('feeds').doc(feedId).collection('posts').doc(postId);
+                        const snap = await ref.get();
+                        if (!snap.exists) return;
+                        const reactions = snap.data().reactions || {};
+                        const myReactions = reactions[currentUser.uid] || [];
+                        const idx = myReactions.indexOf(emoji);
+                        if (idx >= 0) myReactions.splice(idx, 1);
+                        else { myReactions.splice(0, myReactions.length); myReactions.push(emoji); } // one reaction per user
+                        reactions[currentUser.uid] = myReactions;
+                        await ref.update({ reactions });
+                        reactPicker.classList.remove('open');
+                        renderReactionBar(card, postId, reactions);
+                    });
+                });
+
+                // Render initial reaction bar
+                renderReactionBar(card, postId, data.reactions || {});
+
+                // Comment toggle
+                const commentToggleBtn = card.querySelector(`#commentToggleBtn-${postId}`);
+                const commentsSection = card.querySelector(`#comments-${postId}`);
+                let commentsLoaded = false;
+                commentToggleBtn.addEventListener('click', () => {
+                    commentsSection.classList.toggle('open');
+                    if (commentsSection.classList.contains('open') && !commentsLoaded) {
+                        commentsLoaded = true;
+                        loadComments(postId, feedId, card);
+                    }
+                });
+
+                // Comment send
+                const commentInput = card.querySelector(`#commentInput-${postId}`);
+                const commentSendBtn = card.querySelector(`#commentSendBtn-${postId}`);
+                const sendComment = async () => {
+                    const text = commentInput.value.trim();
+                    if (!text) return;
+                    commentSendBtn.disabled = true;
+                    try {
+                        const myUsername = navbarDisplayName.textContent || 'User';
+                        await db.collection('feeds').doc(feedId).collection('posts').doc(postId)
+                            .collection('comments').add({
+                                text, userId: currentUser.uid, username: myUsername,
+                                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                            });
+                        // Increment commentCount on post
+                        await db.collection('feeds').doc(feedId).collection('posts').doc(postId)
+                            .update({ commentCount: firebase.firestore.FieldValue.increment(1) });
+                        commentInput.value = '';
+                    } finally { commentSendBtn.disabled = false; commentInput.focus(); }
+                };
+                commentSendBtn.addEventListener('click', sendComment);
+                commentInput.addEventListener('keydown', e => { if (e.key === 'Enter') sendComment(); });
 
                 // Delete button
                 const delBtn = card.querySelector('.post-delete-btn');
@@ -1848,6 +2151,56 @@
                 }
 
                 return card;
+            }
+
+            // ===== REACTION BAR RENDERER =====
+            function renderReactionBar(card, postId, reactions) {
+                const bar = card.querySelector(`#reactBar-${postId}`);
+                if (!bar) return;
+                // Aggregate: emoji -> count, myEmoji
+                const counts = {};
+                let myEmoji = null;
+                Object.entries(reactions).forEach(([uid, emojis]) => {
+                    (emojis || []).forEach(e => {
+                        counts[e] = (counts[e] || 0) + 1;
+                        if (uid === currentUser.uid) myEmoji = e;
+                    });
+                });
+                bar.innerHTML = '';
+                Object.entries(counts).forEach(([emoji, count]) => {
+                    const btn = document.createElement('button');
+                    btn.className = 'reaction-btn' + (myEmoji === emoji ? ' reacted' : '');
+                    btn.innerHTML = `${emoji}<span class="reaction-count">${count}</span>`;
+                    bar.appendChild(btn);
+                });
+            }
+
+            // ===== LOAD COMMENTS =====
+            function loadComments(postId, feedId, card) {
+                db.collection('feeds').doc(feedId).collection('posts').doc(postId)
+                    .collection('comments').orderBy('createdAt', 'asc').limit(50)
+                    .onSnapshot(snap => {
+                        const list = card.querySelector(`#commentList-${postId}`);
+                        if (!list) return;
+                        list.innerHTML = '';
+                        snap.forEach(doc => {
+                            const c = doc.data();
+                            const initial = (c.username || '?').charAt(0).toUpperCase();
+                            const div = document.createElement('div');
+                            div.className = 'comment-item';
+                            div.innerHTML = `
+                                <div class="comment-avatar">${initial}</div>
+                                <div class="comment-bubble">
+                                    <div class="comment-user">${c.username || 'User'}</div>
+                                    <div class="comment-text">${c.text}</div>
+                                    <div class="comment-time">${timeAgo(c.createdAt)}</div>
+                                </div>`;
+                            list.appendChild(div);
+                        });
+                        // Update count badge
+                        const countEl = card.querySelector(`#commentCount-${postId}`);
+                        if (countEl) countEl.textContent = snap.size > 0 ? snap.size : '';
+                    });
             }
 
             // Composer: media pick
@@ -2818,6 +3171,394 @@
             // Start listening when user is logged in (hook into goToHome)
             // (listenForIncomingCalls is called from auth.onAuthStateChanged above)
 
+            // ===== STORIES =====
+            const STORY_TTL = 24 * 60 * 60 * 1000; // 24h
+            let storiesUnsub = null;
+
+            function initStories() {
+                if (storiesUnsub) { storiesUnsub(); storiesUnsub = null; }
+                const wrap = document.getElementById('storiesRowWrap');
+                const row = document.getElementById('storiesRow');
+                if (!currentUser || !currentPartnerId) { if(wrap) wrap.style.display='none'; return; }
+                if(wrap) wrap.style.display='block';
+                const feedId = [currentUser.uid, currentPartnerId].sort().join('_');
+                const cutoff = new Date(Date.now() - STORY_TTL);
+                storiesUnsub = db.collection('stories').doc(feedId).collection('posts')
+                    .where('createdAt', '>', cutoff)
+                    .orderBy('createdAt', 'asc')
+                    .onSnapshot(snap => {
+                        // Rebuild row keeping add button
+                        const addBtn = document.getElementById('addStoryBtn');
+                        row.innerHTML = '';
+                        row.appendChild(addBtn);
+                        snap.forEach(doc => {
+                            const s = doc.data(); if (!s.createdAt) return;
+                            const item = document.createElement('div');
+                            item.className = 'story-item';
+                            const isOwn = s.userId === currentUser.uid;
+                            const initial = (s.username || '?').charAt(0).toUpperCase();
+                            const viewed = s.viewedBy && s.viewedBy[currentUser.uid];
+                            item.innerHTML = `
+                                <div class="story-ring${viewed ? ' viewed' : ''}">
+                                    <div class="story-inner" style="background:linear-gradient(135deg,var(--primary),var(--accent));">
+                                        ${s.mediaUrl && s.mediaType === 'image' ? `<img src="${s.mediaUrl}" alt="story">` : `<span style="color:white;font-weight:700;">${initial}</span>`}
+                                    </div>
+                                </div>
+                                <span class="story-label">${isOwn ? 'You' : (s.username || 'Partner')}</span>`;
+                            item.addEventListener('click', () => openStory(doc.id, s, feedId));
+                            row.appendChild(item);
+                        });
+                    });
+            }
+
+            function openStory(storyId, data, feedId) {
+                const viewer = document.getElementById('storyViewer');
+                const mediaEl = document.getElementById('storyViewerMedia');
+                const bar = document.getElementById('storyViewerBar');
+                document.getElementById('storyViewerName').textContent = data.username || 'User';
+                document.getElementById('storyViewerAvatar').textContent = (data.username || '?').charAt(0).toUpperCase();
+                document.getElementById('storyViewerTime').textContent = timeAgo(data.createdAt);
+                mediaEl.innerHTML = '';
+                if (data.mediaType === 'image' && data.mediaUrl) {
+                    const img = document.createElement('img'); img.src = data.mediaUrl; mediaEl.appendChild(img);
+                } else if (data.mediaType === 'video' && data.mediaUrl) {
+                    const v = document.createElement('video'); v.src = data.mediaUrl; v.controls = true; v.autoplay = true; v.playsInline = true; mediaEl.appendChild(v);
+                } else {
+                    const d = document.createElement('div'); d.className = 'story-text-only';
+                    d.innerHTML = `<p>${data.caption || ''}</p>`; mediaEl.appendChild(d);
+                }
+                if (data.caption && data.mediaUrl) {
+                    const cap = document.createElement('div'); cap.className = 'story-viewer-caption'; cap.textContent = data.caption; mediaEl.appendChild(cap);
+                }
+                viewer.classList.add('active');
+                bar.style.transition = 'none'; bar.style.width = '0%';
+                const dur = data.mediaType === 'video' ? 15000 : 5000;
+                setTimeout(() => { bar.style.transition = `width ${dur}ms linear`; bar.style.width = '100%'; }, 50);
+                const timer = setTimeout(() => viewer.classList.remove('active'), dur);
+                viewer._closeTimer = timer;
+                // Mark viewed
+                if (data.userId !== currentUser.uid) {
+                    db.collection('stories').doc(feedId).collection('posts').doc(storyId)
+                        .update({ [`viewedBy.${currentUser.uid}`]: true }).catch(()=>{});
+                }
+            }
+
+            document.getElementById('storyViewerClose').addEventListener('click', () => {
+                const v = document.getElementById('storyViewer');
+                v.classList.remove('active');
+                clearTimeout(v._closeTimer);
+            });
+
+            document.getElementById('addStoryBtn').addEventListener('click', () => {
+                if (!currentPartnerId) { alert('Connect with your partner first.'); return; }
+                document.getElementById('storyFileInput').click();
+            });
+
+            document.getElementById('storyFileInput').addEventListener('change', async (e) => {
+                const file = e.target.files[0];
+                e.target.value = '';
+                if (!file || !currentPartnerId) return;
+                if (file.size > 30 * 1024 * 1024) { alert('Max 30 MB for stories.'); return; }
+                const isVideo = file.type.startsWith('video/');
+                const feedId = [currentUser.uid, currentPartnerId].sort().join('_');
+                const myUsername = navbarDisplayName.textContent || 'User';
+                try {
+                    const formData = new FormData();
+                    formData.append('file', file);
+                    formData.append('upload_preset', CLOUDINARY_PRESET);
+                    formData.append('folder', 'tamtam_stories');
+                    const rt = isVideo ? 'video' : 'image';
+                    const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD}/${rt}/upload`, { method:'POST', body:formData });
+                    const json = await res.json();
+                    await db.collection('stories').doc(feedId).collection('posts').add({
+                        userId: currentUser.uid, username: myUsername,
+                        mediaUrl: json.secure_url, mediaType: isVideo ? 'video' : 'image',
+                        viewedBy: {}, createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                } catch(err) { console.error(err); alert('Could not upload story.'); }
+            });
+
+            // ===== NOTES / LOVE LETTERS =====
+            let notesUnsub = null;
+
+            function initNotes() {
+                if (notesUnsub) { notesUnsub(); notesUnsub = null; }
+                const list = document.getElementById('notesList');
+                const empty = document.getElementById('notesEmpty');
+                if (!currentUser || !currentPartnerId) {
+                    list.innerHTML = '<div class="feed-empty"><div style="font-size:2.5rem;">💑</div><p>Connect with your partner to exchange love letters!</p></div>';
+                    empty.style.display = 'none'; return;
+                }
+                const feedId = [currentUser.uid, currentPartnerId].sort().join('_');
+                notesUnsub = db.collection('notes').doc(feedId).collection('letters')
+                    .orderBy('createdAt', 'desc').limit(40)
+                    .onSnapshot(snap => {
+                        list.innerHTML = '';
+                        if (snap.empty) { empty.style.display = 'block'; return; }
+                        empty.style.display = 'none';
+                        snap.forEach(doc => {
+                            const n = doc.data();
+                            const isOwn = n.userId === currentUser.uid;
+                            const card = document.createElement('div');
+                            card.className = 'note-card';
+                            const trashSvg2 = `<svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"/></svg>`;
+                            card.innerHTML = `
+                                <div class="note-card-header">
+                                    <div>
+                                        <div class="note-from">${isOwn ? 'From you' : 'From ' + n.username} ${isOwn ? '<span class="note-own-badge">Sent</span>' : '💌'}</div>
+                                        <div class="note-date">${timeAgo(n.createdAt)}</div>
+                                    </div>
+                                    ${isOwn ? `<button class="note-delete-btn" title="Delete">${trashSvg2}</button>` : ''}
+                                </div>
+                                <div class="note-subject">${n.subject || '(No subject)'}</div>
+                                <div class="note-body">${n.body || ''}</div>`;
+                            if (isOwn) {
+                                card.querySelector('.note-delete-btn').addEventListener('click', async () => {
+                                    if (!confirm('Delete this letter?')) return;
+                                    await db.collection('notes').doc(feedId).collection('letters').doc(doc.id).delete();
+                                });
+                            }
+                            list.appendChild(card);
+                        });
+                    });
+            }
+
+            document.getElementById('newNoteBtn').addEventListener('click', () => {
+                document.getElementById('noteCompose').classList.toggle('open');
+                document.getElementById('noteSubject').focus();
+            });
+            document.getElementById('cancelNoteBtn').addEventListener('click', () => {
+                document.getElementById('noteCompose').classList.remove('open');
+                document.getElementById('noteSubject').value = '';
+                document.getElementById('noteBody').value = '';
+            });
+            document.getElementById('sendNoteBtn').addEventListener('click', async () => {
+                if (!currentPartnerId) { alert('Connect with your partner first.'); return; }
+                const subject = document.getElementById('noteSubject').value.trim();
+                const body = document.getElementById('noteBody').value.trim();
+                if (!body) { alert('Write something in your letter!'); return; }
+                const btn = document.getElementById('sendNoteBtn');
+                btn.disabled = true; btn.textContent = 'Sending…';
+                try {
+                    const feedId = [currentUser.uid, currentPartnerId].sort().join('_');
+                    await db.collection('notes').doc(feedId).collection('letters').add({
+                        userId: currentUser.uid, username: navbarDisplayName.textContent || 'User',
+                        subject, body, createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                    document.getElementById('noteCompose').classList.remove('open');
+                    document.getElementById('noteSubject').value = '';
+                    document.getElementById('noteBody').value = '';
+                } catch(err) { alert('Failed to send: ' + err.message); }
+                finally { btn.disabled = false; btn.textContent = 'Send 💌'; }
+            });
+
+            // ===== ALBUM =====
+            let albumUnsub = null;
+
+            function initAlbum() {
+                if (albumUnsub) { albumUnsub(); albumUnsub = null; }
+                const grid = document.getElementById('albumGrid');
+                const empty = document.getElementById('albumEmpty');
+                const noPartner = document.getElementById('albumNoPartner');
+                const uploadRow = document.getElementById('albumUploadRow');
+                grid.innerHTML = '';
+                if (!currentUser || !currentPartnerId) {
+                    noPartner.style.display = 'block'; empty.style.display = 'none'; uploadRow.style.display = 'none'; return;
+                }
+                noPartner.style.display = 'none'; uploadRow.style.display = 'flex';
+                const feedId = [currentUser.uid, currentPartnerId].sort().join('_');
+                albumUnsub = db.collection('albums').doc(feedId).collection('photos')
+                    .orderBy('createdAt', 'desc').limit(150)
+                    .onSnapshot(snap => {
+                        grid.innerHTML = '';
+                        if (snap.empty) { empty.style.display = 'block'; return; }
+                        empty.style.display = 'none';
+                        snap.forEach(doc => {
+                            const p = doc.data();
+                            const thumb = document.createElement('div');
+                            thumb.className = 'album-thumb';
+                            const isOwn = p.userId === currentUser.uid;
+                            if (p.mediaType === 'video') {
+                                thumb.innerHTML = `<video src="${p.mediaUrl}" muted playsinline preload="metadata"></video>${isOwn ? `<button class="del-overlay" title="Delete">✕</button>` : ''}`;
+                            } else {
+                                thumb.innerHTML = `<img src="${p.mediaUrl}" alt="photo" loading="lazy">${isOwn ? `<button class="del-overlay" title="Delete">✕</button>` : ''}`;
+                            }
+                            thumb.addEventListener('click', (e) => {
+                                if (e.target.classList.contains('del-overlay')) return;
+                                openAlbumLightbox(p);
+                            });
+                            if (isOwn) {
+                                const del = thumb.querySelector('.del-overlay');
+                                if(del) del.addEventListener('click', async () => {
+                                    if (!confirm('Remove from album?')) return;
+                                    await db.collection('albums').doc(feedId).collection('photos').doc(doc.id).delete();
+                                });
+                            }
+                            grid.appendChild(thumb);
+                        });
+                    });
+            }
+
+            function openAlbumLightbox(p) {
+                const lb = document.getElementById('albumLightbox');
+                const content = document.getElementById('albumLightboxContent');
+                content.innerHTML = p.mediaType === 'video'
+                    ? `<video src="${p.mediaUrl}" controls autoplay playsinline style="max-width:96vw;max-height:92vh;border-radius:12px;"></video>`
+                    : `<img src="${p.mediaUrl}" style="max-width:96vw;max-height:92vh;border-radius:12px;object-fit:contain;">`;
+                lb.classList.add('active');
+            }
+
+            document.getElementById('albumLightboxClose').addEventListener('click', () => {
+                document.getElementById('albumLightbox').classList.remove('active');
+            });
+            document.getElementById('albumLightbox').addEventListener('click', (e) => {
+                if (e.target === document.getElementById('albumLightbox')) document.getElementById('albumLightbox').classList.remove('active');
+            });
+
+            document.getElementById('albumUploadBtn').addEventListener('click', () => {
+                if (!currentPartnerId) { alert('Connect with your partner first.'); return; }
+                document.getElementById('albumFileInput').click();
+            });
+
+            document.getElementById('albumFileInput').addEventListener('change', async (e) => {
+                const files = Array.from(e.target.files);
+                e.target.value = '';
+                if (!files.length || !currentPartnerId) return;
+                const status = document.getElementById('albumUploadStatus');
+                const feedId = [currentUser.uid, currentPartnerId].sort().join('_');
+                const myUsername = navbarDisplayName.textContent || 'User';
+                for (let i = 0; i < files.length; i++) {
+                    const file = files[i];
+                    if (file.size > 30 * 1024 * 1024) { status.textContent = `${file.name} too large (max 30MB)`; continue; }
+                    status.textContent = `Uploading ${i+1}/${files.length}…`;
+                    const isVideo = file.type.startsWith('video/');
+                    const rt = isVideo ? 'video' : 'image';
+                    const formData = new FormData();
+                    formData.append('file', file);
+                    formData.append('upload_preset', CLOUDINARY_PRESET);
+                    formData.append('folder', 'tamtam_album');
+                    try {
+                        const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD}/${rt}/upload`, { method:'POST', body:formData });
+                        const json = await res.json();
+                        await db.collection('albums').doc(feedId).collection('photos').add({
+                            userId: currentUser.uid, username: myUsername,
+                            mediaUrl: json.secure_url, mediaType: isVideo ? 'video' : 'image',
+                            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                        });
+                    } catch(err) { console.error(err); }
+                }
+                status.textContent = 'Done!';
+                setTimeout(() => status.textContent = '', 2000);
+            });
+
+            // ===== COUNTDOWNS =====
+            let countdownIntervals = [];
+
+            function initCountdowns() {
+                const section = document.getElementById('countdownSection');
+                if (!currentUser || !currentPartnerId) { section.style.display='none'; return; }
+                section.style.display = 'block';
+                const feedId = [currentUser.uid, currentPartnerId].sort().join('_');
+                db.collection('countdowns').doc(feedId).collection('events')
+                    .orderBy('date', 'asc').limit(20)
+                    .onSnapshot(snap => {
+                        countdownIntervals.forEach(t => clearInterval(t));
+                        countdownIntervals = [];
+                        section.innerHTML = '';
+                        // Add form
+                        const form = document.createElement('div');
+                        form.innerHTML = `
+                            <div class="countdown-add-row" style="margin-bottom:12px;">
+                                <input type="text" id="cdLabel" placeholder="Event name (e.g. Anniversary 💍)" maxlength="50">
+                                <input type="date" id="cdDate">
+                                <button class="btn-add-countdown" id="cdAddBtn">Add</button>
+                            </div>`;
+                        section.appendChild(form);
+                        document.getElementById('cdAddBtn').addEventListener('click', async () => {
+                            const label = document.getElementById('cdLabel').value.trim();
+                            const date = document.getElementById('cdDate').value;
+                            if (!label || !date) { alert('Fill in both fields.'); return; }
+                            await db.collection('countdowns').doc(feedId).collection('events').add({
+                                label, date, userId: currentUser.uid,
+                                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                            });
+                            document.getElementById('cdLabel').value = '';
+                            document.getElementById('cdDate').value = '';
+                        });
+
+                        snap.forEach(doc => {
+                            const ev = doc.data();
+                            const card = document.createElement('div');
+                            card.className = 'countdown-card';
+                            const trashSvg3 = `<svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"/></svg>`;
+                            const isOwn = ev.userId === currentUser.uid;
+                            card.innerHTML = `
+                                <div class="countdown-card-header">
+                                    <div class="countdown-card-title">📅 ${ev.label}</div>
+                                    ${isOwn ? `<button class="countdown-card-del" title="Delete">${trashSvg3}</button>` : ''}
+                                </div>
+                                <div class="countdown-units" id="cd-units-${doc.id}">
+                                    <div class="countdown-unit"><div class="countdown-num" id="cd-d-${doc.id}">—</div><div class="countdown-label">Days</div></div>
+                                    <div class="countdown-unit"><div class="countdown-num" id="cd-h-${doc.id}">—</div><div class="countdown-label">Hours</div></div>
+                                    <div class="countdown-unit"><div class="countdown-num" id="cd-m-${doc.id}">—</div><div class="countdown-label">Mins</div></div>
+                                    <div class="countdown-unit"><div class="countdown-num" id="cd-s-${doc.id}">—</div><div class="countdown-label">Secs</div></div>
+                                </div>
+                                <div id="cd-past-${doc.id}" class="countdown-past" style="display:none;"></div>`;
+                            if (isOwn) {
+                                card.querySelector('.countdown-card-del').addEventListener('click', async () => {
+                                    if (!confirm('Delete this countdown?')) return;
+                                    await db.collection('countdowns').doc(feedId).collection('events').doc(doc.id).delete();
+                                });
+                            }
+                            section.appendChild(card);
+
+                            const targetDate = new Date(ev.date + 'T00:00:00');
+                            const tick = () => {
+                                const now = new Date();
+                                const diff = targetDate - now;
+                                const pastEl = document.getElementById(`cd-past-${doc.id}`);
+                                const unitsEl = document.getElementById(`cd-units-${doc.id}`);
+                                if (diff <= 0) {
+                                    // Past — show how long ago / anniversary message
+                                    const daysAgo = Math.abs(Math.floor(diff / 86400000));
+                                    if (daysAgo === 0) {
+                                        // Today!
+                                        if (unitsEl) unitsEl.style.display = 'none';
+                                        if (pastEl) { pastEl.style.display='block'; pastEl.textContent = '🎉 Today! Happy ' + ev.label + '!'; }
+                                        return;
+                                    }
+                                    if (unitsEl) unitsEl.style.display = 'none';
+                                    if (pastEl) { pastEl.style.display='block'; pastEl.textContent = `✓ ${daysAgo} day${daysAgo!==1?'s':''} since this event`; }
+                                    return;
+                                }
+                                const d = Math.floor(diff / 86400000);
+                                const h = Math.floor((diff % 86400000) / 3600000);
+                                const m = Math.floor((diff % 3600000) / 60000);
+                                const s = Math.floor((diff % 60000) / 1000);
+                                const dEl = document.getElementById(`cd-d-${doc.id}`);
+                                const hEl = document.getElementById(`cd-h-${doc.id}`);
+                                const mEl = document.getElementById(`cd-m-${doc.id}`);
+                                const sEl = document.getElementById(`cd-s-${doc.id}`);
+                                if(dEl) dEl.textContent = d;
+                                if(hEl) hEl.textContent = h;
+                                if(mEl) mEl.textContent = m;
+                                if(sEl) sEl.textContent = s;
+                            };
+                            tick();
+                            const t = setInterval(tick, 1000);
+                            countdownIntervals.push(t);
+                        });
+                    });
+            }
+
+            // Hook stories + countdowns into initFeed
+            const _origInitFeed = initFeed;
+            function initFeedWithExtras() {
+                _origInitFeed();
+                initStories();
+                initCountdowns();
+            }
+
             signoutBtn.addEventListener('click', async () => {
                 if (livekitRoom) { livekitRoom.disconnect(); livekitRoom = null; }
                 closeCallOverlay();
@@ -2825,6 +3566,10 @@
                 if (callSignalUnsub) { callSignalUnsub(); callSignalUnsub = null; }
                 if (unsubscribeChat) { unsubscribeChat(); unsubscribeChat = null; }
                 if (feedUnsub) { feedUnsub(); feedUnsub = null; }
+                if (storiesUnsub) { storiesUnsub(); storiesUnsub = null; }
+                if (notesUnsub) { notesUnsub(); notesUnsub = null; }
+                if (albumUnsub) { albumUnsub(); albumUnsub = null; }
+                countdownIntervals.forEach(t => clearInterval(t)); countdownIntervals = [];
                 if (unsubscribeUserDoc) { unsubscribeUserDoc(); unsubscribeUserDoc = null; }
                 if (unsubscribePartnerLocation) { unsubscribePartnerLocation(); unsubscribePartnerLocation = null; }
                 if (watchId !== null) { navigator.geolocation.clearWatch(watchId); watchId = null; }
