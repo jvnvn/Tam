@@ -3287,12 +3287,19 @@
                     }
                     const feedId = [currentUser.uid, partnerId].sort().join('_');
                     notesUnsub = db.collection('notes').doc(feedId).collection('letters')
-                        .orderBy('createdAt', 'desc').limit(40)
+                        .limit(40)
                         .onSnapshot(snap => {
                             list.innerHTML = '';
                             if (snap.empty) { empty.style.display = 'block'; return; }
                             empty.style.display = 'none';
-                            snap.forEach(doc => {
+                            // Sort client-side: newest first
+                            const noteDocs = [];
+                            snap.forEach(doc => noteDocs.push(doc));
+                            noteDocs.sort((a, b) => {
+                                const ta = a.data().createdAt, tb = b.data().createdAt;
+                                return ((tb && tb.seconds) || 0) - ((ta && ta.seconds) || 0);
+                            });
+                            noteDocs.forEach(doc => {
                                 const n = doc.data();
                                 const isOwn = n.userId === currentUser.uid;
                                 const card = document.createElement('div');
@@ -3372,14 +3379,23 @@
                     }
                     noPartner.style.display = 'none'; uploadRow.style.display = 'flex';
                     const feedId = [currentUser.uid, partnerId].sort().join('_');
-                    albumUnsub = db.collection('albums').doc(feedId).collection('photos')
-                        .orderBy('createdAt', 'desc').limit(150)
-                    .onSnapshot(snap => {
+                    function renderAlbumSnap(snap) {
                         grid.innerHTML = '';
                         if (snap.empty) { empty.style.display = 'block'; return; }
                         empty.style.display = 'none';
-                        snap.forEach(doc => {
+                        // Sort client-side so no composite index needed
+                        const docs = [];
+                        snap.forEach(doc => docs.push(doc));
+                        docs.sort((a, b) => {
+                            const ta = a.data().createdAt;
+                            const tb = b.data().createdAt;
+                            const ma = ta ? (ta.seconds || 0) : 0;
+                            const mb = tb ? (tb.seconds || 0) : 0;
+                            return mb - ma; // newest first
+                        });
+                        docs.forEach(doc => {
                             const p = doc.data();
+                            if (!p.mediaUrl) return; // skip broken entries
                             const thumb = document.createElement('div');
                             thumb.className = 'album-thumb';
                             const isOwn = p.userId === currentUser.uid;
@@ -3401,7 +3417,19 @@
                             }
                             grid.appendChild(thumb);
                         });
-                    });
+                    }
+
+                    albumUnsub = db.collection('albums').doc(feedId).collection('photos')
+                        .limit(150)
+                        .onSnapshot(snap => {
+                            renderAlbumSnap(snap);
+                        }, err => {
+                            console.error('Album snapshot error:', err);
+                            // Fallback: try without ordering
+                            db.collection('albums').doc(feedId).collection('photos').get()
+                                .then(s => renderAlbumSnap(s))
+                                .catch(e => console.error('Album fallback error:', e));
+                        });
                 }).catch(err => console.error('initAlbum error:', err));
             }
 
@@ -3449,12 +3477,18 @@
                     try {
                         const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD}/${rt}/upload`, { method:'POST', body:formData });
                         const json = await res.json();
+                        if (!json.secure_url) {
+                            console.error('Cloudinary error:', json);
+                            status.textContent = `Upload failed: ${json.error ? json.error.message : 'Unknown error'}`;
+                            continue;
+                        }
                         await db.collection('albums').doc(feedId).collection('photos').add({
                             userId: currentUser.uid, username: myUsername,
                             mediaUrl: json.secure_url, mediaType: isVideo ? 'video' : 'image',
                             createdAt: firebase.firestore.FieldValue.serverTimestamp()
                         });
-                    } catch(err) { console.error(err); }
+                        console.log('Album photo saved:', json.secure_url);
+                    } catch(err) { console.error('Album upload error:', err); status.textContent = 'Upload failed: ' + err.message; }
                 }
                 status.textContent = 'Done!';
                 setTimeout(() => status.textContent = '', 2000);
