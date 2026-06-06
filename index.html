@@ -810,16 +810,28 @@
             <div id="homeProfileCard" class="home-card profile-card" style="margin-bottom:16px;">
                 <div style="display:flex; align-items:center; gap:14px; justify-content:space-between; flex-wrap:wrap;">
                     <div style="display:flex; align-items:center; gap:14px;">
-                        <div class="icon-bg" id="homeProfileAvatar" style="width:48px;height:48px;border-radius:50%;font-size:1.2rem;font-weight:700;color:white;background:linear-gradient(135deg,var(--primary),var(--accent));margin-bottom:0;">?</div>
+                        <div id="homeProfileAvatar" style="width:44px;height:44px;border-radius:50%;font-size:1.1rem;font-weight:700;color:white;background:linear-gradient(135deg,var(--primary),var(--accent));display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(212,84,106,0.3);flex-shrink:0;">?</div>
                         <div>
-                            <div class="username" id="homeProfileUsername" style="font-size:1.1rem;font-weight:700;font-family:'Playfair Display',Georgia,serif;color:var(--text);">—</div>
-                            <div class="bio" id="homeProfileBio" style="font-size:0.82rem;color:var(--text-secondary);margin-top:2px;"></div>
+                            <div id="homeProfileUsername" style="font-size:1rem;font-weight:700;color:var(--text);letter-spacing:-0.2px;">—</div>
+                            <div id="homeProfileBio" style="font-size:0.8rem;color:var(--text-secondary);margin-top:2px;"></div>
                         </div>
                     </div>
-                    <div>
-                        <div style="font-size:0.72rem;font-weight:600;text-transform:uppercase;letter-spacing:0.07em;color:var(--text-secondary);margin-bottom:4px;">Your Partner Code</div>
-                        <div class="code-box" id="homePartnerCode" title="Click to copy" style="font-size:1.3rem;letter-spacing:5px;padding:8px 16px;">——</div>
-                        <div style="font-size:0.72rem;color:var(--text-secondary);margin-top:4px;text-align:center;">Share this with your partner</div>
+                    <!-- shown when no partner -->
+                    <div id="homeCodeSection">
+                        <div style="font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-secondary);margin-bottom:4px;">Your Partner Code</div>
+                        <div class="code-box" id="homePartnerCode" title="Click to copy" style="font-size:1.2rem;letter-spacing:5px;padding:8px 14px;">——</div>
+                        <div style="font-size:0.7rem;color:var(--text-secondary);margin-top:4px;text-align:center;">Share this with your partner</div>
+                    </div>
+                    <!-- shown when partner connected -->
+                    <div id="homePartnerSection" style="display:none;">
+                        <div style="display:flex;align-items:center;gap:10px;">
+                            <div id="homePartnerAvatar" style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--accent),#f43f5e);display:flex;align-items:center;justify-content:center;font-weight:700;color:white;font-size:0.9rem;flex-shrink:0;">?</div>
+                            <div>
+                                <div style="font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--text-secondary);">Connected with</div>
+                                <div id="homePartnerName" style="font-size:0.95rem;font-weight:700;color:var(--primary);margin-top:1px;">—</div>
+                            </div>
+                            <div style="width:8px;height:8px;border-radius:50%;background:#22c55e;box-shadow:0 0 0 3px rgba(34,197,94,0.2);margin-left:4px;flex-shrink:0;"></div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1211,30 +1223,49 @@
             async function loadProfileData() {
                 if (!auth.currentUser) return;
                 const doc = await db.collection('users').doc(auth.currentUser.uid).get();
-                if (doc.exists) {
-                    const data = doc.data();
-                    const initial = (data.username || '?').charAt(0).toUpperCase();
-                    const composerAvatar = document.getElementById('composerAvatar');
-                    if (composerAvatar) composerAvatar.textContent = initial;
+                if (!doc.exists) return;
+                const data = doc.data();
+                const initial = (data.username || '?').charAt(0).toUpperCase();
 
-                    // Populate profile card
-                    const card = document.getElementById('homeProfileCard');
-                    if (card) {
-                        document.getElementById('homeProfileAvatar').textContent = initial;
-                        document.getElementById('homeProfileUsername').textContent = data.username || '—';
-                        document.getElementById('homeProfileBio').textContent = data.bio || '';
-                        const codeEl = document.getElementById('homePartnerCode');
-                        codeEl.textContent = data.partnerCode || '——';
-                        codeEl.onclick = () => {
-                            navigator.clipboard.writeText(data.partnerCode || '').then(() => {
-                                const prev = codeEl.textContent;
-                                codeEl.textContent = 'Copied!';
-                                codeEl.style.color = 'var(--success-text)';
-                                setTimeout(() => { codeEl.textContent = prev; codeEl.style.color = ''; }, 1500);
-                            }).catch(() => {});
-                        };
-                        card.style.display = 'block';
-                    }
+                // Composer avatar
+                const composerAvatar = document.getElementById('composerAvatar');
+                if (composerAvatar) composerAvatar.textContent = initial;
+
+                // Profile card — always visible
+                document.getElementById('homeProfileAvatar').textContent = initial;
+                document.getElementById('homeProfileUsername').textContent = data.username || '—';
+                document.getElementById('homeProfileBio').textContent = data.bio || '';
+
+                const codeSection = document.getElementById('homeCodeSection');
+                const partnerSection = document.getElementById('homePartnerSection');
+
+                if (data.partnerId) {
+                    // Partner connected — hide code, show partner info
+                    if (codeSection) codeSection.style.display = 'none';
+                    if (partnerSection) partnerSection.style.display = 'block';
+                    // Fetch partner name
+                    try {
+                        const pDoc = await db.collection('users').doc(data.partnerId).get();
+                        if (pDoc.exists) {
+                            const pName = pDoc.data().username || 'Partner';
+                            document.getElementById('homePartnerName').textContent = pName;
+                            document.getElementById('homePartnerAvatar').textContent = pName.charAt(0).toUpperCase();
+                        }
+                    } catch(e) {}
+                } else {
+                    // No partner — show code
+                    if (codeSection) codeSection.style.display = 'block';
+                    if (partnerSection) partnerSection.style.display = 'none';
+                    const codeEl = document.getElementById('homePartnerCode');
+                    codeEl.textContent = data.partnerCode || '——';
+                    codeEl.onclick = () => {
+                        navigator.clipboard.writeText(data.partnerCode || '').then(() => {
+                            const prev = codeEl.textContent;
+                            codeEl.textContent = 'Copied!';
+                            codeEl.style.color = 'var(--success-text)';
+                            setTimeout(() => { codeEl.textContent = prev; codeEl.style.color = ''; }, 1500);
+                        }).catch(() => {});
+                    };
                 }
             }
 
