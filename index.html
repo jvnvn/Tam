@@ -643,6 +643,75 @@
         .loc-no-partner svg { width:44px; height:44px; margin-bottom:14px; opacity:0.3; }
         .loc-permission-msg { background:var(--error-bg); color:var(--error-text); border-radius:var(--radius-sm); padding:11px 14px; font-size:0.83rem; margin-bottom:10px; display:none; }
 
+        /* ===== CUSTOM VIDEO PLAYER ===== */
+        .tt-video-wrap {
+            position: relative; background: #000;
+            overflow: hidden; cursor: pointer;
+            user-select: none;
+        }
+        .tt-video {
+            width: 100%; display: block;
+            max-height: 440px; object-fit: cover;
+        }
+        /* Big tap-to-play overlay */
+        .tt-play-overlay {
+            position: absolute; inset: 0;
+            display: flex; align-items: center; justify-content: center;
+            background: rgba(0,0,0,0.28);
+            transition: opacity 0.2s;
+        }
+        .tt-play-overlay.hidden { opacity: 0; pointer-events: none; }
+        .tt-play-icon {
+            width: 60px; height: 60px; border-radius: 50%;
+            background: rgba(212,84,106,0.85);
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 4px 24px rgba(212,84,106,0.5);
+            transition: transform 0.15s, background 0.15s;
+        }
+        .tt-play-icon:hover { transform: scale(1.1); background: rgba(212,84,106,1); }
+        .tt-play-icon svg { width: 28px; height: 28px; margin-left: 4px; }
+        /* Pause icon when playing */
+        .tt-play-overlay.playing .tt-play-icon svg { margin-left: 0; }
+
+        /* Bottom controls bar */
+        .tt-controls {
+            position: absolute; bottom: 0; left: 0; right: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 100%);
+            padding: 20px 12px 10px;
+            opacity: 0;
+            transition: opacity 0.25s;
+            pointer-events: none;
+        }
+        .tt-video-wrap:hover .tt-controls,
+        .tt-video-wrap.playing .tt-controls { opacity: 1; pointer-events: all; }
+
+        .tt-progress-wrap {
+            height: 3px; background: rgba(255,255,255,0.3);
+            border-radius: 3px; overflow: hidden; margin-bottom: 8px;
+            cursor: pointer; transition: height 0.15s;
+        }
+        .tt-video-wrap:hover .tt-progress-wrap { height: 5px; }
+        .tt-progress-bar {
+            height: 100%; width: 0%;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            border-radius: 3px; transition: width 0.1s linear;
+        }
+        .tt-ctrl-row { display: flex; align-items: center; gap: 10px; }
+        .tt-btn {
+            background: none; border: none; cursor: pointer;
+            padding: 4px; display: flex; align-items: center; justify-content: center;
+            opacity: 0.9; transition: opacity 0.15s, transform 0.15s;
+            flex-shrink: 0;
+        }
+        .tt-btn:hover { opacity: 1; transform: scale(1.15); }
+        .tt-btn svg { width: 18px; height: 18px; }
+        .tt-time {
+            font-size: 0.7rem; color: rgba(255,255,255,0.85); font-weight: 600;
+            flex: 1; letter-spacing: 0.03em;
+        }
+        /* Muted icon state */
+        .tt-mute-btn.muted svg { stroke: rgba(255,255,255,0.45); }
+
         /* ===== VIDEO CALL ===== */
         .video-call-overlay { position:fixed; top:0; left:0; right:0; bottom:0; background:#080810; z-index:1000; display:none; flex-direction:column; align-items:center; justify-content:center; }
         .video-call-overlay.active { display:flex; }
@@ -1604,7 +1673,30 @@
                 let mediaHtml = '';
                 if (data.mediaUrl) {
                     if (data.mediaType === 'video') {
-                        mediaHtml = `<video class="post-media" src="${data.mediaUrl}" controls playsinline preload="metadata"></video>`;
+                        const vid = `vid-${postId}`;
+                        mediaHtml = `
+                        <div class="tt-video-wrap" id="wrap-${vid}">
+                            <video class="post-media tt-video" id="${vid}" src="${data.mediaUrl}" playsinline preload="metadata" loop></video>
+                            <div class="tt-play-overlay" id="ov-${vid}">
+                                <div class="tt-play-icon">
+                                    <svg viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg>
+                                </div>
+                            </div>
+                            <div class="tt-controls" id="ctrl-${vid}">
+                                <div class="tt-progress-wrap" id="prog-${vid}">
+                                    <div class="tt-progress-bar" id="bar-${vid}"></div>
+                                </div>
+                                <div class="tt-ctrl-row">
+                                    <button class="tt-btn tt-mute-btn" id="mute-${vid}" title="Mute">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
+                                    </button>
+                                    <div class="tt-time" id="time-${vid}">0:00</div>
+                                    <button class="tt-btn tt-fs-btn" id="fs-${vid}" title="Fullscreen">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>`;
                     } else {
                         mediaHtml = `<img class="post-media" src="${data.mediaUrl}" alt="post" onclick="window.open('${data.mediaUrl}','_blank')">`;
                     }
@@ -1628,7 +1720,7 @@
                         </div>
                         ${isOwn ? `<button class="post-delete-btn" data-post="${postId}" data-feed="${feedId}" title="Delete">${trashSvg}</button>` : ''}
                     </div>
-                    ${mediaHtml ? `<div class="post-media-wrap">${mediaHtml}</div>` : ''}
+                    ${mediaHtml ? (data.mediaType === 'video' ? mediaHtml : `<div class="post-media-wrap">${mediaHtml}</div>`) : ''}
                     <div class="post-footer">
                         <div class="post-actions">
                             <button class="like-btn${liked ? ' liked' : ''}" data-post="${postId}" data-feed="${feedId}">
@@ -1662,6 +1754,75 @@
                     delBtn.addEventListener('click', async () => {
                         if (!confirm('Delete this post?')) return;
                         await db.collection('feeds').doc(feedId).collection('posts').doc(postId).delete();
+                    });
+                }
+
+                // Custom video player wiring
+                if (data.mediaType === 'video' && data.mediaUrl) {
+                    const vid = `vid-${postId}`;
+                    const videoEl  = card.querySelector(`#${vid}`);
+                    const wrapEl   = card.querySelector(`#wrap-${vid}`);
+                    const overlay  = card.querySelector(`#ov-${vid}`);
+                    const bar      = card.querySelector(`#bar-${vid}`);
+                    const timeEl   = card.querySelector(`#time-${vid}`);
+                    const muteBtn  = card.querySelector(`#mute-${vid}`);
+                    const fsBtn    = card.querySelector(`#fs-${vid}`);
+                    const progWrap = card.querySelector(`#prog-${vid}`);
+
+                    function fmtTime(s) {
+                        const m = Math.floor(s / 60);
+                        return `${m}:${String(Math.floor(s % 60)).padStart(2,'0')}`;
+                    }
+
+                    function togglePlay() {
+                        if (videoEl.paused) {
+                            videoEl.play();
+                        } else {
+                            videoEl.pause();
+                        }
+                    }
+
+                    videoEl.addEventListener('play', () => {
+                        wrapEl.classList.add('playing');
+                        overlay.classList.add('hidden');
+                    });
+                    videoEl.addEventListener('pause', () => {
+                        wrapEl.classList.remove('playing');
+                        overlay.classList.remove('hidden');
+                        // swap icon back to play triangle
+                        overlay.querySelector('svg path').setAttribute('d', 'M8 5v14l11-7z');
+                    });
+
+                    overlay.addEventListener('click', togglePlay);
+
+                    videoEl.addEventListener('timeupdate', () => {
+                        if (!videoEl.duration) return;
+                        bar.style.width = (videoEl.currentTime / videoEl.duration * 100) + '%';
+                        timeEl.textContent = fmtTime(videoEl.currentTime) + ' / ' + fmtTime(videoEl.duration);
+                    });
+
+                    // Scrub by clicking progress bar
+                    progWrap.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const rect = progWrap.getBoundingClientRect();
+                        const ratio = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+                        videoEl.currentTime = ratio * videoEl.duration;
+                    });
+
+                    muteBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        videoEl.muted = !videoEl.muted;
+                        muteBtn.classList.toggle('muted', videoEl.muted);
+                        // swap icon
+                        muteBtn.querySelector('svg').innerHTML = videoEl.muted
+                            ? `<path fill="none" stroke="white" stroke-width="2" d="M11 5L6 9H2v6h4l5 4V5z"/><line stroke="white" stroke-width="2" x1="23" y1="9" x2="17" y2="15"/><line stroke="white" stroke-width="2" x1="17" y1="9" x2="23" y2="15"/>`
+                            : `<path fill="none" stroke="white" stroke-width="2" d="M11 5L6 9H2v6h4l5 4V5z"/><path fill="none" stroke="white" stroke-width="2" d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path fill="none" stroke="white" stroke-width="2" d="M19.07 4.93a10 10 0 0 1 0 14.14"/>`;
+                    });
+
+                    fsBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        if (videoEl.requestFullscreen) videoEl.requestFullscreen();
+                        else if (videoEl.webkitEnterFullscreen) videoEl.webkitEnterFullscreen();
                     });
                 }
 
