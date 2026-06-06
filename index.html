@@ -3491,11 +3491,13 @@
                             thumb.className = 'album-thumb';
                             const isOwn = p.userId === currentUser.uid;
                             if (p.mediaType === 'video') {
-                                thumb.innerHTML = `<video src="${p.mediaUrl}" muted playsinline preload="metadata"></video>${isOwn ? `<button class="del-overlay" title="Delete">✕</button>` : ''}`;
+                                thumb.innerHTML = `<video src="${p.mediaUrl}" muted playsinline preload="metadata" style="pointer-events:none;"></video>${isOwn ? `<button class="del-overlay" title="Delete">✕</button>` : ''}`;
                             } else {
-                                thumb.innerHTML = `<img src="${p.mediaUrl}" alt="photo" loading="lazy">${isOwn ? `<button class="del-overlay" title="Delete">✕</button>` : ''}`;
+                                thumb.innerHTML = `<img src="${p.mediaUrl}" alt="photo" loading="lazy" draggable="false" style="pointer-events:none;">${isOwn ? `<button class="del-overlay" title="Delete">✕</button>` : ''}`;
                             }
                             thumb.addEventListener('click', (e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
                                 if (e.target.classList.contains('del-overlay')) return;
                                 openAlbumLightbox(p);
                             });
