@@ -1066,6 +1066,24 @@
 
         <!-- Home Panel — Instagram-style Feed -->
         <div class="home-panel active" id="panelHome">
+            <!-- Profile & code card -->
+            <div id="homeProfileCard" class="home-card profile-card" style="margin-bottom:20px; display:none;">
+                <div style="display:flex; align-items:center; gap:14px; justify-content:space-between; flex-wrap:wrap;">
+                    <div style="display:flex; align-items:center; gap:14px;">
+                        <div class="icon-bg" id="homeProfileAvatar" style="width:48px;height:48px;border-radius:50%;font-size:1.2rem;font-weight:700;color:white;background:linear-gradient(135deg,var(--primary),var(--accent));margin-bottom:0;">?</div>
+                        <div>
+                            <div class="username" id="homeProfileUsername" style="font-size:1.1rem;font-weight:700;font-family:'Playfair Display',Georgia,serif;color:var(--text);">—</div>
+                            <div class="bio" id="homeProfileBio" style="font-size:0.82rem;color:var(--text-secondary);margin-top:2px;"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div style="font-size:0.72rem;font-weight:600;text-transform:uppercase;letter-spacing:0.07em;color:var(--text-secondary);margin-bottom:4px;">Your Partner Code</div>
+                        <div class="code-box" id="homePartnerCode" title="Click to copy" style="font-size:1.3rem;letter-spacing:5px;padding:8px 16px;">——</div>
+                        <div style="font-size:0.72rem;color:var(--text-secondary);margin-top:4px;text-align:center;">Share this with your partner</div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Post composer -->
             <div class="feed-composer" id="feedComposer">
                 <div class="composer-top">
@@ -1451,6 +1469,25 @@
                     const initial = (data.username || '?').charAt(0).toUpperCase();
                     const composerAvatar = document.getElementById('composerAvatar');
                     if (composerAvatar) composerAvatar.textContent = initial;
+
+                    // Populate profile card
+                    const card = document.getElementById('homeProfileCard');
+                    if (card) {
+                        document.getElementById('homeProfileAvatar').textContent = initial;
+                        document.getElementById('homeProfileUsername').textContent = data.username || '—';
+                        document.getElementById('homeProfileBio').textContent = data.bio || '';
+                        const codeEl = document.getElementById('homePartnerCode');
+                        codeEl.textContent = data.partnerCode || '——';
+                        codeEl.onclick = () => {
+                            navigator.clipboard.writeText(data.partnerCode || '').then(() => {
+                                const prev = codeEl.textContent;
+                                codeEl.textContent = 'Copied!';
+                                codeEl.style.color = 'var(--success-text)';
+                                setTimeout(() => { codeEl.textContent = prev; codeEl.style.color = ''; }, 1500);
+                            }).catch(() => {});
+                        };
+                        card.style.display = 'block';
+                    }
                 }
             }
 
