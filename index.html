@@ -653,20 +653,26 @@
             width: 100%; display: block;
             max-height: 440px; object-fit: cover;
         }
-        /* Big tap-to-play overlay */
         .tt-play-overlay {
             position: absolute; inset: 0;
             display: flex; align-items: center; justify-content: center;
             background: rgba(0,0,0,0.28);
-            transition: opacity 0.2s;
+            transition: opacity 0.2s, background 0.2s;
         }
-        .tt-play-overlay.hidden { opacity: 0; pointer-events: none; }
+        .tt-play-overlay.hidden {
+            background: transparent;
+        }
+        .tt-play-overlay.hidden .tt-play-icon {
+            opacity: 0;
+            transform: scale(0.8);
+            pointer-events: none;
+        }
         .tt-play-icon {
             width: 60px; height: 60px; border-radius: 50%;
             background: rgba(212,84,106,0.85);
             display: flex; align-items: center; justify-content: center;
             box-shadow: 0 4px 24px rgba(212,84,106,0.5);
-            transition: transform 0.15s, background 0.15s;
+            transition: transform 0.2s, background 0.15s, opacity 0.2s;
         }
         .tt-play-icon:hover { transform: scale(1.1); background: rgba(212,84,106,1); }
         .tt-play-icon svg { width: 28px; height: 28px; margin-left: 4px; }
@@ -1676,7 +1682,7 @@
                         const vid = `vid-${postId}`;
                         mediaHtml = `
                         <div class="tt-video-wrap" id="wrap-${vid}">
-                            <video class="post-media tt-video" id="${vid}" src="${data.mediaUrl}" playsinline preload="metadata" loop></video>
+                            <video class="post-media tt-video" id="${vid}" src="${data.mediaUrl}" playsinline preload="metadata"></video>
                             <div class="tt-play-overlay" id="ov-${vid}">
                                 <div class="tt-play-icon">
                                     <svg viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg>
@@ -1785,15 +1791,17 @@
                     videoEl.addEventListener('play', () => {
                         wrapEl.classList.add('playing');
                         overlay.classList.add('hidden');
+                        overlay.querySelector('svg path').setAttribute('d', 'M6 19h4V5H6v14zm8-14v14h4V5h-4z');
                     });
                     videoEl.addEventListener('pause', () => {
                         wrapEl.classList.remove('playing');
                         overlay.classList.remove('hidden');
-                        // swap icon back to play triangle
                         overlay.querySelector('svg path').setAttribute('d', 'M8 5v14l11-7z');
                     });
 
+                    // Overlay tap = play; video tap while playing = pause
                     overlay.addEventListener('click', togglePlay);
+                    videoEl.addEventListener('click', togglePlay);
 
                     videoEl.addEventListener('timeupdate', () => {
                         if (!videoEl.duration) return;
