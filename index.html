@@ -1642,13 +1642,14 @@
                         feedEmpty.style.display = 'none';
                         feedList.innerHTML = '';
                         snapshot.forEach(doc => {
-                            feedList.appendChild(buildPostCard(doc.id, doc.data(), feedId));
+                            const d = doc.data(); if (!d.createdAt) return; feedList.appendChild(buildPostCard(doc.id, d, feedId));
                         });
                     });
             }
 
             function timeAgo(ts) {
-                if (!ts) return '';
+                if (!ts) return 'just now';
+
                 let date;
                 if (ts.toDate) date = ts.toDate();
                 else if (ts instanceof Date) date = ts;
@@ -2221,6 +2222,7 @@
             }
 
             function timeAgo(ts) {
+                if (!ts) return 'just now';
                 if (!ts) return 'Unknown';
                 const diff = Math.floor((Date.now() - ts) / 1000);
                 if (diff < 60) return 'Just now';
