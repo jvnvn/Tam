@@ -3454,6 +3454,20 @@
             let albumUnsub = null;
 
             function initAlbum() {
+                // Prevent any click inside album grid from opening new tabs
+                const albumGrid = document.getElementById('albumGrid');
+                if (albumGrid && !albumGrid._clickGuarded) {
+                    albumGrid._clickGuarded = true;
+                    albumGrid.addEventListener('click', (e) => {
+                        // Block any anchor or element that would navigate
+                        const a = e.target.closest('a');
+                        if (a) { e.preventDefault(); e.stopPropagation(); }
+                        // Block img/video direct navigation
+                        if (e.target.tagName === 'IMG' || e.target.tagName === 'VIDEO') {
+                            e.preventDefault();
+                        }
+                    }, true); // capture phase
+                }
                 if (albumUnsub) { albumUnsub(); albumUnsub = null; }
                 if (!currentUser) return;
                 const grid = document.getElementById('albumGrid');
@@ -3678,11 +3692,20 @@
 
                     vid.play().catch(() => {});
                 } else {
-                    cnt.innerHTML = `<img src="${p.mediaUrl}" style="max-width:96vw;max-height:88vh;border-radius:12px;object-fit:contain;">`;
+                    cnt.innerHTML = `<img src="${p.mediaUrl}" style="max-width:96vw;max-height:88vh;border-radius:12px;object-fit:contain;" draggable="false">`;
+                    // Prevent the lightbox image from opening a new tab on click
+                    const lbImg = cnt.querySelector('img');
+                    if (lbImg) lbImg.addEventListener('click', e => e.preventDefault());
                 }
 
                 lb.classList.add('active');
             }
+
+            // Block any navigation from inside the lightbox
+            document.getElementById('albumLightbox').addEventListener('auxclick', e => e.preventDefault());
+            document.getElementById('albumLightboxContent').addEventListener('click', e => {
+                if (e.target.tagName === 'IMG') e.preventDefault();
+            });
 
             document.getElementById('albumLightboxClose').addEventListener('click', () => {
                 const lb = document.getElementById('albumLightbox');
