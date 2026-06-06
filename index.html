@@ -1651,6 +1651,7 @@
             }
 
             function timeAgo(ts) {
+                console.log('timeAgo input:', ts, typeof ts, JSON.stringify(ts));
                 if (!ts) return 'just now';
                 let ms;
                 try {
