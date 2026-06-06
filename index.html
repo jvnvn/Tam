@@ -1590,32 +1590,52 @@
 
             // ===== Partner connection =====
             async function connectToPartner(code) {
-                if (!currentUser) return;
+                if (!currentUser) { setMessage(partnerConnectMsg, 'Not logged in. Please refresh.', 'error'); return; }
                 code = code.trim().toUpperCase();
                 if (!code || code.length !== 6) { setMessage(partnerConnectMsg, 'Code must be 6 characters.', 'error'); return; }
-                const myDoc = await db.collection('users').doc(currentUser.uid).get();
-                const myCode = myDoc.data().partnerCode;
-                if (code === myCode) { setMessage(partnerConnectMsg, 'You cannot connect with yourself.', 'error'); return; }
-                const snapshot = await db.collection('users').where('partnerCode', '==', code).limit(1).get();
-                if (snapshot.empty) { setMessage(partnerConnectMsg, 'Partner code not found.', 'error'); return; }
-                const partnerDoc = snapshot.docs[0];
-                const partnerId = partnerDoc.id;
-                // Clear previous connections
-                const myPrevPartner = myDoc.data().partnerId;
-                const partnerPrevPartner = partnerDoc.data().partnerId;
-                const batch = db.batch();
-                if (myPrevPartner && myPrevPartner !== partnerId) {
-                    batch.update(db.collection('users').doc(myPrevPartner), { partnerId: null });
-                }
-                if (partnerPrevPartner && partnerPrevPartner !== currentUser.uid) {
-                    batch.update(db.collection('users').doc(partnerPrevPartner), { partnerId: null });
-                }
-                batch.update(db.collection('users').doc(currentUser.uid), { partnerId: partnerId });
-                batch.update(db.collection('users').doc(partnerId), { partnerId: currentUser.uid });
-                await batch.commit();
-                // The listener on own user doc will automatically update the UI
+
+                connectPartnerBtn.disabled = true;
+                connectPartnerBtn.textContent = 'Connecting…';
                 setMessage(partnerConnectMsg, '', '');
-                partnerCodeInput.value = '';
+
+                try {
+                    const myDoc = await db.collection('users').doc(currentUser.uid).get();
+                    if (!myDoc.exists) { setMessage(partnerConnectMsg, 'Your profile was not found. Try signing out and back in.', 'error'); return; }
+                    const myCode = myDoc.data().partnerCode;
+                    if (code === myCode) { setMessage(partnerConnectMsg, 'That\'s your own code! Share it with your partner.', 'error'); return; }
+
+                    const snapshot = await db.collection('users').where('partnerCode', '==', code).limit(1).get();
+                    if (snapshot.empty) { setMessage(partnerConnectMsg, 'Code not found. Double-check and try again.', 'error'); return; }
+
+                    const partnerDoc = snapshot.docs[0];
+                    const partnerId = partnerDoc.id;
+
+                    // Clear previous connections
+                    const myPrevPartner = myDoc.data().partnerId;
+                    const partnerPrevPartner = partnerDoc.data().partnerId;
+                    const batch = db.batch();
+                    if (myPrevPartner && myPrevPartner !== partnerId) {
+                        batch.update(db.collection('users').doc(myPrevPartner), { partnerId: null });
+                    }
+                    if (partnerPrevPartner && partnerPrevPartner !== currentUser.uid) {
+                        batch.update(db.collection('users').doc(partnerPrevPartner), { partnerId: null });
+                    }
+                    batch.update(db.collection('users').doc(currentUser.uid), { partnerId: partnerId });
+                    batch.update(db.collection('users').doc(partnerId), { partnerId: currentUser.uid });
+                    await batch.commit();
+
+                    partnerCodeInput.value = '';
+                    setMessage(partnerConnectMsg, '✓ Connected! Loading chat…', 'success');
+                    // The listenToOwnUser snapshot will fire and call setupMessagesUI automatically
+                    // But also call it directly in case the snapshot already fired
+                    setTimeout(() => setupMessagesUI(), 600);
+                } catch (err) {
+                    console.error('connectToPartner error:', err);
+                    setMessage(partnerConnectMsg, 'Connection failed: ' + (err.message || err.code || 'Unknown error. Check console.'), 'error');
+                } finally {
+                    connectPartnerBtn.disabled = false;
+                    connectPartnerBtn.textContent = 'Connect';
+                }
             }
 
             connectPartnerBtn.addEventListener('click', () => connectToPartner(partnerCodeInput.value));
