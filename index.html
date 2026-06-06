@@ -870,10 +870,101 @@
         .album-thumb .del-overlay { position:absolute; top:4px; right:4px; background:rgba(0,0,0,0.55); color:white; border:none; border-radius:50%; width:24px; height:24px; font-size:0.7rem; cursor:pointer; display:none; align-items:center; justify-content:center; }
         .album-thumb:hover .del-overlay { display:flex; }
         .album-empty { text-align:center; padding:60px 20px; color:var(--text-secondary); }
-        .album-lightbox { position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.92); z-index:900; display:none; align-items:center; justify-content:center; }
+        .album-lightbox {
+            position:fixed; top:0; left:0; right:0; bottom:0;
+            background:rgba(0,0,0,0.96); z-index:900; display:none;
+            align-items:center; justify-content:center; flex-direction:column;
+        }
         .album-lightbox.active { display:flex; }
-        .album-lightbox img, .album-lightbox video { max-width:96vw; max-height:92vh; border-radius:12px; object-fit:contain; }
-        .album-lightbox-close { position:absolute; top:16px; right:20px; background:none; border:none; color:white; font-size:2rem; cursor:pointer; z-index:10; }
+        .album-lightbox img { max-width:96vw; max-height:92vh; border-radius:12px; object-fit:contain; }
+        .album-lightbox-close {
+            position:absolute; top:16px; right:20px;
+            background:rgba(255,255,255,0.12); border:none; color:white;
+            width:40px; height:40px; border-radius:50%; font-size:1.1rem;
+            cursor:pointer; z-index:10; display:flex; align-items:center; justify-content:center;
+            backdrop-filter:blur(8px); transition:background 0.2s;
+        }
+        .album-lightbox-close:hover { background:rgba(255,255,255,0.22); }
+
+        /* Custom video player in lightbox */
+        .lb-video-wrap {
+            position: relative; width: 100%; max-width: 96vw;
+            display: flex; flex-direction: column; align-items: center;
+        }
+        .lb-video {
+            width: 100%; max-width: 96vw; max-height: 80vh;
+            border-radius: 12px; object-fit: contain; display: block;
+            background: #000; cursor: pointer;
+        }
+        .lb-controls {
+            width: 100%; max-width: 96vw;
+            padding: 12px 16px 8px;
+            display: flex; flex-direction: column; gap: 10px;
+        }
+        .lb-progress-wrap {
+            width: 100%; height: 4px; background: rgba(255,255,255,0.2);
+            border-radius: 4px; cursor: pointer; position: relative;
+            transition: height 0.15s;
+        }
+        .lb-progress-wrap:hover { height: 6px; }
+        .lb-progress-fill {
+            height: 100%; border-radius: 4px; width: 0%;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            pointer-events: none; transition: width 0.1s linear;
+        }
+        .lb-progress-thumb {
+            position: absolute; top: 50%; right: auto;
+            width: 14px; height: 14px; border-radius: 50%;
+            background: white; transform: translate(-50%, -50%);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+            pointer-events: none; opacity: 0; transition: opacity 0.15s;
+        }
+        .lb-progress-wrap:hover .lb-progress-thumb { opacity: 1; }
+        .lb-ctrl-row {
+            display: flex; align-items: center; gap: 12px;
+        }
+        .lb-btn {
+            background: none; border: none; cursor: pointer; padding: 6px;
+            display: flex; align-items: center; justify-content: center;
+            color: white; opacity: 0.85; transition: opacity 0.15s, transform 0.15s;
+            border-radius: 8px;
+        }
+        .lb-btn:hover { opacity: 1; transform: scale(1.15); }
+        .lb-btn svg { width: 22px; height: 22px; }
+        .lb-time {
+            font-size: 0.78rem; color: rgba(255,255,255,0.75);
+            font-weight: 600; letter-spacing: 0.04em; flex: 1;
+        }
+        .lb-vol-wrap { display: flex; align-items: center; gap: 8px; }
+        .lb-vol-slider {
+            -webkit-appearance: none; appearance: none;
+            width: 72px; height: 3px; border-radius: 3px;
+            background: rgba(255,255,255,0.25); outline: none; cursor: pointer;
+        }
+        .lb-vol-slider::-webkit-slider-thumb {
+            -webkit-appearance: none; width: 13px; height: 13px;
+            border-radius: 50%; background: white; cursor: pointer;
+        }
+        .lb-play-overlay {
+            position: absolute; inset: 0; display: flex;
+            align-items: center; justify-content: center;
+            border-radius: 12px; pointer-events: none;
+            transition: opacity 0.2s;
+        }
+        .lb-play-icon {
+            width: 72px; height: 72px; border-radius: 50%;
+            background: rgba(212,84,106,0.85);
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 4px 32px rgba(212,84,106,0.5);
+            transition: transform 0.2s, opacity 0.2s;
+        }
+        .lb-play-icon svg { width: 32px; height: 32px; margin-left: 4px; }
+        .lb-play-overlay.playing { opacity: 0; }
+        .lb-video-wrap:hover .lb-play-overlay.playing { opacity: 1; }
+        .lb-play-overlay.playing .lb-play-icon {
+            background: rgba(0,0,0,0.45);
+            backdrop-filter: blur(4px);
+        }
 
         /* ===== COUNTDOWNS ===== */
         .countdown-section { margin-bottom:16px; }
@@ -3435,18 +3526,179 @@
 
             function openAlbumLightbox(p) {
                 const lb = document.getElementById('albumLightbox');
-                const content = document.getElementById('albumLightboxContent');
-                content.innerHTML = p.mediaType === 'video'
-                    ? `<video src="${p.mediaUrl}" controls autoplay playsinline style="max-width:96vw;max-height:92vh;border-radius:12px;"></video>`
-                    : `<img src="${p.mediaUrl}" style="max-width:96vw;max-height:92vh;border-radius:12px;object-fit:contain;">`;
+                const cnt = document.getElementById('albumLightboxContent');
+                cnt.innerHTML = '';
+
+                if (p.mediaType === 'video') {
+                    cnt.innerHTML = `
+                        <div class="lb-video-wrap" id="lbWrap">
+                            <video class="lb-video" id="lbVid" src="${p.mediaUrl}" playsinline preload="metadata"></video>
+                            <div class="lb-play-overlay" id="lbOverlay">
+                                <div class="lb-play-icon" id="lbPlayIcon">
+                                    <svg viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="lb-controls">
+                            <div class="lb-progress-wrap" id="lbProg">
+                                <div class="lb-progress-fill" id="lbFill"></div>
+                                <div class="lb-progress-thumb" id="lbThumb"></div>
+                            </div>
+                            <div class="lb-ctrl-row">
+                                <button class="lb-btn" id="lbPlayBtn" title="Play/Pause">
+                                    <svg viewBox="0 0 24 24" fill="white" id="lbPlaySvg"><path d="M8 5v14l11-7z"/></svg>
+                                </button>
+                                <button class="lb-btn" id="lbMuteBtn" title="Mute">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" id="lbMuteSvg">
+                                        <path d="M11 5L6 9H2v6h4l5 4V5z"/>
+                                        <path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>
+                                        <path d="M19.07 4.93a10 10 0 0 1 0 14.14"/>
+                                    </svg>
+                                </button>
+                                <div class="lb-vol-wrap">
+                                    <input type="range" class="lb-vol-slider" id="lbVol" min="0" max="1" step="0.05" value="1">
+                                </div>
+                                <span class="lb-time" id="lbTime">0:00 / 0:00</span>
+                                <button class="lb-btn" id="lbFsBtn" title="Fullscreen">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                                        <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>`;
+
+                    const vid = document.getElementById('lbVid');
+                    const overlay = document.getElementById('lbOverlay');
+                    const playBtn = document.getElementById('lbPlayBtn');
+                    const playSvg = document.getElementById('lbPlaySvg');
+                    const muteBtn = document.getElementById('lbMuteBtn');
+                    const muteSvg = document.getElementById('lbMuteSvg');
+                    const volSlider = document.getElementById('lbVol');
+                    const fill = document.getElementById('lbFill');
+                    const thumb = document.getElementById('lbThumb');
+                    const timeEl = document.getElementById('lbTime');
+                    const prog = document.getElementById('lbProg');
+                    const fsBtn = document.getElementById('lbFsBtn');
+
+                    function fmt(s) {
+                        const m = Math.floor(s/60);
+                        return m + ':' + String(Math.floor(s%60)).padStart(2,'0');
+                    }
+                    function setPlayIcon(playing) {
+                        playSvg.innerHTML = playing
+                            ? '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>'
+                            : '<path d="M8 5v14l11-7z"/>';
+                        overlay.querySelector('svg path').setAttribute('d',
+                            playing ? 'M6 19h4V5H6v14zm8-14v14h4V5h-4z' : 'M8 5v14l11-7z');
+                        overlay.classList.toggle('playing', playing);
+                    }
+                    function togglePlay() {
+                        vid.paused ? vid.play() : vid.pause();
+                    }
+                    vid.addEventListener('play', () => setPlayIcon(true));
+                    vid.addEventListener('pause', () => setPlayIcon(false));
+                    vid.addEventListener('ended', () => setPlayIcon(false));
+                    vid.addEventListener('timeupdate', () => {
+                        if (!vid.duration) return;
+                        const pct = (vid.currentTime / vid.duration) * 100;
+                        fill.style.width = pct + '%';
+                        thumb.style.left = pct + '%';
+                        timeEl.textContent = fmt(vid.currentTime) + ' / ' + fmt(vid.duration);
+                    });
+                    vid.addEventListener('click', togglePlay);
+                    overlay.addEventListener('click', togglePlay);
+                    playBtn.addEventListener('click', togglePlay);
+
+                    prog.addEventListener('click', (e) => {
+                        const rect = prog.getBoundingClientRect();
+                        vid.currentTime = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width)) * vid.duration;
+                    });
+
+                    let dragging = false;
+                    prog.addEventListener('mousedown', () => dragging = true);
+                    document.addEventListener('mousemove', (e) => {
+                        if (!dragging || !vid.duration) return;
+                        const rect = prog.getBoundingClientRect();
+                        const ratio = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+                        fill.style.width = (ratio*100) + '%';
+                        thumb.style.left = (ratio*100) + '%';
+                        vid.currentTime = ratio * vid.duration;
+                    });
+                    document.addEventListener('mouseup', () => dragging = false);
+
+                    // Touch scrubbing
+                    prog.addEventListener('touchstart', (e) => { dragging = true; e.preventDefault(); }, {passive:false});
+                    prog.addEventListener('touchmove', (e) => {
+                        if (!dragging || !vid.duration) return;
+                        e.preventDefault();
+                        const rect = prog.getBoundingClientRect();
+                        const ratio = Math.max(0, Math.min(1, (e.touches[0].clientX - rect.left) / rect.width));
+                        fill.style.width = (ratio*100) + '%';
+                        thumb.style.left = (ratio*100) + '%';
+                        vid.currentTime = ratio * vid.duration;
+                    }, {passive:false});
+                    prog.addEventListener('touchend', () => dragging = false);
+
+                    let muted = false;
+                    muteBtn.addEventListener('click', () => {
+                        muted = !muted;
+                        vid.muted = muted;
+                        volSlider.value = muted ? 0 : vid.volume;
+                        muteSvg.innerHTML = muted
+                            ? '<path d="M11 5L6 9H2v6h4l5 4V5z"/><line stroke="white" stroke-width="2" x1="23" y1="9" x2="17" y2="15"/><line stroke="white" stroke-width="2" x1="17" y1="9" x2="23" y2="15"/>'
+                            : '<path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/>';
+                    });
+                    volSlider.addEventListener('input', () => {
+                        vid.volume = volSlider.value;
+                        vid.muted = volSlider.value == 0;
+                        muted = vid.muted;
+                    });
+                    fsBtn.addEventListener('click', () => {
+                        const wrap = document.getElementById('lbWrap');
+                        if (document.fullscreenElement) document.exitFullscreen();
+                        else if (wrap.requestFullscreen) wrap.requestFullscreen();
+                        else if (vid.webkitEnterFullscreen) vid.webkitEnterFullscreen();
+                    });
+
+                    // Keyboard shortcuts
+                    const lbKeyHandler = (e) => {
+                        if (!lb.classList.contains('active')) return;
+                        if (e.key === ' ' || e.key === 'k') { e.preventDefault(); togglePlay(); }
+                        if (e.key === 'm') muteBtn.click();
+                        if (e.key === 'ArrowRight') vid.currentTime = Math.min(vid.duration, vid.currentTime + 5);
+                        if (e.key === 'ArrowLeft') vid.currentTime = Math.max(0, vid.currentTime - 5);
+                        if (e.key === 'ArrowUp') { vid.volume = Math.min(1, vid.volume + 0.1); volSlider.value = vid.volume; }
+                        if (e.key === 'ArrowDown') { vid.volume = Math.max(0, vid.volume - 0.1); volSlider.value = vid.volume; }
+                        if (e.key === 'f') fsBtn.click();
+                    };
+                    document.addEventListener('keydown', lbKeyHandler);
+                    lb._keyHandler = lbKeyHandler;
+
+                    vid.play().catch(() => {});
+                } else {
+                    cnt.innerHTML = `<img src="${p.mediaUrl}" style="max-width:96vw;max-height:88vh;border-radius:12px;object-fit:contain;">`;
+                }
+
                 lb.classList.add('active');
             }
 
             document.getElementById('albumLightboxClose').addEventListener('click', () => {
-                document.getElementById('albumLightbox').classList.remove('active');
+                const lb = document.getElementById('albumLightbox');
+                lb.classList.remove('active');
+                const vid = document.getElementById('lbVid');
+                if (vid) { vid.pause(); vid.src = ''; }
+                if (lb._keyHandler) { document.removeEventListener('keydown', lb._keyHandler); lb._keyHandler = null; }
+                document.getElementById('albumLightboxContent').innerHTML = '';
             });
             document.getElementById('albumLightbox').addEventListener('click', (e) => {
-                if (e.target === document.getElementById('albumLightbox')) document.getElementById('albumLightbox').classList.remove('active');
+                const lb = document.getElementById('albumLightbox');
+                if (e.target === lb) {
+                    lb.classList.remove('active');
+                    const vid = document.getElementById('lbVid');
+                    if (vid) { vid.pause(); vid.src = ''; }
+                    if (lb._keyHandler) { document.removeEventListener('keydown', lb._keyHandler); lb._keyHandler = null; }
+                    document.getElementById('albumLightboxContent').innerHTML = '';
+                }
             });
 
             document.getElementById('albumUploadBtn').addEventListener('click', () => {
