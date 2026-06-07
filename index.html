@@ -1302,6 +1302,10 @@
                     <button class="btn-location btn-loc-secondary" id="stopSharingBtn" style="display:none;">⏹ Stop Sharing</button>
                     <button class="btn-location btn-loc-secondary" id="centerMapBtn">🎯 Center Map</button>
                 </div>
+                <div style="margin-top:10px;padding:10px 14px;background:var(--card-bg);border-radius:12px;border:1px solid var(--border);font-size:0.82rem;color:var(--text-secondary);line-height:1.5;">
+                    📱 <strong style="color:var(--text);">More accurate on PC?</strong> Share your location from the Android app — it uses your phone's GPS and updates here automatically.
+                    <br><span id="phoneGpsStatus" style="display:none;color:#22c55e;font-weight:600;">✓ Phone GPS active — reading from app</span>
+                </div>
             </div>
         </div>
 
@@ -2834,6 +2838,29 @@
                 shareBtn.onclick = () => startSharing(myName);
                 stopBtn.onclick = stopSharing;
                 centerBtn.onclick = fitBothMarkers;
+
+                // Also listen to MY OWN location from Firestore (written by Android app)
+                // This makes the web map accurate even on PC where browser GPS is poor
+                db.collection('users').doc(auth.currentUser.uid).onSnapshot(doc => {
+                    if (!doc.exists) return;
+                    const loc = doc.data().location;
+                    if (loc && loc.lat && loc.lng) {
+                        // Phone GPS is active — show it on map and update status
+                        updateMyStatus(loc.lat, loc.lng, myName);
+                        document.getElementById('phoneGpsStatus').style.display = 'inline';
+                        // If the browser share button is not active, still show the marker
+                        // and mark as sharing in the status card
+                        if (!isSharing) {
+                            document.getElementById('locMyCoords').textContent = formatCoords(loc.lat, loc.lng) + ' (phone GPS)';
+                            document.getElementById('locMyDot').className = 'loc-dot live';
+                        }
+                    } else {
+                        document.getElementById('phoneGpsStatus').style.display = 'none';
+                        if (!isSharing) {
+                            document.getElementById('locMyDot').className = 'loc-dot';
+                        }
+                    }
+                });
 
                 // Restore button state if already sharing
                 if (isSharing) {
