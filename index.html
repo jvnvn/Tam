@@ -2746,7 +2746,7 @@
                         document.getElementById('locPermissionMsg').textContent = '⚠️ Location permission denied. Please allow location access in your browser settings.';
                         stopSharing();
                     },
-                    { enableHighAccuracy: true, maximumAge: 15000, timeout: 20000 }
+                    { enableHighAccuracy: true, maximumAge: 0, timeout: 30000 }
                 );
             }
 
