@@ -1022,7 +1022,61 @@
             .video-tile.local { max-width: 130px; min-width: 100px; bottom: 80px; right: 10px; }
             .ctrl-btn { width:48px; height:48px; font-size:1.1rem; }
         }
-    </style>
+    
+        /* ===== PROFILE PANEL ===== */
+        #panelProfile { max-width: 680px; padding: 0; }
+        .profile-panel-header { padding: 28px 20px 16px; display:flex; flex-direction:column; align-items:center; position:relative; }
+        .profile-big-avatar { width:84px;height:84px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--accent));display:flex;align-items:center;justify-content:center;font-size:2rem;font-weight:800;color:white;box-shadow:0 4px 16px rgba(212,84,106,0.3);flex-shrink:0; }
+        .profile-username-big { font-size:1.25rem;font-weight:800;color:var(--text);margin-top:12px;letter-spacing:-0.3px; }
+        .profile-bio-big { font-size:0.85rem;color:var(--text-secondary);margin-top:4px;text-align:center; }
+        .profile-email-small { font-size:0.75rem;color:var(--text-muted,#9ca3af);margin-top:3px; }
+        .profile-stats-row { display:flex;align-items:stretch;gap:0;width:100%;border-top:1px solid var(--border);border-bottom:1px solid var(--border);margin-top:16px; }
+        .profile-stat { flex:1;text-align:center;padding:14px 8px;cursor:default; }
+        .profile-stat + .profile-stat { border-left:1px solid var(--border); }
+        .profile-stat-num { font-size:1.25rem;font-weight:800;color:var(--primary);line-height:1; }
+        .profile-stat-label { font-size:0.65rem;font-weight:600;text-transform:uppercase;letter-spacing:0.07em;color:var(--text-secondary);margin-top:3px; }
+        .profile-edit-btn { display:flex;align-items:center;gap:6px;padding:9px 18px;border:1.5px solid var(--input-border);border-radius:10px;background:transparent;color:var(--text);font-size:0.88rem;font-weight:600;cursor:pointer;font-family:inherit;transition:all var(--transition);margin-top:16px;width:100%; justify-content:center; }
+        .profile-edit-btn:hover { background:var(--primary-light);border-color:var(--primary);color:var(--primary); }
+        .profile-settings-btn { position:absolute;top:16px;right:16px;background:none;border:none;cursor:pointer;color:var(--text-secondary);padding:6px;border-radius:50%;transition:all var(--transition); }
+        .profile-settings-btn:hover { background:var(--primary-light);color:var(--primary); }
+        .profile-settings-btn svg { width:22px;height:22px;display:block; }
+        .profile-tab-bar { display:flex;border-bottom:1px solid var(--border);background:var(--card-bg); }
+        .profile-tab-btn { flex:1;padding:12px 8px;border:none;background:transparent;color:var(--text-secondary);font-size:0.78rem;font-weight:600;cursor:pointer;font-family:inherit;border-bottom:2.5px solid transparent;transition:all var(--transition);display:flex;align-items:center;justify-content:center;gap:5px; }
+        .profile-tab-btn.active { color:var(--primary);border-bottom-color:var(--primary); }
+        .profile-tab-content { display:none; }
+        .profile-tab-content.active { display:block; }
+        .profile-grid { display:grid;grid-template-columns:repeat(3,1fr);gap:2px;padding:2px; }
+        .profile-grid-thumb { aspect-ratio:1;overflow:hidden;cursor:pointer;position:relative;background:#000; }
+        .profile-grid-thumb img,.profile-grid-thumb video { width:100%;height:100%;object-fit:cover;transition:transform 0.2s; }
+        .profile-grid-thumb:hover img,.profile-grid-thumb:hover video { transform:scale(1.04); }
+        .profile-grid-thumb .grid-play-icon { position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:white;pointer-events:none; }
+        .profile-empty { display:flex;flex-direction:column;align-items:center;justify-content:center;padding:48px 20px;gap:10px;color:var(--text-secondary); }
+        .profile-empty svg { width:40px;height:40px;opacity:0.35; }
+        .profile-empty-title { font-size:0.95rem;font-weight:700;color:var(--text); }
+        .profile-empty-sub { font-size:0.82rem; }
+
+        /* Settings overlay inside profile */
+        .profile-settings-overlay { display:none;position:absolute;inset:0;background:var(--bg);z-index:10;overflow-y:auto; }
+        .profile-settings-overlay.active { display:block; }
+        #panelProfile { position:relative;overflow:hidden; }
+        .settings-back-btn { background:none;border:none;cursor:pointer;color:var(--text);padding:8px;border-radius:50%;display:flex;align-items:center;justify-content:center;transition:all var(--transition); }
+        .settings-back-btn:hover { background:var(--primary-light);color:var(--primary); }
+        .settings-back-btn svg { width:22px;height:22px; }
+
+        /* Profile lightbox */
+        .profile-lightbox { display:none;position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:9999;align-items:center;justify-content:center; }
+        .profile-lightbox.active { display:flex; }
+        .profile-lightbox img,.profile-lightbox video { max-width:96vw;max-height:90vh;object-fit:contain;border-radius:10px; }
+        .profile-lightbox-close { position:absolute;top:16px;right:16px;background:rgba(255,255,255,0.15);border:none;color:white;font-size:1.4rem;width:38px;height:38px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.2s; }
+        .profile-lightbox-close:hover { background:rgba(255,255,255,0.28); }
+
+        /* Edit profile modal */
+        .edit-profile-modal { display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:9998;align-items:center;justify-content:center;padding:16px; }
+        .edit-profile-modal.active { display:flex; }
+        .edit-profile-box { background:var(--card-bg);border-radius:20px;padding:24px;width:100%;max-width:400px;box-shadow:0 20px 60px rgba(0,0,0,0.3); }
+        .edit-profile-box h3 { margin:0 0 18px;font-size:1.1rem;font-weight:800;color:var(--text); }
+
+        </style>
 </head>
 <body>
 
@@ -1089,6 +1143,7 @@
                     <button class="nav-tab" data-panel="notes">Notes</button>
                     <button class="nav-tab" data-panel="album">Album</button>
                     <button class="nav-tab" data-panel="settings">Settings</button>
+                    <button class="nav-tab" data-panel="profile">Profile</button>
                 </div>
             </div>
             <div class="nav-right">
@@ -1122,6 +1177,10 @@
                 <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 0 0 1.5-1.5V6a1.5 1.5 0 0 0-1.5-1.5H3.75A1.5 1.5 0 0 0 2.25 6v12a1.5 1.5 0 0 0 1.5 1.5Zm10.5-11.25h.008v.008h-.008V8.25Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z"/></svg>
                 Album
             </button>
+            <button class="bottom-nav-btn" data-panel="profile">
+                <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></svg>
+                <span>Profile</span>
+            </button>
             <button class="bottom-nav-btn" data-panel="settings">
                 <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></svg>
                 Settings
@@ -1154,7 +1213,7 @@
                                 <div style="font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--text-secondary);">Connected with</div>
                                 <div id="homePartnerName" style="font-size:0.95rem;font-weight:700;color:var(--primary);margin-top:1px;">—</div>
                             </div>
-                            <div style="width:8px;height:8px;border-radius:50%;background:#22c55e;box-shadow:0 0 0 3px rgba(34,197,94,0.2);margin-left:4px;flex-shrink:0;"></div>
+                            <div id="homePartnerOnlineDot" style="width:8px;height:8px;border-radius:50%;background:#9ca3af;margin-left:4px;flex-shrink:0;"></div>
                         </div>
                     </div>
                 </div>
@@ -1378,6 +1437,169 @@
         <div class="story-viewer-progress"><div class="story-viewer-bar" id="storyViewerBar"></div></div>
         <div class="story-viewer-media" id="storyViewerMedia"></div>
     </div>
+
+
+        <!-- Profile Panel -->
+        <div class="home-panel" id="panelProfile">
+            <!-- Main profile content -->
+            <div id="profileMain">
+                <div class="profile-panel-header">
+                    <button class="profile-settings-btn" id="profileSettingsBtn" title="Settings">
+                        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></svg>
+                    </button>
+                    <div class="profile-big-avatar" id="profileBigAvatar">?</div>
+                    <div class="profile-username-big" id="profileBigUsername">—</div>
+                    <div class="profile-bio-big" id="profileBigBio"></div>
+                    <div class="profile-email-small" id="profileBigEmail"></div>
+                    <div class="profile-stats-row">
+                        <div class="profile-stat"><div class="profile-stat-num" id="statPosts">0</div><div class="profile-stat-label">Posts</div></div>
+                        <div class="profile-stat"><div class="profile-stat-num" id="statPhotos">0</div><div class="profile-stat-label">Photos</div></div>
+                        <div class="profile-stat"><div class="profile-stat-num" id="statLetters">0</div><div class="profile-stat-label">Letters</div></div>
+                        <div class="profile-stat"><div class="profile-stat-num" id="statLikes">0</div><div class="profile-stat-label">Likes</div></div>
+                    </div>
+                    <button class="profile-edit-btn" id="profileEditBtn">
+                        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="width:15px;height:15px;"><path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Z"/></svg>
+                        Edit Profile
+                    </button>
+                </div>
+                <!-- Tab bar -->
+                <div class="profile-tab-bar">
+                    <button class="profile-tab-btn active" data-ptab="posts">
+                        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="width:16px;height:16px;"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 0 1 6 3.75h2.25A2.25 2.25 0 0 1 10.5 6v2.25a2.25 2.25 0 0 1-2.25 2.25H6a2.25 2.25 0 0 1-2.25-2.25V6ZM3.75 15.75A2.25 2.25 0 0 1 6 13.5h2.25a2.25 2.25 0 0 1 2.25 2.25V18a2.25 2.25 0 0 1-2.25 2.25H6A2.25 2.25 0 0 1 3.75 18v-2.25ZM13.5 6a2.25 2.25 0 0 1 2.25-2.25H18A2.25 2.25 0 0 1 20.25 6v2.25A2.25 2.25 0 0 1 18 10.5h-2.25a2.25 2.25 0 0 1-2.25-2.25V6ZM13.5 15.75a2.25 2.25 0 0 1 2.25-2.25H18a2.25 2.25 0 0 1 2.25 2.25V18A2.25 2.25 0 0 1 18 20.25h-2.25A2.25 2.25 0 0 1 13.5 18v-2.25Z"/></svg>
+                        Posts
+                    </button>
+                    <button class="profile-tab-btn" data-ptab="album">
+                        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="width:16px;height:16px;"><path stroke-linecap="round" stroke-linejoin="round" d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 0 0 1.5-1.5V6a1.5 1.5 0 0 0-1.5-1.5H3.75A1.5 1.5 0 0 0 2.25 6v12a1.5 1.5 0 0 0 1.5 1.5Zm10.5-11.25h.008v.008h-.008V8.25Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z"/></svg>
+                        Album
+                    </button>
+                    <button class="profile-tab-btn" data-ptab="letters">
+                        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="width:16px;height:16px;"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75"/></svg>
+                        Letters
+                    </button>
+                </div>
+                <!-- Posts tab -->
+                <div class="profile-tab-content active" id="ptabPosts">
+                    <div class="profile-grid" id="profilePostsGrid">
+                        <div class="profile-empty" style="grid-column:1/-1">
+                            <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 0 0 1.5-1.5V6a1.5 1.5 0 0 0-1.5-1.5H3.75A1.5 1.5 0 0 0 2.25 6v12a1.5 1.5 0 0 0 1.5 1.5Zm10.5-11.25h.008v.008h-.008V8.25Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z"/></svg>
+                            <div class="profile-empty-title">No posts yet</div>
+                            <div class="profile-empty-sub">Share something on the home feed!</div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Album tab -->
+                <div class="profile-tab-content" id="ptabAlbum">
+                    <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;">
+                        <div>
+                            <div style="font-weight:700;font-size:0.95rem;color:var(--text);">Our Album</div>
+                            <div style="font-size:0.78rem;color:var(--text-secondary);">Shared photos &amp; memories</div>
+                        </div>
+                        <button class="btn btn-primary" id="profileAlbumAddBtn" style="padding:8px 14px;font-size:0.83rem;">+ Add</button>
+                        <input type="file" id="profileAlbumInput" style="display:none" accept="image/*,video/*" multiple>
+                    </div>
+                    <div class="profile-grid" id="profileAlbumGrid">
+                        <div class="profile-empty" style="grid-column:1/-1">
+                            <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 0 0 1.5-1.5V6a1.5 1.5 0 0 0-1.5-1.5H3.75A1.5 1.5 0 0 0 2.25 6v12a1.5 1.5 0 0 0 1.5 1.5Zm10.5-11.25h.008v.008h-.008V8.25Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z"/></svg>
+                            <div class="profile-empty-title">No photos yet</div>
+                            <div class="profile-empty-sub">Add your first memory!</div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Letters tab -->
+                <div class="profile-tab-content" id="ptabLetters">
+                    <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;">
+                        <div>
+                            <div style="font-weight:700;font-size:0.95rem;color:var(--text);">Love Letters 💌</div>
+                            <div style="font-size:0.78rem;color:var(--text-secondary);">Private notes just for the two of you</div>
+                        </div>
+                        <button class="btn btn-primary" id="profileLetterWriteBtn" style="padding:8px 14px;font-size:0.83rem;">✉️ Write</button>
+                    </div>
+                    <div id="profileLetterCompose" style="display:none;padding:0 14px 14px;">
+                        <div style="background:var(--card-bg);border:1px solid var(--border);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:10px;">
+                            <div style="font-weight:700;font-size:0.9rem;color:var(--text);">New Letter 💌</div>
+                            <input type="text" id="profileLetterSubject" placeholder="Subject (optional)" style="border:1.5px solid var(--input-border);border-radius:10px;padding:9px 12px;font-size:0.88rem;background:var(--input-bg);color:var(--text);font-family:inherit;outline:none;">
+                            <textarea id="profileLetterBody" placeholder="Write something…" rows="4" style="border:1.5px solid var(--input-border);border-radius:10px;padding:9px 12px;font-size:0.88rem;background:var(--input-bg);color:var(--text);font-family:inherit;outline:none;resize:vertical;"></textarea>
+                            <div style="display:flex;gap:8px;justify-content:flex-end;">
+                                <button class="btn" id="profileLetterCancelBtn" style="padding:8px 14px;">Cancel</button>
+                                <button class="btn btn-primary" id="profileLetterSendBtn" style="padding:8px 14px;">Send 💌</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="profileLettersContainer" style="padding:0 14px 14px;display:flex;flex-direction:column;gap:10px;">
+                        <div class="profile-empty">
+                            <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75"/></svg>
+                            <div class="profile-empty-title">No letters yet</div>
+                            <div class="profile-empty-sub">Write your partner something special!</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Settings overlay (slides over profile) -->
+            <div class="profile-settings-overlay" id="profileSettingsOverlay">
+                <div style="padding:8px 8px 4px;display:flex;align-items:center;gap:4px;border-bottom:1px solid var(--border);">
+                    <button class="settings-back-btn" id="profileSettingsBackBtn">
+                        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5"/></svg>
+                    </button>
+                    <span style="font-size:1.1rem;font-weight:800;color:var(--text);">Settings</span>
+                </div>
+                <div style="padding:16px;display:flex;flex-direction:column;gap:14px;">
+                    <div id="profileSettingsFeedback" style="display:none;"></div>
+                    <div class="settings-section">
+                        <h3>Account</h3>
+                        <button class="btn btn-primary" id="profileChangePasswordBtn" style="margin-bottom:8px;width:100%;">Change Password</button>
+                        <p style="font-size:0.8rem;color:var(--text-secondary);">We'll send a reset link to your email.</p>
+                    </div>
+                    <div class="settings-section">
+                        <h3>Partner</h3>
+                        <div id="profilePartnerSettingSection"></div>
+                    </div>
+                    <div class="settings-section">
+                        <h3>Preferences</h3>
+                        <div class="toggle-container"><span class="toggle-label">Dark Mode</span><div class="toggle-switch" id="profileDarkModeToggle"></div></div>
+                        <div class="toggle-container"><span class="toggle-label">Notification Sounds</span><div class="toggle-switch" id="profileNotifSoundToggle"></div></div>
+                        <div class="toggle-container" style="border-bottom:none;"><span class="toggle-label">Message Previews</span><div class="toggle-switch" id="profileMsgPreviewToggle"></div></div>
+                    </div>
+                    <div class="settings-section" style="border:none;">
+                        <button class="btn-danger" id="profileSignOutBtn" style="width:100%;">Sign Out</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Profile lightbox -->
+        <div class="profile-lightbox" id="profileLightbox">
+            <button class="profile-lightbox-close" id="profileLightboxClose">✕</button>
+            <div id="profileLightboxContent"></div>
+        </div>
+
+        <!-- Feed image lightbox -->
+        <div class="profile-lightbox" id="feedImageLightbox">
+            <button class="profile-lightbox-close" id="feedImageLightboxClose">✕</button>
+            <img id="feedImageLightboxImg" src="" alt="post" style="max-width:96vw;max-height:90vh;object-fit:contain;border-radius:10px;">
+        </div>
+
+        <!-- Edit profile modal -->
+        <div class="edit-profile-modal" id="editProfileModal">
+            <div class="edit-profile-box">
+                <h3>Edit Profile</h3>
+                <div style="display:flex;flex-direction:column;gap:12px;">
+                    <div>
+                        <label style="font-size:0.82rem;font-weight:600;color:var(--text-secondary);display:block;margin-bottom:5px;">Username</label>
+                        <input type="text" id="editProfileUsername" style="width:100%;border:1.5px solid var(--input-border);border-radius:10px;padding:10px 12px;font-size:0.92rem;background:var(--input-bg);color:var(--text);font-family:inherit;outline:none;box-sizing:border-box;">
+                    </div>
+                    <div>
+                        <label style="font-size:0.82rem;font-weight:600;color:var(--text-secondary);display:block;margin-bottom:5px;">Bio</label>
+                        <textarea id="editProfileBio" rows="3" style="width:100%;border:1.5px solid var(--input-border);border-radius:10px;padding:10px 12px;font-size:0.92rem;background:var(--input-bg);color:var(--text);font-family:inherit;outline:none;resize:none;box-sizing:border-box;"></textarea>
+                    </div>
+                    <div id="editProfileFeedback" style="display:none;font-size:0.83rem;padding:8px 12px;border-radius:8px;"></div>
+                    <div style="display:flex;gap:8px;justify-content:flex-end;">
+                        <button class="btn" id="editProfileCancelBtn">Cancel</button>
+                        <button class="btn btn-primary" id="editProfileSaveBtn">Save</button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
     <!-- ===== ALBUM LIGHTBOX ===== -->
     <div class="album-lightbox" id="albumLightbox">
@@ -1633,6 +1855,401 @@
                 avatarCircle.textContent = (username || '?').charAt(0).toUpperCase();
             }
 
+
+            // ═══════════════════════════════════════════════════════
+            // PROFILE PANEL
+            // ═══════════════════════════════════════════════════════
+            const panelProfile = document.getElementById('panelProfile');
+            let profilePostsUnsub = null, profileAlbumUnsub = null, profileLettersUnsub = null;
+            let profilePartnerPresenceUnsub = null;
+
+            // Register profile panel in the existing panels array
+            // (handled by injecting into switchHomeTab below)
+
+            // ── Tab switching inside profile ──
+            document.querySelectorAll('.profile-tab-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.profile-tab-btn').forEach(b => b.classList.remove('active'));
+                    document.querySelectorAll('.profile-tab-content').forEach(c => c.classList.remove('active'));
+                    btn.classList.add('active');
+                    const tab = btn.dataset.ptab;
+                    document.getElementById('ptab' + tab.charAt(0).toUpperCase() + tab.slice(1)).classList.add('active');
+                });
+            });
+
+            // ── Settings overlay ──
+            document.getElementById('profileSettingsBtn').addEventListener('click', () => {
+                syncProfileSettingsToggles();
+                document.getElementById('profileSettingsOverlay').classList.add('active');
+            });
+            document.getElementById('profileSettingsBackBtn').addEventListener('click', () => {
+                document.getElementById('profileSettingsOverlay').classList.remove('active');
+            });
+
+            function showProfileSettingsFeedback(msg, type) {
+                const el = document.getElementById('profileSettingsFeedback');
+                el.textContent = msg;
+                el.style.display = 'block';
+                el.style.background = type === 'error' ? 'var(--danger-bg)' : 'var(--success-bg)';
+                el.style.color = type === 'error' ? 'var(--danger-text)' : 'var(--success-text)';
+                el.style.padding = '8px 12px';
+                el.style.borderRadius = '8px';
+                el.style.fontSize = '0.83rem';
+                setTimeout(() => { el.style.display = 'none'; }, 3000);
+            }
+
+            document.getElementById('profileChangePasswordBtn').addEventListener('click', async () => {
+                if (!auth.currentUser) return;
+                try {
+                    await auth.sendPasswordResetEmail(auth.currentUser.email);
+                    showProfileSettingsFeedback('Password reset email sent!', 'success');
+                } catch(e) { showProfileSettingsFeedback(e.message || 'Failed', 'error'); }
+            });
+
+            document.getElementById('profileSignOutBtn').addEventListener('click', async () => {
+                document.getElementById('profileSignOutBtn').textContent = 'Signing out…';
+                document.getElementById('profileSignOutBtn').disabled = true;
+                // Trigger the existing sign-out flow
+                document.getElementById('signOutBtn') && document.getElementById('signOutBtn').click();
+            });
+
+            function syncProfileSettingsToggles() {
+                // Sync state from main settings toggles to profile settings toggles
+                const darkMain = document.getElementById('darkModeToggle');
+                const notifMain = document.getElementById('notifSoundToggle');
+                const msgMain = document.getElementById('msgPreviewToggle');
+                const darkProf = document.getElementById('profileDarkModeToggle');
+                const notifProf = document.getElementById('profileNotifSoundToggle');
+                const msgProf = document.getElementById('profileMsgPreviewToggle');
+                if (darkMain && darkProf) {
+                    darkProf.classList.toggle('active', darkMain.classList.contains('active'));
+                }
+                if (notifMain && notifProf) notifProf.classList.toggle('active', notifMain.classList.contains('active'));
+                if (msgMain && msgProf) msgProf.classList.toggle('active', msgMain.classList.contains('active'));
+            }
+
+            // Mirror profile setting toggles to main toggles so existing logic runs
+            ['profileDarkModeToggle', 'profileNotifSoundToggle', 'profileMsgPreviewToggle'].forEach((id, i) => {
+                const mainIds = ['darkModeToggle', 'notifSoundToggle', 'msgPreviewToggle'];
+                document.getElementById(id).addEventListener('click', () => {
+                    document.getElementById(mainIds[i]).click();
+                    syncProfileSettingsToggles();
+                });
+            });
+
+            // ── Edit Profile modal ──
+            document.getElementById('profileEditBtn').addEventListener('click', () => {
+                if (!auth.currentUser) return;
+                db.collection('users').doc(auth.currentUser.uid).get().then(doc => {
+                    if (!doc.exists) return;
+                    document.getElementById('editProfileUsername').value = doc.data().username || '';
+                    document.getElementById('editProfileBio').value = doc.data().bio || '';
+                    const fb = document.getElementById('editProfileFeedback');
+                    fb.style.display = 'none';
+                    document.getElementById('editProfileModal').classList.add('active');
+                });
+            });
+            document.getElementById('editProfileCancelBtn').addEventListener('click', () => {
+                document.getElementById('editProfileModal').classList.remove('active');
+            });
+            document.getElementById('editProfileModal').addEventListener('click', e => {
+                if (e.target === document.getElementById('editProfileModal'))
+                    document.getElementById('editProfileModal').classList.remove('active');
+            });
+            document.getElementById('editProfileSaveBtn').addEventListener('click', async () => {
+                const username = document.getElementById('editProfileUsername').value.trim();
+                const bio = document.getElementById('editProfileBio').value.trim();
+                const fb = document.getElementById('editProfileFeedback');
+                if (!username) {
+                    fb.textContent = 'Username cannot be empty';
+                    fb.style.display = 'block';
+                    fb.style.background = 'var(--danger-bg)';
+                    fb.style.color = 'var(--danger-text)';
+                    return;
+                }
+                const btn = document.getElementById('editProfileSaveBtn');
+                btn.disabled = true; btn.textContent = 'Saving…';
+                try {
+                    await db.collection('users').doc(auth.currentUser.uid).update({ username, bio });
+                    document.getElementById('editProfileModal').classList.remove('active');
+                    loadProfileData();
+                    initProfilePanel();
+                } catch(e) {
+                    fb.textContent = e.message || 'Save failed';
+                    fb.style.display = 'block';
+                    fb.style.background = 'var(--danger-bg)';
+                    fb.style.color = 'var(--danger-text)';
+                } finally {
+                    btn.disabled = false; btn.textContent = 'Save';
+                }
+            });
+
+            // ── Lightboxes ──
+            document.getElementById('profileLightboxClose').addEventListener('click', () => {
+                const lb = document.getElementById('profileLightbox');
+                lb.classList.remove('active');
+                lb.querySelector('#profileLightboxContent').innerHTML = '';
+            });
+            document.getElementById('profileLightbox').addEventListener('click', e => {
+                if (e.target === document.getElementById('profileLightbox')) {
+                    document.getElementById('profileLightbox').classList.remove('active');
+                    document.getElementById('profileLightboxContent').innerHTML = '';
+                }
+            });
+            document.getElementById('feedImageLightboxClose').addEventListener('click', () => {
+                document.getElementById('feedImageLightbox').classList.remove('active');
+            });
+            document.getElementById('feedImageLightbox').addEventListener('click', e => {
+                if (e.target === document.getElementById('feedImageLightbox'))
+                    document.getElementById('feedImageLightbox').classList.remove('active');
+            });
+
+            function openFeedImageLightbox(url) {
+                document.getElementById('feedImageLightboxImg').src = url;
+                document.getElementById('feedImageLightbox').classList.add('active');
+            }
+            window.openFeedImageLightbox = openFeedImageLightbox;
+
+            function openProfileLightbox(url, isVideo) {
+                const lb = document.getElementById('profileLightbox');
+                const cnt = document.getElementById('profileLightboxContent');
+                cnt.innerHTML = isVideo
+                    ? `<video src="${url}" controls autoplay style="max-width:96vw;max-height:90vh;border-radius:10px;"></video>`
+                    : `<img src="${url}" style="max-width:96vw;max-height:90vh;object-fit:contain;border-radius:10px;">`;
+                lb.classList.add('active');
+            }
+
+            // ── Album upload ──
+            document.getElementById('profileAlbumAddBtn').addEventListener('click', () => {
+                document.getElementById('profileAlbumInput').click();
+            });
+            document.getElementById('profileAlbumInput').addEventListener('change', async e => {
+                const files = Array.from(e.target.files);
+                if (!files.length || !currentUser || !currentPartnerId) return;
+                const feedId = [currentUser.uid, currentPartnerId].sort().join('_');
+                const btn = document.getElementById('profileAlbumAddBtn');
+                btn.disabled = true; btn.textContent = 'Uploading…';
+                for (const file of files) {
+                    try {
+                        const isVideo = file.type.startsWith('video/');
+                        const formData = new FormData();
+                        formData.append('file', file);
+                        formData.append('upload_preset', 'tamtam_unsigned');
+                        const res = await fetch(`https://api.cloudinary.com/v1_1/dkqvtmqkk/${isVideo ? 'video' : 'image'}/upload`, { method: 'POST', body: formData });
+                        const data = await res.json();
+                        if (data.secure_url) {
+                            await db.collection('albums').doc(feedId).collection('photos').add({
+                                userId: currentUser.uid,
+                                username: (await db.collection('users').doc(currentUser.uid).get()).data().username || '',
+                                mediaUrl: data.secure_url,
+                                mediaType: isVideo ? 'video' : 'image',
+                                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                            });
+                        }
+                    } catch(err) { console.error('Album upload error', err); }
+                }
+                btn.disabled = false; btn.textContent = '+ Add';
+                e.target.value = '';
+            });
+
+            // ── Letter compose ──
+            document.getElementById('profileLetterWriteBtn').addEventListener('click', () => {
+                const compose = document.getElementById('profileLetterCompose');
+                compose.style.display = compose.style.display === 'none' ? 'block' : 'none';
+            });
+            document.getElementById('profileLetterCancelBtn').addEventListener('click', () => {
+                document.getElementById('profileLetterCompose').style.display = 'none';
+                document.getElementById('profileLetterSubject').value = '';
+                document.getElementById('profileLetterBody').value = '';
+            });
+            document.getElementById('profileLetterSendBtn').addEventListener('click', async () => {
+                const body = document.getElementById('profileLetterBody').value.trim();
+                const subject = document.getElementById('profileLetterSubject').value.trim();
+                if (!body || !currentUser || !currentPartnerId) return;
+                const feedId = [currentUser.uid, currentPartnerId].sort().join('_');
+                const btn = document.getElementById('profileLetterSendBtn');
+                btn.disabled = true; btn.textContent = 'Sending…';
+                try {
+                    const me = await db.collection('users').doc(currentUser.uid).get();
+                    await db.collection('notes').doc(feedId).collection('letters').add({
+                        userId: currentUser.uid,
+                        username: me.data().username || '',
+                        subject, body,
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                    document.getElementById('profileLetterCompose').style.display = 'none';
+                    document.getElementById('profileLetterSubject').value = '';
+                    document.getElementById('profileLetterBody').value = '';
+                } catch(err) { console.error(err); }
+                finally { btn.disabled = false; btn.textContent = 'Send 💌'; }
+            });
+
+            // ── Main profile init ──
+            async function initProfilePanel() {
+                if (!auth.currentUser) return;
+                const uid = auth.currentUser.uid;
+                const doc = await db.collection('users').doc(uid).get();
+                if (!doc.exists) return;
+                const data = doc.data();
+                const initial = (data.username || '?').charAt(0).toUpperCase();
+
+                document.getElementById('profileBigAvatar').textContent = initial;
+                document.getElementById('profileBigUsername').textContent = data.username || '—';
+                document.getElementById('profileBigBio').textContent = data.bio || '';
+                document.getElementById('profileBigEmail').textContent = auth.currentUser.email || '';
+
+                // Partner settings section
+                const partnerSettingEl = document.getElementById('profilePartnerSettingSection');
+                if (data.partnerId) {
+                    partnerSettingEl.innerHTML = `<button class="btn-danger" id="profileDisconnectBtn" style="width:100%;">Disconnect Partner</button>`;
+                    document.getElementById('profileDisconnectBtn').addEventListener('click', async () => {
+                        if (!confirm('Are you sure you want to disconnect from your partner?')) return;
+                        try {
+                            const batch = db.batch();
+                            batch.update(db.collection('users').doc(uid), { partnerId: null });
+                            batch.update(db.collection('users').doc(data.partnerId), { partnerId: null });
+                            await batch.commit();
+                            initProfilePanel();
+                        } catch(e) { showProfileSettingsFeedback(e.message || 'Failed', 'error'); }
+                    });
+                } else {
+                    partnerSettingEl.innerHTML = `<p style="font-size:0.82rem;color:var(--text-secondary);">No partner connected. Use the Messages tab to connect.</p>`;
+                }
+
+                if (!data.partnerId) {
+                    document.getElementById('statPosts').textContent = '—';
+                    document.getElementById('statPhotos').textContent = '—';
+                    document.getElementById('statLetters').textContent = '—';
+                    document.getElementById('statLikes').textContent = '—';
+                    return;
+                }
+
+                const feedId = [uid, data.partnerId].sort().join('_');
+
+                // Live listeners for counts & grids
+                if (profilePostsUnsub) profilePostsUnsub();
+                profilePostsUnsub = db.collection('feeds').doc(feedId).collection('posts')
+                    .orderBy('createdAt', 'desc').limit(50)
+                    .onSnapshot(snap => {
+                        const myPosts = snap.docs.filter(d => d.data().userId === uid);
+                        let totalLikes = 0;
+                        myPosts.forEach(d => { const l = d.data().likes; if (l) totalLikes += Object.keys(l).length; });
+                        document.getElementById('statPosts').textContent = myPosts.length;
+                        document.getElementById('statLikes').textContent = totalLikes;
+                        renderProfileGrid('profilePostsGrid', myPosts.map(d => ({ id: d.id, ...d.data() })));
+                    });
+
+                if (profileAlbumUnsub) profileAlbumUnsub();
+                profileAlbumUnsub = db.collection('albums').doc(feedId).collection('photos')
+                    .orderBy('createdAt', 'desc')
+                    .onSnapshot(snap => {
+                        document.getElementById('statPhotos').textContent = snap.size;
+                        renderAlbumGrid('profileAlbumGrid', snap.docs.map(d => ({ id: d.id, ...d.data() })), feedId);
+                    });
+
+                if (profileLettersUnsub) profileLettersUnsub();
+                profileLettersUnsub = db.collection('notes').doc(feedId).collection('letters')
+                    .onSnapshot(snap => {
+                        document.getElementById('statLetters').textContent = snap.size;
+                        renderLetters(snap.docs.map(d => ({ id: d.id, ...d.data() })), feedId);
+                    });
+
+                // Live partner presence for settings section
+                if (profilePartnerPresenceUnsub) profilePartnerPresenceUnsub();
+            }
+
+            function renderProfileGrid(containerId, posts) {
+                const grid = document.getElementById(containerId);
+                if (!posts.length) {
+                    grid.innerHTML = `<div class="profile-empty" style="grid-column:1/-1">
+                        <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 0 0 1.5-1.5V6a1.5 1.5 0 0 0-1.5-1.5H3.75A1.5 1.5 0 0 0 2.25 6v12a1.5 1.5 0 0 0 1.5 1.5Zm10.5-11.25h.008v.008h-.008V8.25Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z"/></svg>
+                        <div class="profile-empty-title">No posts yet</div>
+                        <div class="profile-empty-sub">Share something on the home feed!</div>
+                    </div>`;
+                    return;
+                }
+                grid.innerHTML = posts.map(p => {
+                    const isVideo = p.mediaType === 'video';
+                    const thumb = p.mediaUrl
+                        ? `<img src="${p.mediaUrl}" loading="lazy" alt="post">`
+                        : `<div style="width:100%;height:100%;background:var(--primary-light);display:flex;align-items:center;justify-content:center;font-size:1.5rem;">💬</div>`;
+                    const playIcon = isVideo ? `<div class="grid-play-icon"><svg style="width:28px;height:28px;" fill="white" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>` : '';
+                    return `<div class="profile-grid-thumb" onclick="openProfileLightbox('${p.mediaUrl || ''}', ${isVideo})">${thumb}${playIcon}</div>`;
+                }).join('');
+            }
+
+            function renderAlbumGrid(containerId, photos, feedId) {
+                const grid = document.getElementById(containerId);
+                const uid = auth.currentUser?.uid;
+                if (!photos.length) {
+                    grid.innerHTML = `<div class="profile-empty" style="grid-column:1/-1">
+                        <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 0 0 1.5-1.5V6a1.5 1.5 0 0 0-1.5-1.5H3.75A1.5 1.5 0 0 0 2.25 6v12a1.5 1.5 0 0 0 1.5 1.5Zm10.5-11.25h.008v.008h-.008V8.25Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z"/></svg>
+                        <div class="profile-empty-title">No photos yet</div>
+                        <div class="profile-empty-sub">Add your first memory!</div>
+                    </div>`;
+                    return;
+                }
+                grid.innerHTML = photos.map(p => {
+                    const isVideo = p.mediaType === 'video';
+                    const playIcon = isVideo ? `<div class="grid-play-icon"><svg style="width:28px;height:28px;" fill="white" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>` : '';
+                    const delBtn = p.userId === uid
+                        ? `<button onclick="event.stopPropagation();deleteProfileAlbumPhoto('${feedId}','${p.id}')" style="position:absolute;top:4px;right:4px;background:rgba(0,0,0,0.55);border:none;color:white;border-radius:50%;width:24px;height:24px;font-size:0.9rem;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;">✕</button>` : '';
+                    return `<div class="profile-grid-thumb" onclick="openProfileLightbox('${p.mediaUrl}',${isVideo})"><img src="${p.mediaUrl}" loading="lazy" alt="">${playIcon}${delBtn}</div>`;
+                }).join('');
+            }
+            window.deleteProfileAlbumPhoto = async (feedId, photoId) => {
+                if (!confirm('Delete this photo?')) return;
+                await db.collection('albums').doc(feedId).collection('photos').document(photoId).delete().catch(() =>
+                    db.collection('albums').doc(feedId).collection('photos').doc(photoId).delete()
+                );
+            };
+
+            function renderLetters(letters, feedId) {
+                const container = document.getElementById('profileLettersContainer');
+                const uid = auth.currentUser?.uid;
+                if (!letters.length) {
+                    container.innerHTML = `<div class="profile-empty">
+                        <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75"/></svg>
+                        <div class="profile-empty-title">No letters yet</div>
+                        <div class="profile-empty-sub">Write your partner something special!</div>
+                    </div>`;
+                    return;
+                }
+                const sorted = [...letters].sort((a,b) => {
+                    const ta = a.createdAt?.seconds || 0, tb = b.createdAt?.seconds || 0;
+                    return tb - ta;
+                });
+                container.innerHTML = sorted.map(n => {
+                    const isOwn = n.userId === uid;
+                    return `<div style="background:var(--card-bg);border:1px solid var(--border);border-radius:14px;padding:14px;position:relative;">
+                        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+                            <div style="font-weight:700;font-size:0.88rem;color:var(--text);">${n.subject || '(no subject)'}</div>
+                            ${isOwn ? `<button onclick="deleteProfileLetter('${feedId}','${n.id}')" style="background:none;border:none;cursor:pointer;color:var(--text-secondary);font-size:1rem;padding:2px 6px;border-radius:6px;">✕</button>` : ''}
+                        </div>
+                        <div style="font-size:0.85rem;color:var(--text-secondary);line-height:1.5;white-space:pre-wrap;">${n.body}</div>
+                        <div style="font-size:0.72rem;color:var(--text-muted,#9ca3af);margin-top:8px;">— ${n.username || 'You'}</div>
+                    </div>`;
+                }).join('');
+            }
+            window.deleteProfileLetter = async (feedId, letterId) => {
+                if (!confirm('Delete this letter?')) return;
+                await db.collection('notes').doc(feedId).collection('letters').doc(letterId).delete();
+            };
+
+            // ── Partner online dot in feed profile card (live) ──
+            let feedPartnerPresenceUnsub = null;
+            function listenToPartnerPresenceForFeedCard(partnerId) {
+                if (feedPartnerPresenceUnsub) { feedPartnerPresenceUnsub(); feedPartnerPresenceUnsub = null; }
+                if (!partnerId) return;
+                feedPartnerPresenceUnsub = db.collection('users').doc(partnerId).onSnapshot(snap => {
+                    const dot = document.getElementById('homePartnerOnlineDot');
+                    if (!dot) return;
+                    const isOnline = snap.exists && snap.data().isOnline === true;
+                    dot.style.background = isOnline ? '#22c55e' : '#9ca3af';
+                    dot.style.boxShadow = isOnline ? '0 0 0 3px rgba(34,197,94,0.2)' : 'none';
+                });
+            }
+
             async function loadProfileData() {
                 if (!auth.currentUser) return;
                 const doc = await db.collection('users').doc(auth.currentUser.uid).get();
@@ -1664,6 +2281,7 @@
                             document.getElementById('homePartnerName').textContent = pName;
                             document.getElementById('homePartnerAvatar').textContent = pName.charAt(0).toUpperCase();
                         }
+                        listenToPartnerPresenceForFeedCard(data.partnerId);
                     } catch(e) {}
                 } else {
                     // No partner — show code
@@ -1693,7 +2311,7 @@
 
             function switchHomeTab(panelName) {
                 [panelHome, panelMessages, panelSettings, panelLocation,
-                 document.getElementById('panelNotes'), document.getElementById('panelAlbum')]
+                 document.getElementById('panelNotes'), document.getElementById('panelAlbum'), panelProfile]
                     .forEach(p => p && p.classList.remove('active'));
                 const targetId = 'panel' + panelName.charAt(0).toUpperCase() + panelName.slice(1);
                 const target = document.getElementById(targetId);
@@ -1703,6 +2321,7 @@
                     if (tab.dataset.panel === panelName) tab.classList.add('active');
                 });
                 if (panelName === 'home') { loadProfileData(); initFeed(); initStories(); initCountdowns(); }
+                if (panelName === 'profile') { initProfilePanel(); }
                 if (panelName === 'messages') setupMessagesUI();
                 if (panelName === 'location') setupLocationUI();
                 if (panelName === 'notes') initNotes();
@@ -2067,7 +2686,7 @@
                             </div>
                         </div>`;
                     } else {
-                        mediaHtml = `<img class="post-media" src="${data.mediaUrl}" alt="post" onclick="window.open('${data.mediaUrl}','_blank')">`;
+                        mediaHtml = `<img class="post-media" src="${data.mediaUrl}" alt="post" style="cursor:pointer" onclick="openFeedImageLightbox('${data.mediaUrl}')">`;
                     }
                 }
 
