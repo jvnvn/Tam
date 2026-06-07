@@ -427,6 +427,7 @@
         .chat-header-info { flex: 1; min-width: 0; }
         .chat-header-name { font-weight: 700; font-size: 0.95rem; color: var(--text); }
         .chat-header-status { font-size: 0.72rem; color: var(--success-text); font-weight: 500; }
+        .chat-header-status.offline { color: var(--text-muted, #9ca3af); }
 
         /* ===== CHAT ===== */
         .chat-container {
@@ -1226,7 +1227,7 @@
                     <div class="chat-header-avatar" id="chatHeaderAvatar">?</div>
                     <div class="chat-header-info">
                         <div class="chat-header-name" id="connectedPartnerText">Partner</div>
-                        <div class="chat-header-status">● Online</div>
+                        <div class="chat-header-status" id="chatHeaderStatus">● Online</div>
                     </div>
                     <button class="btn-video-call" id="videoCallBtn" title="Start video call">
                         <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="m15.75 10.5 4.72-4.72a.75.75 0 0 1 1.28.53v11.38a.75.75 0 0 1-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 0 0 2.25-2.25v-9a2.25 2.25 0 0 0-2.25-2.25h-9A2.25 2.25 0 0 0 2.25 7.5v9a2.25 2.25 0 0 0 2.25 2.25Z"/></svg>
@@ -1301,10 +1302,6 @@
                     <button class="btn-location btn-loc-primary" id="shareLocationBtn">📡 Share My Location</button>
                     <button class="btn-location btn-loc-secondary" id="stopSharingBtn" style="display:none;">⏹ Stop Sharing</button>
                     <button class="btn-location btn-loc-secondary" id="centerMapBtn">🎯 Center Map</button>
-                </div>
-                <div style="margin-top:10px;padding:10px 14px;background:var(--card-bg);border-radius:12px;border:1px solid var(--border);font-size:0.82rem;color:var(--text-secondary);line-height:1.5;">
-                    📱 <strong style="color:var(--text);">More accurate on PC?</strong> Share your location from the Android app — it uses your phone's GPS and updates here automatically.
-                    <br><span id="phoneGpsStatus" style="display:none;color:#22c55e;font-weight:600;">✓ Phone GPS active — reading from app</span>
                 </div>
             </div>
         </div>
@@ -1473,6 +1470,21 @@
             firebase.initializeApp(firebaseConfig);
             const auth = firebase.auth();
             const db = firebase.firestore();
+
+            // ── Presence: mark offline when tab closes / hides ──
+            function markOffline() {
+                if (auth.currentUser) {
+                    db.collection('users').doc(auth.currentUser.uid).update({ isOnline: false }).catch(() => {});
+                }
+            }
+            window.addEventListener('beforeunload', markOffline);
+            document.addEventListener('visibilitychange', () => {
+                if (auth.currentUser) {
+                    db.collection('users').doc(auth.currentUser.uid)
+                        .update({ isOnline: document.visibilityState === 'visible' })
+                        .catch(() => {});
+                }
+            });
 
             // ===== Cloudinary config =====
             const CLOUDINARY_CLOUD = 'dmh6mgqxg';
@@ -1703,6 +1715,8 @@
                 document.body.classList.add('home-view');
                 currentUser = user;
                 updateNavbarDisplay(username || user.email);
+                // Mark this user as online
+                db.collection('users').doc(user.uid).update({ isOnline: true }).catch(() => {});
                 switchHomeTab('home');
                 // Load profile card immediately (don't wait for tab switch)
                 loadProfileData();
@@ -1784,6 +1798,18 @@
                     const chatAvatar = document.getElementById('chatHeaderAvatar');
                     if (chatAvatar) chatAvatar.textContent = (username || '?').charAt(0).toUpperCase();
                     document.getElementById('videoCallBtn').disabled = false;
+
+                    // Live presence listener for partner
+                    if (window._partnerPresenceUnsub) { window._partnerPresenceUnsub(); }
+                    window._partnerPresenceUnsub = db.collection('users').doc(partnerId)
+                        .onSnapshot(snap => {
+                            const statusEl = document.getElementById('chatHeaderStatus');
+                            if (!statusEl) return;
+                            const isOnline = snap.exists && snap.data().isOnline === true;
+                            statusEl.textContent = isOnline ? '● Online' : '● Offline';
+                            statusEl.className = 'chat-header-status' + (isOnline ? '' : ' offline');
+                        });
+
                     attachPrivateChatListener(chatId);
                     initFeed();
                 } else {
@@ -2681,20 +2707,11 @@
                 return `${Math.floor(diff / 3600)}h ago`;
             }
 
-            let myMarkerCenteredOnce = false;
-            function updateMyStatus(lat, lng, myName) {
+            function updateMyStatus(lat, lng) {
+                // Only update the status card — do NOT put your own marker on the map.
+                // Your partner sees your marker on THEIR map via Firestore.
                 document.getElementById('locMyCoords').textContent = formatCoords(lat, lng);
                 document.getElementById('locMyDot').className = 'loc-dot live';
-                // Show MY marker on the map too
-                const label = myName ? myName.charAt(0).toUpperCase() : 'Me';
-                const html = `<div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#4f46e5,#7c3aed);display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:14px;border:3px solid white;box-shadow:0 2px 8px rgba(0,0,0,0.3);">${label}</div>`;
-                const icon = L.divIcon({ className: '', html, iconSize: [36, 36], iconAnchor: [18, 18] });
-                if (myMarker) { myMarker.setLatLng([lat, lng]); myMarker.setIcon(icon); }
-                else { myMarker = L.marker([lat, lng], { icon }).addTo(locationMap).bindPopup(`<strong>${myName || 'You'}</strong><br>${formatCoords(lat, lng)}`); }
-                if (!myMarkerCenteredOnce) {
-                    locationMap.setView([lat, lng], 16);
-                    myMarkerCenteredOnce = true;
-                }
             }
 
             function updatePartnerMarker(lat, lng, name, updatedAt) {
@@ -2703,22 +2720,14 @@
                 const icon = L.divIcon({ className: '', html, iconSize: [36, 36], iconAnchor: [18, 18] });
                 const ago = locationTimeAgo(updatedAt);
                 if (partnerMarker) { partnerMarker.setLatLng([lat, lng]); partnerMarker.setIcon(icon); partnerMarker.setPopupContent(`<strong>${name || 'Partner'}</strong><br>${formatCoords(lat, lng)}<br><small>${ago}</small>`); }
-                else { 
-                    partnerMarker = L.marker([lat, lng], { icon }).addTo(locationMap).bindPopup(`<strong>${name || 'Partner'}</strong><br>${formatCoords(lat, lng)}<br><small>${ago}</small>`);
-                    // Auto-center on partner if we haven't centered on ourselves yet
-                    if (!myMarkerCenteredOnce) { locationMap.setView([lat, lng], 16); }
-                }
+                else { partnerMarker = L.marker([lat, lng], { icon }).addTo(locationMap).bindPopup(`<strong>${name || 'Partner'}</strong><br>${formatCoords(lat, lng)}<br><small>${ago}</small>`); }
                 document.getElementById('locPartnerCoords').textContent = `${formatCoords(lat, lng)} · ${ago}`;
                 document.getElementById('locPartnerDot').className = 'loc-dot live';
             }
 
             function fitBothMarkers() {
-                if (myMarker && partnerMarker) {
-                    const group = L.featureGroup([myMarker, partnerMarker]);
-                    locationMap.fitBounds(group.getBounds().pad(0.3));
-                } else if (myMarker) {
-                    locationMap.setView(myMarker.getLatLng(), 16);
-                } else if (partnerMarker) {
+                // Only the partner's marker exists on the map; center on it.
+                if (partnerMarker) {
                     locationMap.setView(partnerMarker.getLatLng(), 16);
                 }
             }
@@ -2736,7 +2745,7 @@
                 watchId = navigator.geolocation.watchPosition(
                     async (pos) => {
                         const { latitude: lat, longitude: lng } = pos.coords;
-                        updateMyStatus(lat, lng, myName);
+                        updateMyStatus(lat, lng);
                         document.getElementById('locPermissionMsg').style.display = 'none';
                         // Save to Firestore so partner can see our location on their map
                         try {
@@ -2750,7 +2759,7 @@
                         document.getElementById('locPermissionMsg').textContent = '⚠️ Location permission denied. Please allow location access in your browser settings.';
                         stopSharing();
                     },
-                    { enableHighAccuracy: true, maximumAge: 0, timeout: 30000 }
+                    { enableHighAccuracy: true, maximumAge: 15000, timeout: 20000 }
                 );
             }
 
@@ -2765,8 +2774,7 @@
                 if (auth.currentUser) {
                     db.collection('users').doc(auth.currentUser.uid).update({ location: null }).catch(() => {});
                 }
-                // Remove my marker from the map
-                if (myMarker) { locationMap.removeLayer(myMarker); myMarker = null; myMarkerCenteredOnce = false; }
+                // myMarker is never on the map (we only show partner's location here)
             }
 
             function listenToPartnerLocation(partnerId, partnerName) {
@@ -2838,29 +2846,6 @@
                 shareBtn.onclick = () => startSharing(myName);
                 stopBtn.onclick = stopSharing;
                 centerBtn.onclick = fitBothMarkers;
-
-                // Also listen to MY OWN location from Firestore (written by Android app)
-                // This makes the web map accurate even on PC where browser GPS is poor
-                db.collection('users').doc(auth.currentUser.uid).onSnapshot(doc => {
-                    if (!doc.exists) return;
-                    const loc = doc.data().location;
-                    if (loc && loc.lat && loc.lng) {
-                        // Phone GPS is active — show it on map and update status
-                        updateMyStatus(loc.lat, loc.lng, myName);
-                        document.getElementById('phoneGpsStatus').style.display = 'inline';
-                        // If the browser share button is not active, still show the marker
-                        // and mark as sharing in the status card
-                        if (!isSharing) {
-                            document.getElementById('locMyCoords').textContent = formatCoords(loc.lat, loc.lng) + ' (phone GPS)';
-                            document.getElementById('locMyDot').className = 'loc-dot live';
-                        }
-                    } else {
-                        document.getElementById('phoneGpsStatus').style.display = 'none';
-                        if (!isSharing) {
-                            document.getElementById('locMyDot').className = 'loc-dot';
-                        }
-                    }
-                });
 
                 // Restore button state if already sharing
                 if (isSharing) {
@@ -3938,7 +3923,10 @@
                 if (unsubscribeUserDoc) { unsubscribeUserDoc(); unsubscribeUserDoc = null; }
                 if (unsubscribePartnerLocation) { unsubscribePartnerLocation(); unsubscribePartnerLocation = null; }
                 if (watchId !== null) { navigator.geolocation.clearWatch(watchId); watchId = null; }
-                if (auth.currentUser) { db.collection('users').doc(auth.currentUser.uid).update({ location: null }).catch(() => {}); }
+                if (auth.currentUser) {
+                    const _uid = auth.currentUser.uid;
+                    await db.collection('users').doc(_uid).update({ location: null, isOnline: false }).catch(() => {});
+                }
                 locationMap = null; myMarker = null; partnerMarker = null; isSharing = false; locationUISetup = false;
                 await auth.signOut();
             });
