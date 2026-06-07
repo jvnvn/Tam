@@ -2677,11 +2677,20 @@
                 return `${Math.floor(diff / 3600)}h ago`;
             }
 
-            function updateMyStatus(lat, lng) {
-                // Only update the status card — do NOT put your own marker on the map.
-                // Your partner sees your marker on THEIR map via Firestore.
+            let myMarkerCenteredOnce = false;
+            function updateMyStatus(lat, lng, myName) {
                 document.getElementById('locMyCoords').textContent = formatCoords(lat, lng);
                 document.getElementById('locMyDot').className = 'loc-dot live';
+                // Show MY marker on the map too
+                const label = myName ? myName.charAt(0).toUpperCase() : 'Me';
+                const html = `<div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#4f46e5,#7c3aed);display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:14px;border:3px solid white;box-shadow:0 2px 8px rgba(0,0,0,0.3);">${label}</div>`;
+                const icon = L.divIcon({ className: '', html, iconSize: [36, 36], iconAnchor: [18, 18] });
+                if (myMarker) { myMarker.setLatLng([lat, lng]); myMarker.setIcon(icon); }
+                else { myMarker = L.marker([lat, lng], { icon }).addTo(locationMap).bindPopup(`<strong>${myName || 'You'}</strong><br>${formatCoords(lat, lng)}`); }
+                if (!myMarkerCenteredOnce) {
+                    locationMap.setView([lat, lng], 16);
+                    myMarkerCenteredOnce = true;
+                }
             }
 
             function updatePartnerMarker(lat, lng, name, updatedAt) {
@@ -2690,14 +2699,22 @@
                 const icon = L.divIcon({ className: '', html, iconSize: [36, 36], iconAnchor: [18, 18] });
                 const ago = locationTimeAgo(updatedAt);
                 if (partnerMarker) { partnerMarker.setLatLng([lat, lng]); partnerMarker.setIcon(icon); partnerMarker.setPopupContent(`<strong>${name || 'Partner'}</strong><br>${formatCoords(lat, lng)}<br><small>${ago}</small>`); }
-                else { partnerMarker = L.marker([lat, lng], { icon }).addTo(locationMap).bindPopup(`<strong>${name || 'Partner'}</strong><br>${formatCoords(lat, lng)}<br><small>${ago}</small>`); }
+                else { 
+                    partnerMarker = L.marker([lat, lng], { icon }).addTo(locationMap).bindPopup(`<strong>${name || 'Partner'}</strong><br>${formatCoords(lat, lng)}<br><small>${ago}</small>`);
+                    // Auto-center on partner if we haven't centered on ourselves yet
+                    if (!myMarkerCenteredOnce) { locationMap.setView([lat, lng], 16); }
+                }
                 document.getElementById('locPartnerCoords').textContent = `${formatCoords(lat, lng)} · ${ago}`;
                 document.getElementById('locPartnerDot').className = 'loc-dot live';
             }
 
             function fitBothMarkers() {
-                // Only the partner's marker exists on the map; center on it.
-                if (partnerMarker) {
+                if (myMarker && partnerMarker) {
+                    const group = L.featureGroup([myMarker, partnerMarker]);
+                    locationMap.fitBounds(group.getBounds().pad(0.3));
+                } else if (myMarker) {
+                    locationMap.setView(myMarker.getLatLng(), 16);
+                } else if (partnerMarker) {
                     locationMap.setView(partnerMarker.getLatLng(), 16);
                 }
             }
@@ -2715,7 +2732,7 @@
                 watchId = navigator.geolocation.watchPosition(
                     async (pos) => {
                         const { latitude: lat, longitude: lng } = pos.coords;
-                        updateMyStatus(lat, lng);
+                        updateMyStatus(lat, lng, myName);
                         document.getElementById('locPermissionMsg').style.display = 'none';
                         // Save to Firestore so partner can see our location on their map
                         try {
@@ -2744,7 +2761,8 @@
                 if (auth.currentUser) {
                     db.collection('users').doc(auth.currentUser.uid).update({ location: null }).catch(() => {});
                 }
-                // myMarker is never on the map (we only show partner's location here)
+                // Remove my marker from the map
+                if (myMarker) { locationMap.removeLayer(myMarker); myMarker = null; myMarkerCenteredOnce = false; }
             }
 
             function listenToPartnerLocation(partnerId, partnerName) {
